@@ -27,13 +27,15 @@ def render_image(uint16_t[:] accum, uint32_t bitshift, size_t ovoxels):
     oimg[i] = <uint8_t>(accum[i] >> bitshift)
   return oimg
 
-def average_pooling_2x2x1(
-    np.ndarray[uint8_t, ndim=3] channel, 
+def average_pooling_2x2(
+    np.ndarray[uint8_t, ndim=4] channel, 
     uint32_t num_mips=1
   ):
+
   cdef size_t sx = channel.shape[0]
   cdef size_t sy = channel.shape[1]
   cdef size_t sz = channel.shape[2]
+  cdef size_t sw = channel.shape[3]
   cdef size_t sxy = sx * sy
 
   if num_mips == 0:
@@ -45,10 +47,10 @@ def average_pooling_2x2x1(
   cdef size_t osx = (sx + 1) // 2
   cdef size_t osy = (sy + 1) // 2
   cdef size_t osxy = osx * osy
-  cdef size_t ovoxels = osxy * sz
+  cdef size_t ovoxels = osxy * sz * sw
 
-  cdef uint8_t[:,:,:] channelview = channel
-  cdef uint16_t* accum = accumulate_2x2[uint8_t](&channelview[0,0,0], sx, sy, sz)
+  cdef uint8_t[:,:,:,:] channelview = channel
+  cdef uint16_t* accum = accumulate_2x2[uint8_t](&channelview[0,0,0,0], sx, sy, sz, sw)
   cdef uint16_t[:] accumview = <uint16_t[:ovoxels]>accum
   cdef uint16_t* tmp
   cdef size_t i
@@ -60,7 +62,7 @@ def average_pooling_2x2x1(
 
     oimg = render_image(accumview, bitshift, ovoxels)
     results.append(
-      oimg.reshape( (osx, osy, sz), order='F' )
+      oimg.reshape( (osx, osy, sz, sw), order='F' )
     )
 
     if mip == num_mips - 1:
@@ -72,14 +74,14 @@ def average_pooling_2x2x1(
     osx = (sx + 1) // 2
     osy = (sy + 1) // 2
     osxy = osx * osy
-    ovoxels = osxy * sz
+    ovoxels = osxy * sz * sw
 
     if bitshift == 8:
-      for i in range(sx * sy * sz):
+      for i in range(sx * sy * sz * sw):
         accum[i] >>= 8
 
     tmp = accum 
-    accum = accumulate_2x2[uint16_t](accum, sx, sy, sz)
+    accum = accumulate_2x2[uint16_t](accum, sx, sy, sz, sw)
     accumview = <uint16_t[:ovoxels]>accum
     PyMem_Free(tmp)
 

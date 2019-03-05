@@ -2134,7 +2134,7 @@ static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value);
 static CYTHON_INLINE char __Pyx_PyInt_As_char(PyObject *);
 
 /* ObjectToMemviewSlice.proto */
-static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_dsdsds_nn_uint8_t(PyObject *, int writable_flag);
+static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_dsdsdsds_nn_uint8_t(PyObject *, int writable_flag);
 
 /* CheckBinaryVersion.proto */
 static int __Pyx_check_binary_version(void);
@@ -2260,6 +2260,7 @@ static const char __pyx_k_T[] = "T{";
   static const char __pyx_k_s[] = "(%s)";
   static const char __pyx_k_id[] = "id";
   static const char __pyx_k_np[] = "np";
+  static const char __pyx_k_sw[] = "sw";
   static const char __pyx_k_sx[] = "sx";
   static const char __pyx_k_sy[] = "sy";
   static const char __pyx_k_sz[] = "sz";
@@ -2351,8 +2352,8 @@ static const char __pyx_k_setstate_cython[] = "__setstate_cython__";
 static const char __pyx_k_pyx_unpickle_Enum[] = "__pyx_unpickle_Enum";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
 static const char __pyx_k_strided_and_direct[] = "<strided and direct>";
+static const char __pyx_k_average_pooling_2x2[] = "average_pooling_2x2";
 static const char __pyx_k_strided_and_indirect[] = "<strided and indirect>";
-static const char __pyx_k_average_pooling_2x2x1[] = "average_pooling_2x2x1";
 static const char __pyx_k_contiguous_and_direct[] = "<contiguous and direct>";
 static const char __pyx_k_tinybrain_accelerated[] = "tinybrain.accelerated";
 static const char __pyx_k_MemoryView_of_r_object[] = "<MemoryView of %r object>";
@@ -2426,7 +2427,7 @@ static PyObject *__pyx_kp_u__31;
 static PyObject *__pyx_n_s_accum;
 static PyObject *__pyx_n_s_accumview;
 static PyObject *__pyx_n_s_allocate_buffer;
-static PyObject *__pyx_n_s_average_pooling_2x2x1;
+static PyObject *__pyx_n_s_average_pooling_2x2;
 static PyObject *__pyx_n_s_base;
 static PyObject *__pyx_n_s_bitshift;
 static PyObject *__pyx_n_s_c;
@@ -2508,6 +2509,7 @@ static PyObject *__pyx_kp_s_strided_and_direct_or_indirect;
 static PyObject *__pyx_kp_s_strided_and_indirect;
 static PyObject *__pyx_kp_s_stringsource;
 static PyObject *__pyx_n_s_struct;
+static PyObject *__pyx_n_s_sw;
 static PyObject *__pyx_n_s_sx;
 static PyObject *__pyx_n_s_sxy;
 static PyObject *__pyx_n_s_sy;
@@ -2524,7 +2526,7 @@ static PyObject *__pyx_n_s_unpack;
 static PyObject *__pyx_n_s_update;
 static PyObject *__pyx_n_s_zeros;
 static PyObject *__pyx_pf_9tinybrain_11accelerated_render_image(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_accum, uint32_t __pyx_v_bitshift, size_t __pyx_v_ovoxels); /* proto */
-static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2x1(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_channel, uint32_t __pyx_v_num_mips); /* proto */
+static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_channel, uint32_t __pyx_v_num_mips); /* proto */
 static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags); /* proto */
 static void __pyx_pf_5numpy_7ndarray_2__releasebuffer__(PyArrayObject *__pyx_v_self, Py_buffer *__pyx_v_info); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __pyx_array_obj *__pyx_v_self, PyObject *__pyx_v_shape, Py_ssize_t __pyx_v_itemsize, PyObject *__pyx_v_format, PyObject *__pyx_v_mode, int __pyx_v_allocate_buffer); /* proto */
@@ -2824,7 +2826,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_render_image(CYTHON_UNUSED Py
  *     oimg[i] = <uint8_t>(accum[i] >> bitshift)
  *   return oimg             # <<<<<<<<<<<<<<
  * 
- * def average_pooling_2x2x1(
+ * def average_pooling_2x2(
  */
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF(((PyObject *)__pyx_v_oimg));
@@ -2868,20 +2870,20 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_render_image(CYTHON_UNUSED Py
 /* "tinybrain/accelerated.pyx":30
  *   return oimg
  * 
- * def average_pooling_2x2x1(             # <<<<<<<<<<<<<<
- *     np.ndarray[uint8_t, ndim=3] channel,
+ * def average_pooling_2x2(             # <<<<<<<<<<<<<<
+ *     np.ndarray[uint8_t, ndim=4] channel,
  *     uint32_t num_mips=1
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_9tinybrain_11accelerated_3average_pooling_2x2x1(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyMethodDef __pyx_mdef_9tinybrain_11accelerated_3average_pooling_2x2x1 = {"average_pooling_2x2x1", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_9tinybrain_11accelerated_3average_pooling_2x2x1, METH_VARARGS|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_9tinybrain_11accelerated_3average_pooling_2x2x1(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_9tinybrain_11accelerated_3average_pooling_2x2(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyMethodDef __pyx_mdef_9tinybrain_11accelerated_3average_pooling_2x2 = {"average_pooling_2x2", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_9tinybrain_11accelerated_3average_pooling_2x2, METH_VARARGS|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_9tinybrain_11accelerated_3average_pooling_2x2(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyArrayObject *__pyx_v_channel = 0;
   uint32_t __pyx_v_num_mips;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("average_pooling_2x2x1 (wrapper)", 0);
+  __Pyx_RefNannySetupContext("average_pooling_2x2 (wrapper)", 0);
   {
     static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_channel,&__pyx_n_s_num_mips,0};
     PyObject* values[2] = {0,0};
@@ -2909,7 +2911,7 @@ static PyObject *__pyx_pw_9tinybrain_11accelerated_3average_pooling_2x2x1(PyObje
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "average_pooling_2x2x1") < 0)) __PYX_ERR(0, 30, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "average_pooling_2x2") < 0)) __PYX_ERR(0, 30, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -2929,14 +2931,14 @@ static PyObject *__pyx_pw_9tinybrain_11accelerated_3average_pooling_2x2x1(PyObje
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("average_pooling_2x2x1", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 30, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("average_pooling_2x2", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 30, __pyx_L3_error)
   __pyx_L3_error:;
-  __Pyx_AddTraceback("tinybrain.accelerated.average_pooling_2x2x1", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("tinybrain.accelerated.average_pooling_2x2", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_channel), __pyx_ptype_5numpy_ndarray, 1, "channel", 0))) __PYX_ERR(0, 31, __pyx_L1_error)
-  __pyx_r = __pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2x1(__pyx_self, __pyx_v_channel, __pyx_v_num_mips);
+  __pyx_r = __pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2(__pyx_self, __pyx_v_channel, __pyx_v_num_mips);
 
   /* function exit code */
   goto __pyx_L0;
@@ -2947,10 +2949,11 @@ static PyObject *__pyx_pw_9tinybrain_11accelerated_3average_pooling_2x2x1(PyObje
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2x1(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_channel, uint32_t __pyx_v_num_mips) {
+static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_channel, uint32_t __pyx_v_num_mips) {
   size_t __pyx_v_sx;
   size_t __pyx_v_sy;
   size_t __pyx_v_sz;
+  size_t __pyx_v_sw;
   CYTHON_UNUSED size_t __pyx_v_sxy;
   size_t __pyx_v_osx;
   size_t __pyx_v_osy;
@@ -2978,68 +2981,78 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2x1(CYTHON
   Py_ssize_t __pyx_t_7;
   Py_ssize_t __pyx_t_8;
   Py_ssize_t __pyx_t_9;
-  int __pyx_t_10;
-  struct __pyx_array_obj *__pyx_t_11 = NULL;
-  PyObject *__pyx_t_12 = NULL;
-  __Pyx_memviewslice __pyx_t_13 = { 0, 0, { 0 }, { 0 }, { 0 } };
-  uint32_t __pyx_t_14;
+  Py_ssize_t __pyx_t_10;
+  int __pyx_t_11;
+  struct __pyx_array_obj *__pyx_t_12 = NULL;
+  PyObject *__pyx_t_13 = NULL;
+  __Pyx_memviewslice __pyx_t_14 = { 0, 0, { 0 }, { 0 }, { 0 } };
   uint32_t __pyx_t_15;
   uint32_t __pyx_t_16;
-  PyObject *__pyx_t_17 = NULL;
+  uint32_t __pyx_t_17;
   PyObject *__pyx_t_18 = NULL;
   PyObject *__pyx_t_19 = NULL;
   PyObject *__pyx_t_20 = NULL;
   PyObject *__pyx_t_21 = NULL;
-  int __pyx_t_22;
-  size_t __pyx_t_23;
-  __Pyx_RefNannySetupContext("average_pooling_2x2x1", 0);
+  PyObject *__pyx_t_22 = NULL;
+  int __pyx_t_23;
+  size_t __pyx_t_24;
+  __Pyx_RefNannySetupContext("average_pooling_2x2", 0);
   __pyx_pybuffer_channel.pybuffer.buf = NULL;
   __pyx_pybuffer_channel.refcount = 0;
   __pyx_pybuffernd_channel.data = NULL;
   __pyx_pybuffernd_channel.rcbuffer = &__pyx_pybuffer_channel;
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_channel.rcbuffer->pybuffer, (PyObject*)__pyx_v_channel, &__Pyx_TypeInfo_nn_uint8_t, PyBUF_FORMAT| PyBUF_STRIDES, 3, 0, __pyx_stack) == -1)) __PYX_ERR(0, 30, __pyx_L1_error)
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_channel.rcbuffer->pybuffer, (PyObject*)__pyx_v_channel, &__Pyx_TypeInfo_nn_uint8_t, PyBUF_FORMAT| PyBUF_STRIDES, 4, 0, __pyx_stack) == -1)) __PYX_ERR(0, 30, __pyx_L1_error)
   }
-  __pyx_pybuffernd_channel.diminfo[0].strides = __pyx_pybuffernd_channel.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_channel.diminfo[0].shape = __pyx_pybuffernd_channel.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_channel.diminfo[1].strides = __pyx_pybuffernd_channel.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_channel.diminfo[1].shape = __pyx_pybuffernd_channel.rcbuffer->pybuffer.shape[1]; __pyx_pybuffernd_channel.diminfo[2].strides = __pyx_pybuffernd_channel.rcbuffer->pybuffer.strides[2]; __pyx_pybuffernd_channel.diminfo[2].shape = __pyx_pybuffernd_channel.rcbuffer->pybuffer.shape[2];
+  __pyx_pybuffernd_channel.diminfo[0].strides = __pyx_pybuffernd_channel.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_channel.diminfo[0].shape = __pyx_pybuffernd_channel.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_channel.diminfo[1].strides = __pyx_pybuffernd_channel.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_channel.diminfo[1].shape = __pyx_pybuffernd_channel.rcbuffer->pybuffer.shape[1]; __pyx_pybuffernd_channel.diminfo[2].strides = __pyx_pybuffernd_channel.rcbuffer->pybuffer.strides[2]; __pyx_pybuffernd_channel.diminfo[2].shape = __pyx_pybuffernd_channel.rcbuffer->pybuffer.shape[2]; __pyx_pybuffernd_channel.diminfo[3].strides = __pyx_pybuffernd_channel.rcbuffer->pybuffer.strides[3]; __pyx_pybuffernd_channel.diminfo[3].shape = __pyx_pybuffernd_channel.rcbuffer->pybuffer.shape[3];
 
-  /* "tinybrain/accelerated.pyx":34
- *     uint32_t num_mips=1
+  /* "tinybrain/accelerated.pyx":35
  *   ):
+ * 
  *   cdef size_t sx = channel.shape[0]             # <<<<<<<<<<<<<<
  *   cdef size_t sy = channel.shape[1]
  *   cdef size_t sz = channel.shape[2]
  */
   __pyx_v_sx = (__pyx_v_channel->dimensions[0]);
 
-  /* "tinybrain/accelerated.pyx":35
- *   ):
+  /* "tinybrain/accelerated.pyx":36
+ * 
  *   cdef size_t sx = channel.shape[0]
  *   cdef size_t sy = channel.shape[1]             # <<<<<<<<<<<<<<
  *   cdef size_t sz = channel.shape[2]
- *   cdef size_t sxy = sx * sy
+ *   cdef size_t sw = channel.shape[3]
  */
   __pyx_v_sy = (__pyx_v_channel->dimensions[1]);
 
-  /* "tinybrain/accelerated.pyx":36
+  /* "tinybrain/accelerated.pyx":37
  *   cdef size_t sx = channel.shape[0]
  *   cdef size_t sy = channel.shape[1]
  *   cdef size_t sz = channel.shape[2]             # <<<<<<<<<<<<<<
+ *   cdef size_t sw = channel.shape[3]
  *   cdef size_t sxy = sx * sy
- * 
  */
   __pyx_v_sz = (__pyx_v_channel->dimensions[2]);
 
-  /* "tinybrain/accelerated.pyx":37
+  /* "tinybrain/accelerated.pyx":38
  *   cdef size_t sy = channel.shape[1]
  *   cdef size_t sz = channel.shape[2]
+ *   cdef size_t sw = channel.shape[3]             # <<<<<<<<<<<<<<
+ *   cdef size_t sxy = sx * sy
+ * 
+ */
+  __pyx_v_sw = (__pyx_v_channel->dimensions[3]);
+
+  /* "tinybrain/accelerated.pyx":39
+ *   cdef size_t sz = channel.shape[2]
+ *   cdef size_t sw = channel.shape[3]
  *   cdef size_t sxy = sx * sy             # <<<<<<<<<<<<<<
  * 
  *   if num_mips == 0:
  */
   __pyx_v_sxy = (__pyx_v_sx * __pyx_v_sy);
 
-  /* "tinybrain/accelerated.pyx":39
+  /* "tinybrain/accelerated.pyx":41
  *   cdef size_t sxy = sx * sy
  * 
  *   if num_mips == 0:             # <<<<<<<<<<<<<<
@@ -3049,7 +3062,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2x1(CYTHON
   __pyx_t_1 = ((__pyx_v_num_mips == 0) != 0);
   if (__pyx_t_1) {
 
-    /* "tinybrain/accelerated.pyx":40
+    /* "tinybrain/accelerated.pyx":42
  * 
  *   if num_mips == 0:
  *     return []             # <<<<<<<<<<<<<<
@@ -3057,13 +3070,13 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2x1(CYTHON
  *   if min(sx, sy) <= 2 ** num_mips:
  */
     __Pyx_XDECREF(__pyx_r);
-    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 40, __pyx_L1_error)
+    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 42, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_r = __pyx_t_2;
     __pyx_t_2 = 0;
     goto __pyx_L0;
 
-    /* "tinybrain/accelerated.pyx":39
+    /* "tinybrain/accelerated.pyx":41
  *   cdef size_t sxy = sx * sy
  * 
  *   if num_mips == 0:             # <<<<<<<<<<<<<<
@@ -3072,7 +3085,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2x1(CYTHON
  */
   }
 
-  /* "tinybrain/accelerated.pyx":42
+  /* "tinybrain/accelerated.pyx":44
  *     return []
  * 
  *   if min(sx, sy) <= 2 ** num_mips:             # <<<<<<<<<<<<<<
@@ -3089,20 +3102,20 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2x1(CYTHON
   __pyx_t_1 = ((__pyx_t_5 <= __Pyx_pow_long(2, ((long)__pyx_v_num_mips))) != 0);
   if (unlikely(__pyx_t_1)) {
 
-    /* "tinybrain/accelerated.pyx":43
+    /* "tinybrain/accelerated.pyx":45
  * 
  *   if min(sx, sy) <= 2 ** num_mips:
  *     raise ValueError("Can't downsample smaller than the smallest XY plane dimension.")             # <<<<<<<<<<<<<<
  * 
  *   cdef size_t osx = (sx + 1) // 2
  */
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple_, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 43, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple_, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 45, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_Raise(__pyx_t_2, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __PYX_ERR(0, 43, __pyx_L1_error)
+    __PYX_ERR(0, 45, __pyx_L1_error)
 
-    /* "tinybrain/accelerated.pyx":42
+    /* "tinybrain/accelerated.pyx":44
  *     return []
  * 
  *   if min(sx, sy) <= 2 ** num_mips:             # <<<<<<<<<<<<<<
@@ -3111,7 +3124,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2x1(CYTHON
  */
   }
 
-  /* "tinybrain/accelerated.pyx":45
+  /* "tinybrain/accelerated.pyx":47
  *     raise ValueError("Can't downsample smaller than the smallest XY plane dimension.")
  * 
  *   cdef size_t osx = (sx + 1) // 2             # <<<<<<<<<<<<<<
@@ -3120,126 +3133,131 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2x1(CYTHON
  */
   __pyx_v_osx = ((__pyx_v_sx + 1) / 2);
 
-  /* "tinybrain/accelerated.pyx":46
+  /* "tinybrain/accelerated.pyx":48
  * 
  *   cdef size_t osx = (sx + 1) // 2
  *   cdef size_t osy = (sy + 1) // 2             # <<<<<<<<<<<<<<
  *   cdef size_t osxy = osx * osy
- *   cdef size_t ovoxels = osxy * sz
+ *   cdef size_t ovoxels = osxy * sz * sw
  */
   __pyx_v_osy = ((__pyx_v_sy + 1) / 2);
 
-  /* "tinybrain/accelerated.pyx":47
+  /* "tinybrain/accelerated.pyx":49
  *   cdef size_t osx = (sx + 1) // 2
  *   cdef size_t osy = (sy + 1) // 2
  *   cdef size_t osxy = osx * osy             # <<<<<<<<<<<<<<
- *   cdef size_t ovoxels = osxy * sz
+ *   cdef size_t ovoxels = osxy * sz * sw
  * 
  */
   __pyx_v_osxy = (__pyx_v_osx * __pyx_v_osy);
 
-  /* "tinybrain/accelerated.pyx":48
+  /* "tinybrain/accelerated.pyx":50
  *   cdef size_t osy = (sy + 1) // 2
  *   cdef size_t osxy = osx * osy
- *   cdef size_t ovoxels = osxy * sz             # <<<<<<<<<<<<<<
+ *   cdef size_t ovoxels = osxy * sz * sw             # <<<<<<<<<<<<<<
  * 
- *   cdef uint8_t[:,:,:] channelview = channel
+ *   cdef uint8_t[:,:,:,:] channelview = channel
  */
-  __pyx_v_ovoxels = (__pyx_v_osxy * __pyx_v_sz);
+  __pyx_v_ovoxels = ((__pyx_v_osxy * __pyx_v_sz) * __pyx_v_sw);
 
-  /* "tinybrain/accelerated.pyx":50
- *   cdef size_t ovoxels = osxy * sz
+  /* "tinybrain/accelerated.pyx":52
+ *   cdef size_t ovoxels = osxy * sz * sw
  * 
- *   cdef uint8_t[:,:,:] channelview = channel             # <<<<<<<<<<<<<<
- *   cdef uint16_t* accum = accumulate_2x2[uint8_t](&channelview[0,0,0], sx, sy, sz)
+ *   cdef uint8_t[:,:,:,:] channelview = channel             # <<<<<<<<<<<<<<
+ *   cdef uint16_t* accum = accumulate_2x2[uint8_t](&channelview[0,0,0,0], sx, sy, sz, sw)
  *   cdef uint16_t[:] accumview = <uint16_t[:ovoxels]>accum
  */
-  __pyx_t_6 = __Pyx_PyObject_to_MemoryviewSlice_dsdsds_nn_uint8_t(((PyObject *)__pyx_v_channel), PyBUF_WRITABLE); if (unlikely(!__pyx_t_6.memview)) __PYX_ERR(0, 50, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_to_MemoryviewSlice_dsdsdsds_nn_uint8_t(((PyObject *)__pyx_v_channel), PyBUF_WRITABLE); if (unlikely(!__pyx_t_6.memview)) __PYX_ERR(0, 52, __pyx_L1_error)
   __pyx_v_channelview = __pyx_t_6;
   __pyx_t_6.memview = NULL;
   __pyx_t_6.data = NULL;
 
-  /* "tinybrain/accelerated.pyx":51
+  /* "tinybrain/accelerated.pyx":53
  * 
- *   cdef uint8_t[:,:,:] channelview = channel
- *   cdef uint16_t* accum = accumulate_2x2[uint8_t](&channelview[0,0,0], sx, sy, sz)             # <<<<<<<<<<<<<<
+ *   cdef uint8_t[:,:,:,:] channelview = channel
+ *   cdef uint16_t* accum = accumulate_2x2[uint8_t](&channelview[0,0,0,0], sx, sy, sz, sw)             # <<<<<<<<<<<<<<
  *   cdef uint16_t[:] accumview = <uint16_t[:ovoxels]>accum
  *   cdef uint16_t* tmp
  */
   __pyx_t_7 = 0;
   __pyx_t_8 = 0;
   __pyx_t_9 = 0;
-  __pyx_t_10 = -1;
+  __pyx_t_10 = 0;
+  __pyx_t_11 = -1;
   if (__pyx_t_7 < 0) {
     __pyx_t_7 += __pyx_v_channelview.shape[0];
-    if (unlikely(__pyx_t_7 < 0)) __pyx_t_10 = 0;
-  } else if (unlikely(__pyx_t_7 >= __pyx_v_channelview.shape[0])) __pyx_t_10 = 0;
+    if (unlikely(__pyx_t_7 < 0)) __pyx_t_11 = 0;
+  } else if (unlikely(__pyx_t_7 >= __pyx_v_channelview.shape[0])) __pyx_t_11 = 0;
   if (__pyx_t_8 < 0) {
     __pyx_t_8 += __pyx_v_channelview.shape[1];
-    if (unlikely(__pyx_t_8 < 0)) __pyx_t_10 = 1;
-  } else if (unlikely(__pyx_t_8 >= __pyx_v_channelview.shape[1])) __pyx_t_10 = 1;
+    if (unlikely(__pyx_t_8 < 0)) __pyx_t_11 = 1;
+  } else if (unlikely(__pyx_t_8 >= __pyx_v_channelview.shape[1])) __pyx_t_11 = 1;
   if (__pyx_t_9 < 0) {
     __pyx_t_9 += __pyx_v_channelview.shape[2];
-    if (unlikely(__pyx_t_9 < 0)) __pyx_t_10 = 2;
-  } else if (unlikely(__pyx_t_9 >= __pyx_v_channelview.shape[2])) __pyx_t_10 = 2;
-  if (unlikely(__pyx_t_10 != -1)) {
-    __Pyx_RaiseBufferIndexError(__pyx_t_10);
-    __PYX_ERR(0, 51, __pyx_L1_error)
+    if (unlikely(__pyx_t_9 < 0)) __pyx_t_11 = 2;
+  } else if (unlikely(__pyx_t_9 >= __pyx_v_channelview.shape[2])) __pyx_t_11 = 2;
+  if (__pyx_t_10 < 0) {
+    __pyx_t_10 += __pyx_v_channelview.shape[3];
+    if (unlikely(__pyx_t_10 < 0)) __pyx_t_11 = 3;
+  } else if (unlikely(__pyx_t_10 >= __pyx_v_channelview.shape[3])) __pyx_t_11 = 3;
+  if (unlikely(__pyx_t_11 != -1)) {
+    __Pyx_RaiseBufferIndexError(__pyx_t_11);
+    __PYX_ERR(0, 53, __pyx_L1_error)
   }
-  __pyx_v_accum = accelerated::accumulate_2x2<uint8_t>((&(*((uint8_t *) ( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_channelview.data + __pyx_t_7 * __pyx_v_channelview.strides[0]) ) + __pyx_t_8 * __pyx_v_channelview.strides[1]) ) + __pyx_t_9 * __pyx_v_channelview.strides[2]) )))), __pyx_v_sx, __pyx_v_sy, __pyx_v_sz);
+  __pyx_v_accum = accelerated::accumulate_2x2<uint8_t>((&(*((uint8_t *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_channelview.data + __pyx_t_7 * __pyx_v_channelview.strides[0]) ) + __pyx_t_8 * __pyx_v_channelview.strides[1]) ) + __pyx_t_9 * __pyx_v_channelview.strides[2]) ) + __pyx_t_10 * __pyx_v_channelview.strides[3]) )))), __pyx_v_sx, __pyx_v_sy, __pyx_v_sz, __pyx_v_sw);
 
-  /* "tinybrain/accelerated.pyx":52
- *   cdef uint8_t[:,:,:] channelview = channel
- *   cdef uint16_t* accum = accumulate_2x2[uint8_t](&channelview[0,0,0], sx, sy, sz)
+  /* "tinybrain/accelerated.pyx":54
+ *   cdef uint8_t[:,:,:,:] channelview = channel
+ *   cdef uint16_t* accum = accumulate_2x2[uint8_t](&channelview[0,0,0,0], sx, sy, sz, sw)
  *   cdef uint16_t[:] accumview = <uint16_t[:ovoxels]>accum             # <<<<<<<<<<<<<<
  *   cdef uint16_t* tmp
  *   cdef size_t i
  */
   if (!__pyx_v_accum) {
     PyErr_SetString(PyExc_ValueError,"Cannot create cython.array from NULL pointer");
-    __PYX_ERR(0, 52, __pyx_L1_error)
+    __PYX_ERR(0, 54, __pyx_L1_error)
   }
-  __pyx_t_12 = __pyx_format_from_typeinfo(&__Pyx_TypeInfo_nn_uint16_t);
+  __pyx_t_13 = __pyx_format_from_typeinfo(&__Pyx_TypeInfo_nn_uint16_t);
   __pyx_t_2 = Py_BuildValue((char*) "("  __PYX_BUILD_PY_SSIZE_T  ")", ((Py_ssize_t)__pyx_v_ovoxels));
-  if (unlikely(!__pyx_t_12 || !__pyx_t_2 || !PyBytes_AsString(__pyx_t_12))) __PYX_ERR(0, 52, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_12);
+  if (unlikely(!__pyx_t_13 || !__pyx_t_2 || !PyBytes_AsString(__pyx_t_13))) __PYX_ERR(0, 54, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_13);
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_11 = __pyx_array_new(__pyx_t_2, sizeof(uint16_t), PyBytes_AS_STRING(__pyx_t_12), (char *) "c", (char *) __pyx_v_accum);
-  if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 52, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_11);
+  __pyx_t_12 = __pyx_array_new(__pyx_t_2, sizeof(uint16_t), PyBytes_AS_STRING(__pyx_t_13), (char *) "c", (char *) __pyx_v_accum);
+  if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 54, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_12);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
-  __pyx_t_13 = __Pyx_PyObject_to_MemoryviewSlice_ds_nn_uint16_t(((PyObject *)__pyx_t_11), PyBUF_WRITABLE); if (unlikely(!__pyx_t_13.memview)) __PYX_ERR(0, 52, __pyx_L1_error)
-  __Pyx_DECREF(((PyObject *)__pyx_t_11)); __pyx_t_11 = 0;
-  __pyx_v_accumview = __pyx_t_13;
-  __pyx_t_13.memview = NULL;
-  __pyx_t_13.data = NULL;
+  __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
+  __pyx_t_14 = __Pyx_PyObject_to_MemoryviewSlice_ds_nn_uint16_t(((PyObject *)__pyx_t_12), PyBUF_WRITABLE); if (unlikely(!__pyx_t_14.memview)) __PYX_ERR(0, 54, __pyx_L1_error)
+  __Pyx_DECREF(((PyObject *)__pyx_t_12)); __pyx_t_12 = 0;
+  __pyx_v_accumview = __pyx_t_14;
+  __pyx_t_14.memview = NULL;
+  __pyx_t_14.data = NULL;
 
-  /* "tinybrain/accelerated.pyx":57
+  /* "tinybrain/accelerated.pyx":59
  *   cdef uint32_t mip, bitshift
  * 
  *   results = []             # <<<<<<<<<<<<<<
  *   for mip in range(0, num_mips):
  *     bitshift = 2 * ((mip % 4) + 1) # integer truncation every 4 mip levels
  */
-  __pyx_t_12 = PyList_New(0); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 57, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_12);
-  __pyx_v_results = ((PyObject*)__pyx_t_12);
-  __pyx_t_12 = 0;
+  __pyx_t_13 = PyList_New(0); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 59, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_13);
+  __pyx_v_results = ((PyObject*)__pyx_t_13);
+  __pyx_t_13 = 0;
 
-  /* "tinybrain/accelerated.pyx":58
+  /* "tinybrain/accelerated.pyx":60
  * 
  *   results = []
  *   for mip in range(0, num_mips):             # <<<<<<<<<<<<<<
  *     bitshift = 2 * ((mip % 4) + 1) # integer truncation every 4 mip levels
  * 
  */
-  __pyx_t_14 = __pyx_v_num_mips;
-  __pyx_t_15 = __pyx_t_14;
-  for (__pyx_t_16 = 0; __pyx_t_16 < __pyx_t_15; __pyx_t_16+=1) {
-    __pyx_v_mip = __pyx_t_16;
+  __pyx_t_15 = __pyx_v_num_mips;
+  __pyx_t_16 = __pyx_t_15;
+  for (__pyx_t_17 = 0; __pyx_t_17 < __pyx_t_16; __pyx_t_17+=1) {
+    __pyx_v_mip = __pyx_t_17;
 
-    /* "tinybrain/accelerated.pyx":59
+    /* "tinybrain/accelerated.pyx":61
  *   results = []
  *   for mip in range(0, num_mips):
  *     bitshift = 2 * ((mip % 4) + 1) # integer truncation every 4 mip levels             # <<<<<<<<<<<<<<
@@ -3248,129 +3266,134 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2x1(CYTHON
  */
     __pyx_v_bitshift = (2 * (__Pyx_mod_long(__pyx_v_mip, 4) + 1));
 
-    /* "tinybrain/accelerated.pyx":61
+    /* "tinybrain/accelerated.pyx":63
  *     bitshift = 2 * ((mip % 4) + 1) # integer truncation every 4 mip levels
  * 
  *     oimg = render_image(accumview, bitshift, ovoxels)             # <<<<<<<<<<<<<<
  *     results.append(
- *       oimg.reshape( (osx, osy, sz), order='F' )
+ *       oimg.reshape( (osx, osy, sz, sw), order='F' )
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_render_image); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 61, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_render_image); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 63, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_17 = __pyx_memoryview_fromslice(__pyx_v_accumview, 1, (PyObject *(*)(char *)) __pyx_memview_get_nn_uint16_t, (int (*)(char *, PyObject *)) __pyx_memview_set_nn_uint16_t, 0);; if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 61, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_17);
-    __pyx_t_18 = __Pyx_PyInt_From_uint32_t(__pyx_v_bitshift); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 61, __pyx_L1_error)
+    __pyx_t_18 = __pyx_memoryview_fromslice(__pyx_v_accumview, 1, (PyObject *(*)(char *)) __pyx_memview_get_nn_uint16_t, (int (*)(char *, PyObject *)) __pyx_memview_set_nn_uint16_t, 0);; if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 63, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_18);
-    __pyx_t_19 = __Pyx_PyInt_FromSize_t(__pyx_v_ovoxels); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 61, __pyx_L1_error)
+    __pyx_t_19 = __Pyx_PyInt_From_uint32_t(__pyx_v_bitshift); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 63, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_19);
-    __pyx_t_20 = NULL;
-    __pyx_t_10 = 0;
+    __pyx_t_20 = __Pyx_PyInt_FromSize_t(__pyx_v_ovoxels); if (unlikely(!__pyx_t_20)) __PYX_ERR(0, 63, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_20);
+    __pyx_t_21 = NULL;
+    __pyx_t_11 = 0;
     if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
-      __pyx_t_20 = PyMethod_GET_SELF(__pyx_t_2);
-      if (likely(__pyx_t_20)) {
+      __pyx_t_21 = PyMethod_GET_SELF(__pyx_t_2);
+      if (likely(__pyx_t_21)) {
         PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
-        __Pyx_INCREF(__pyx_t_20);
+        __Pyx_INCREF(__pyx_t_21);
         __Pyx_INCREF(function);
         __Pyx_DECREF_SET(__pyx_t_2, function);
-        __pyx_t_10 = 1;
+        __pyx_t_11 = 1;
       }
     }
     #if CYTHON_FAST_PYCALL
     if (PyFunction_Check(__pyx_t_2)) {
-      PyObject *__pyx_temp[4] = {__pyx_t_20, __pyx_t_17, __pyx_t_18, __pyx_t_19};
-      __pyx_t_12 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_10, 3+__pyx_t_10); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 61, __pyx_L1_error)
-      __Pyx_XDECREF(__pyx_t_20); __pyx_t_20 = 0;
-      __Pyx_GOTREF(__pyx_t_12);
-      __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
+      PyObject *__pyx_temp[4] = {__pyx_t_21, __pyx_t_18, __pyx_t_19, __pyx_t_20};
+      __pyx_t_13 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_11, 3+__pyx_t_11); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 63, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_21); __pyx_t_21 = 0;
+      __Pyx_GOTREF(__pyx_t_13);
       __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
       __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
+      __Pyx_DECREF(__pyx_t_20); __pyx_t_20 = 0;
     } else
     #endif
     #if CYTHON_FAST_PYCCALL
     if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
-      PyObject *__pyx_temp[4] = {__pyx_t_20, __pyx_t_17, __pyx_t_18, __pyx_t_19};
-      __pyx_t_12 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_10, 3+__pyx_t_10); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 61, __pyx_L1_error)
-      __Pyx_XDECREF(__pyx_t_20); __pyx_t_20 = 0;
-      __Pyx_GOTREF(__pyx_t_12);
-      __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
+      PyObject *__pyx_temp[4] = {__pyx_t_21, __pyx_t_18, __pyx_t_19, __pyx_t_20};
+      __pyx_t_13 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_11, 3+__pyx_t_11); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 63, __pyx_L1_error)
+      __Pyx_XDECREF(__pyx_t_21); __pyx_t_21 = 0;
+      __Pyx_GOTREF(__pyx_t_13);
       __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
       __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
+      __Pyx_DECREF(__pyx_t_20); __pyx_t_20 = 0;
     } else
     #endif
     {
-      __pyx_t_21 = PyTuple_New(3+__pyx_t_10); if (unlikely(!__pyx_t_21)) __PYX_ERR(0, 61, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_21);
-      if (__pyx_t_20) {
-        __Pyx_GIVEREF(__pyx_t_20); PyTuple_SET_ITEM(__pyx_t_21, 0, __pyx_t_20); __pyx_t_20 = NULL;
+      __pyx_t_22 = PyTuple_New(3+__pyx_t_11); if (unlikely(!__pyx_t_22)) __PYX_ERR(0, 63, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_22);
+      if (__pyx_t_21) {
+        __Pyx_GIVEREF(__pyx_t_21); PyTuple_SET_ITEM(__pyx_t_22, 0, __pyx_t_21); __pyx_t_21 = NULL;
       }
-      __Pyx_GIVEREF(__pyx_t_17);
-      PyTuple_SET_ITEM(__pyx_t_21, 0+__pyx_t_10, __pyx_t_17);
       __Pyx_GIVEREF(__pyx_t_18);
-      PyTuple_SET_ITEM(__pyx_t_21, 1+__pyx_t_10, __pyx_t_18);
+      PyTuple_SET_ITEM(__pyx_t_22, 0+__pyx_t_11, __pyx_t_18);
       __Pyx_GIVEREF(__pyx_t_19);
-      PyTuple_SET_ITEM(__pyx_t_21, 2+__pyx_t_10, __pyx_t_19);
-      __pyx_t_17 = 0;
+      PyTuple_SET_ITEM(__pyx_t_22, 1+__pyx_t_11, __pyx_t_19);
+      __Pyx_GIVEREF(__pyx_t_20);
+      PyTuple_SET_ITEM(__pyx_t_22, 2+__pyx_t_11, __pyx_t_20);
       __pyx_t_18 = 0;
       __pyx_t_19 = 0;
-      __pyx_t_12 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_21, NULL); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 61, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_12);
-      __Pyx_DECREF(__pyx_t_21); __pyx_t_21 = 0;
+      __pyx_t_20 = 0;
+      __pyx_t_13 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_22, NULL); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 63, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_13);
+      __Pyx_DECREF(__pyx_t_22); __pyx_t_22 = 0;
     }
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __Pyx_XDECREF_SET(__pyx_v_oimg, __pyx_t_12);
-    __pyx_t_12 = 0;
+    __Pyx_XDECREF_SET(__pyx_v_oimg, __pyx_t_13);
+    __pyx_t_13 = 0;
 
-    /* "tinybrain/accelerated.pyx":63
+    /* "tinybrain/accelerated.pyx":65
  *     oimg = render_image(accumview, bitshift, ovoxels)
  *     results.append(
- *       oimg.reshape( (osx, osy, sz), order='F' )             # <<<<<<<<<<<<<<
+ *       oimg.reshape( (osx, osy, sz, sw), order='F' )             # <<<<<<<<<<<<<<
  *     )
  * 
  */
-    __pyx_t_12 = __Pyx_PyObject_GetAttrStr(__pyx_v_oimg, __pyx_n_s_reshape); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 63, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_12);
-    __pyx_t_2 = __Pyx_PyInt_FromSize_t(__pyx_v_osx); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 63, __pyx_L1_error)
+    __pyx_t_13 = __Pyx_PyObject_GetAttrStr(__pyx_v_oimg, __pyx_n_s_reshape); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 65, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_13);
+    __pyx_t_2 = __Pyx_PyInt_FromSize_t(__pyx_v_osx); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 65, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_21 = __Pyx_PyInt_FromSize_t(__pyx_v_osy); if (unlikely(!__pyx_t_21)) __PYX_ERR(0, 63, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_21);
-    __pyx_t_19 = __Pyx_PyInt_FromSize_t(__pyx_v_sz); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 63, __pyx_L1_error)
+    __pyx_t_22 = __Pyx_PyInt_FromSize_t(__pyx_v_osy); if (unlikely(!__pyx_t_22)) __PYX_ERR(0, 65, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_22);
+    __pyx_t_20 = __Pyx_PyInt_FromSize_t(__pyx_v_sz); if (unlikely(!__pyx_t_20)) __PYX_ERR(0, 65, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_20);
+    __pyx_t_19 = __Pyx_PyInt_FromSize_t(__pyx_v_sw); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 65, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_19);
-    __pyx_t_18 = PyTuple_New(3); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 63, __pyx_L1_error)
+    __pyx_t_18 = PyTuple_New(4); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 65, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_18);
     __Pyx_GIVEREF(__pyx_t_2);
     PyTuple_SET_ITEM(__pyx_t_18, 0, __pyx_t_2);
-    __Pyx_GIVEREF(__pyx_t_21);
-    PyTuple_SET_ITEM(__pyx_t_18, 1, __pyx_t_21);
+    __Pyx_GIVEREF(__pyx_t_22);
+    PyTuple_SET_ITEM(__pyx_t_18, 1, __pyx_t_22);
+    __Pyx_GIVEREF(__pyx_t_20);
+    PyTuple_SET_ITEM(__pyx_t_18, 2, __pyx_t_20);
     __Pyx_GIVEREF(__pyx_t_19);
-    PyTuple_SET_ITEM(__pyx_t_18, 2, __pyx_t_19);
+    PyTuple_SET_ITEM(__pyx_t_18, 3, __pyx_t_19);
     __pyx_t_2 = 0;
-    __pyx_t_21 = 0;
+    __pyx_t_22 = 0;
+    __pyx_t_20 = 0;
     __pyx_t_19 = 0;
-    __pyx_t_19 = PyTuple_New(1); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 63, __pyx_L1_error)
+    __pyx_t_19 = PyTuple_New(1); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 65, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_19);
     __Pyx_GIVEREF(__pyx_t_18);
     PyTuple_SET_ITEM(__pyx_t_19, 0, __pyx_t_18);
     __pyx_t_18 = 0;
-    __pyx_t_18 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 63, __pyx_L1_error)
+    __pyx_t_18 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_18)) __PYX_ERR(0, 65, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_18);
-    if (PyDict_SetItem(__pyx_t_18, __pyx_n_s_order, __pyx_n_u_F) < 0) __PYX_ERR(0, 63, __pyx_L1_error)
-    __pyx_t_21 = __Pyx_PyObject_Call(__pyx_t_12, __pyx_t_19, __pyx_t_18); if (unlikely(!__pyx_t_21)) __PYX_ERR(0, 63, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_21);
-    __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
+    if (PyDict_SetItem(__pyx_t_18, __pyx_n_s_order, __pyx_n_u_F) < 0) __PYX_ERR(0, 65, __pyx_L1_error)
+    __pyx_t_20 = __Pyx_PyObject_Call(__pyx_t_13, __pyx_t_19, __pyx_t_18); if (unlikely(!__pyx_t_20)) __PYX_ERR(0, 65, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_20);
+    __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
     __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
     __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
 
-    /* "tinybrain/accelerated.pyx":62
+    /* "tinybrain/accelerated.pyx":64
  * 
  *     oimg = render_image(accumview, bitshift, ovoxels)
  *     results.append(             # <<<<<<<<<<<<<<
- *       oimg.reshape( (osx, osy, sz), order='F' )
+ *       oimg.reshape( (osx, osy, sz, sw), order='F' )
  *     )
  */
-    __pyx_t_22 = __Pyx_PyList_Append(__pyx_v_results, __pyx_t_21); if (unlikely(__pyx_t_22 == ((int)-1))) __PYX_ERR(0, 62, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_21); __pyx_t_21 = 0;
+    __pyx_t_23 = __Pyx_PyList_Append(__pyx_v_results, __pyx_t_20); if (unlikely(__pyx_t_23 == ((int)-1))) __PYX_ERR(0, 64, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_20); __pyx_t_20 = 0;
 
-    /* "tinybrain/accelerated.pyx":66
+    /* "tinybrain/accelerated.pyx":68
  *     )
  * 
  *     if mip == num_mips - 1:             # <<<<<<<<<<<<<<
@@ -3380,7 +3403,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2x1(CYTHON
     __pyx_t_1 = ((__pyx_v_mip == (__pyx_v_num_mips - 1)) != 0);
     if (__pyx_t_1) {
 
-      /* "tinybrain/accelerated.pyx":67
+      /* "tinybrain/accelerated.pyx":69
  * 
  *     if mip == num_mips - 1:
  *       break             # <<<<<<<<<<<<<<
@@ -3389,7 +3412,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2x1(CYTHON
  */
       goto __pyx_L6_break;
 
-      /* "tinybrain/accelerated.pyx":66
+      /* "tinybrain/accelerated.pyx":68
  *     )
  * 
  *     if mip == num_mips - 1:             # <<<<<<<<<<<<<<
@@ -3398,7 +3421,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2x1(CYTHON
  */
     }
 
-    /* "tinybrain/accelerated.pyx":69
+    /* "tinybrain/accelerated.pyx":71
  *       break
  * 
  *     sx = osx             # <<<<<<<<<<<<<<
@@ -3407,7 +3430,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2x1(CYTHON
  */
     __pyx_v_sx = __pyx_v_osx;
 
-    /* "tinybrain/accelerated.pyx":70
+    /* "tinybrain/accelerated.pyx":72
  * 
  *     sx = osx
  *     sy = osy             # <<<<<<<<<<<<<<
@@ -3416,7 +3439,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2x1(CYTHON
  */
     __pyx_v_sy = __pyx_v_osy;
 
-    /* "tinybrain/accelerated.pyx":71
+    /* "tinybrain/accelerated.pyx":73
  *     sx = osx
  *     sy = osy
  *     sxy = sx * sy             # <<<<<<<<<<<<<<
@@ -3425,7 +3448,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2x1(CYTHON
  */
     __pyx_v_sxy = (__pyx_v_sx * __pyx_v_sy);
 
-    /* "tinybrain/accelerated.pyx":72
+    /* "tinybrain/accelerated.pyx":74
  *     sy = osy
  *     sxy = sx * sy
  *     osx = (sx + 1) // 2             # <<<<<<<<<<<<<<
@@ -3434,123 +3457,123 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2x1(CYTHON
  */
     __pyx_v_osx = ((__pyx_v_sx + 1) / 2);
 
-    /* "tinybrain/accelerated.pyx":73
+    /* "tinybrain/accelerated.pyx":75
  *     sxy = sx * sy
  *     osx = (sx + 1) // 2
  *     osy = (sy + 1) // 2             # <<<<<<<<<<<<<<
  *     osxy = osx * osy
- *     ovoxels = osxy * sz
+ *     ovoxels = osxy * sz * sw
  */
     __pyx_v_osy = ((__pyx_v_sy + 1) / 2);
 
-    /* "tinybrain/accelerated.pyx":74
+    /* "tinybrain/accelerated.pyx":76
  *     osx = (sx + 1) // 2
  *     osy = (sy + 1) // 2
  *     osxy = osx * osy             # <<<<<<<<<<<<<<
- *     ovoxels = osxy * sz
+ *     ovoxels = osxy * sz * sw
  * 
  */
     __pyx_v_osxy = (__pyx_v_osx * __pyx_v_osy);
 
-    /* "tinybrain/accelerated.pyx":75
+    /* "tinybrain/accelerated.pyx":77
  *     osy = (sy + 1) // 2
  *     osxy = osx * osy
- *     ovoxels = osxy * sz             # <<<<<<<<<<<<<<
+ *     ovoxels = osxy * sz * sw             # <<<<<<<<<<<<<<
  * 
  *     if bitshift == 8:
  */
-    __pyx_v_ovoxels = (__pyx_v_osxy * __pyx_v_sz);
+    __pyx_v_ovoxels = ((__pyx_v_osxy * __pyx_v_sz) * __pyx_v_sw);
 
-    /* "tinybrain/accelerated.pyx":77
- *     ovoxels = osxy * sz
+    /* "tinybrain/accelerated.pyx":79
+ *     ovoxels = osxy * sz * sw
  * 
  *     if bitshift == 8:             # <<<<<<<<<<<<<<
- *       for i in range(sx * sy * sz):
+ *       for i in range(sx * sy * sz * sw):
  *         accum[i] >>= 8
  */
     __pyx_t_1 = ((__pyx_v_bitshift == 8) != 0);
     if (__pyx_t_1) {
 
-      /* "tinybrain/accelerated.pyx":78
+      /* "tinybrain/accelerated.pyx":80
  * 
  *     if bitshift == 8:
- *       for i in range(sx * sy * sz):             # <<<<<<<<<<<<<<
+ *       for i in range(sx * sy * sz * sw):             # <<<<<<<<<<<<<<
  *         accum[i] >>= 8
  * 
  */
-      __pyx_t_5 = ((__pyx_v_sx * __pyx_v_sy) * __pyx_v_sz);
+      __pyx_t_5 = (((__pyx_v_sx * __pyx_v_sy) * __pyx_v_sz) * __pyx_v_sw);
       __pyx_t_3 = __pyx_t_5;
       for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
         __pyx_v_i = __pyx_t_4;
 
-        /* "tinybrain/accelerated.pyx":79
+        /* "tinybrain/accelerated.pyx":81
  *     if bitshift == 8:
- *       for i in range(sx * sy * sz):
+ *       for i in range(sx * sy * sz * sw):
  *         accum[i] >>= 8             # <<<<<<<<<<<<<<
  * 
  *     tmp = accum
  */
-        __pyx_t_23 = __pyx_v_i;
-        (__pyx_v_accum[__pyx_t_23]) = ((__pyx_v_accum[__pyx_t_23]) >> 8);
+        __pyx_t_24 = __pyx_v_i;
+        (__pyx_v_accum[__pyx_t_24]) = ((__pyx_v_accum[__pyx_t_24]) >> 8);
       }
 
-      /* "tinybrain/accelerated.pyx":77
- *     ovoxels = osxy * sz
+      /* "tinybrain/accelerated.pyx":79
+ *     ovoxels = osxy * sz * sw
  * 
  *     if bitshift == 8:             # <<<<<<<<<<<<<<
- *       for i in range(sx * sy * sz):
+ *       for i in range(sx * sy * sz * sw):
  *         accum[i] >>= 8
  */
     }
 
-    /* "tinybrain/accelerated.pyx":81
+    /* "tinybrain/accelerated.pyx":83
  *         accum[i] >>= 8
  * 
  *     tmp = accum             # <<<<<<<<<<<<<<
- *     accum = accumulate_2x2[uint16_t](accum, sx, sy, sz)
+ *     accum = accumulate_2x2[uint16_t](accum, sx, sy, sz, sw)
  *     accumview = <uint16_t[:ovoxels]>accum
  */
     __pyx_v_tmp = __pyx_v_accum;
 
-    /* "tinybrain/accelerated.pyx":82
+    /* "tinybrain/accelerated.pyx":84
  * 
  *     tmp = accum
- *     accum = accumulate_2x2[uint16_t](accum, sx, sy, sz)             # <<<<<<<<<<<<<<
+ *     accum = accumulate_2x2[uint16_t](accum, sx, sy, sz, sw)             # <<<<<<<<<<<<<<
  *     accumview = <uint16_t[:ovoxels]>accum
  *     PyMem_Free(tmp)
  */
-    __pyx_v_accum = accelerated::accumulate_2x2<uint16_t>(__pyx_v_accum, __pyx_v_sx, __pyx_v_sy, __pyx_v_sz);
+    __pyx_v_accum = accelerated::accumulate_2x2<uint16_t>(__pyx_v_accum, __pyx_v_sx, __pyx_v_sy, __pyx_v_sz, __pyx_v_sw);
 
-    /* "tinybrain/accelerated.pyx":83
+    /* "tinybrain/accelerated.pyx":85
  *     tmp = accum
- *     accum = accumulate_2x2[uint16_t](accum, sx, sy, sz)
+ *     accum = accumulate_2x2[uint16_t](accum, sx, sy, sz, sw)
  *     accumview = <uint16_t[:ovoxels]>accum             # <<<<<<<<<<<<<<
  *     PyMem_Free(tmp)
  * 
  */
     if (!__pyx_v_accum) {
       PyErr_SetString(PyExc_ValueError,"Cannot create cython.array from NULL pointer");
-      __PYX_ERR(0, 83, __pyx_L1_error)
+      __PYX_ERR(0, 85, __pyx_L1_error)
     }
     __pyx_t_18 = __pyx_format_from_typeinfo(&__Pyx_TypeInfo_nn_uint16_t);
-    __pyx_t_21 = Py_BuildValue((char*) "("  __PYX_BUILD_PY_SSIZE_T  ")", ((Py_ssize_t)__pyx_v_ovoxels));
-    if (unlikely(!__pyx_t_18 || !__pyx_t_21 || !PyBytes_AsString(__pyx_t_18))) __PYX_ERR(0, 83, __pyx_L1_error)
+    __pyx_t_20 = Py_BuildValue((char*) "("  __PYX_BUILD_PY_SSIZE_T  ")", ((Py_ssize_t)__pyx_v_ovoxels));
+    if (unlikely(!__pyx_t_18 || !__pyx_t_20 || !PyBytes_AsString(__pyx_t_18))) __PYX_ERR(0, 85, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_18);
-    __Pyx_GOTREF(__pyx_t_21);
-    __pyx_t_11 = __pyx_array_new(__pyx_t_21, sizeof(uint16_t), PyBytes_AS_STRING(__pyx_t_18), (char *) "c", (char *) __pyx_v_accum);
-    if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 83, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_11);
-    __Pyx_DECREF(__pyx_t_21); __pyx_t_21 = 0;
+    __Pyx_GOTREF(__pyx_t_20);
+    __pyx_t_12 = __pyx_array_new(__pyx_t_20, sizeof(uint16_t), PyBytes_AS_STRING(__pyx_t_18), (char *) "c", (char *) __pyx_v_accum);
+    if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 85, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_12);
+    __Pyx_DECREF(__pyx_t_20); __pyx_t_20 = 0;
     __Pyx_DECREF(__pyx_t_18); __pyx_t_18 = 0;
-    __pyx_t_13 = __Pyx_PyObject_to_MemoryviewSlice_ds_nn_uint16_t(((PyObject *)__pyx_t_11), PyBUF_WRITABLE); if (unlikely(!__pyx_t_13.memview)) __PYX_ERR(0, 83, __pyx_L1_error)
-    __Pyx_DECREF(((PyObject *)__pyx_t_11)); __pyx_t_11 = 0;
+    __pyx_t_14 = __Pyx_PyObject_to_MemoryviewSlice_ds_nn_uint16_t(((PyObject *)__pyx_t_12), PyBUF_WRITABLE); if (unlikely(!__pyx_t_14.memview)) __PYX_ERR(0, 85, __pyx_L1_error)
+    __Pyx_DECREF(((PyObject *)__pyx_t_12)); __pyx_t_12 = 0;
     __PYX_XDEC_MEMVIEW(&__pyx_v_accumview, 1);
-    __pyx_v_accumview = __pyx_t_13;
-    __pyx_t_13.memview = NULL;
-    __pyx_t_13.data = NULL;
+    __pyx_v_accumview = __pyx_t_14;
+    __pyx_t_14.memview = NULL;
+    __pyx_t_14.data = NULL;
 
-    /* "tinybrain/accelerated.pyx":84
- *     accum = accumulate_2x2[uint16_t](accum, sx, sy, sz)
+    /* "tinybrain/accelerated.pyx":86
+ *     accum = accumulate_2x2[uint16_t](accum, sx, sy, sz, sw)
  *     accumview = <uint16_t[:ovoxels]>accum
  *     PyMem_Free(tmp)             # <<<<<<<<<<<<<<
  * 
@@ -3560,7 +3583,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2x1(CYTHON
   }
   __pyx_L6_break:;
 
-  /* "tinybrain/accelerated.pyx":86
+  /* "tinybrain/accelerated.pyx":88
  *     PyMem_Free(tmp)
  * 
  *   PyMem_Free(accum)             # <<<<<<<<<<<<<<
@@ -3569,7 +3592,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2x1(CYTHON
  */
   PyMem_Free(__pyx_v_accum);
 
-  /* "tinybrain/accelerated.pyx":88
+  /* "tinybrain/accelerated.pyx":90
  *   PyMem_Free(accum)
  * 
  *   return results             # <<<<<<<<<<<<<<
@@ -3584,8 +3607,8 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2x1(CYTHON
   /* "tinybrain/accelerated.pyx":30
  *   return oimg
  * 
- * def average_pooling_2x2x1(             # <<<<<<<<<<<<<<
- *     np.ndarray[uint8_t, ndim=3] channel,
+ * def average_pooling_2x2(             # <<<<<<<<<<<<<<
+ *     np.ndarray[uint8_t, ndim=4] channel,
  *     uint32_t num_mips=1
  */
 
@@ -3593,21 +3616,21 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2x1(CYTHON
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_2);
   __PYX_XDEC_MEMVIEW(&__pyx_t_6, 1);
-  __Pyx_XDECREF(((PyObject *)__pyx_t_11));
-  __Pyx_XDECREF(__pyx_t_12);
-  __PYX_XDEC_MEMVIEW(&__pyx_t_13, 1);
-  __Pyx_XDECREF(__pyx_t_17);
+  __Pyx_XDECREF(((PyObject *)__pyx_t_12));
+  __Pyx_XDECREF(__pyx_t_13);
+  __PYX_XDEC_MEMVIEW(&__pyx_t_14, 1);
   __Pyx_XDECREF(__pyx_t_18);
   __Pyx_XDECREF(__pyx_t_19);
   __Pyx_XDECREF(__pyx_t_20);
   __Pyx_XDECREF(__pyx_t_21);
+  __Pyx_XDECREF(__pyx_t_22);
   { PyObject *__pyx_type, *__pyx_value, *__pyx_tb;
     __Pyx_PyThreadState_declare
     __Pyx_PyThreadState_assign
     __Pyx_ErrFetch(&__pyx_type, &__pyx_value, &__pyx_tb);
     __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_channel.rcbuffer->pybuffer);
   __Pyx_ErrRestore(__pyx_type, __pyx_value, __pyx_tb);}
-  __Pyx_AddTraceback("tinybrain.accelerated.average_pooling_2x2x1", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("tinybrain.accelerated.average_pooling_2x2", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   goto __pyx_L2;
   __pyx_L0:;
@@ -19916,7 +19939,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_accum, __pyx_k_accum, sizeof(__pyx_k_accum), 0, 0, 1, 1},
   {&__pyx_n_s_accumview, __pyx_k_accumview, sizeof(__pyx_k_accumview), 0, 0, 1, 1},
   {&__pyx_n_s_allocate_buffer, __pyx_k_allocate_buffer, sizeof(__pyx_k_allocate_buffer), 0, 0, 1, 1},
-  {&__pyx_n_s_average_pooling_2x2x1, __pyx_k_average_pooling_2x2x1, sizeof(__pyx_k_average_pooling_2x2x1), 0, 0, 1, 1},
+  {&__pyx_n_s_average_pooling_2x2, __pyx_k_average_pooling_2x2, sizeof(__pyx_k_average_pooling_2x2), 0, 0, 1, 1},
   {&__pyx_n_s_base, __pyx_k_base, sizeof(__pyx_k_base), 0, 0, 1, 1},
   {&__pyx_n_s_bitshift, __pyx_k_bitshift, sizeof(__pyx_k_bitshift), 0, 0, 1, 1},
   {&__pyx_n_s_c, __pyx_k_c, sizeof(__pyx_k_c), 0, 0, 1, 1},
@@ -19998,6 +20021,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_strided_and_indirect, __pyx_k_strided_and_indirect, sizeof(__pyx_k_strided_and_indirect), 0, 0, 1, 0},
   {&__pyx_kp_s_stringsource, __pyx_k_stringsource, sizeof(__pyx_k_stringsource), 0, 0, 1, 0},
   {&__pyx_n_s_struct, __pyx_k_struct, sizeof(__pyx_k_struct), 0, 0, 1, 1},
+  {&__pyx_n_s_sw, __pyx_k_sw, sizeof(__pyx_k_sw), 0, 0, 1, 1},
   {&__pyx_n_s_sx, __pyx_k_sx, sizeof(__pyx_k_sx), 0, 0, 1, 1},
   {&__pyx_n_s_sxy, __pyx_k_sxy, sizeof(__pyx_k_sxy), 0, 0, 1, 1},
   {&__pyx_n_s_sy, __pyx_k_sy, sizeof(__pyx_k_sy), 0, 0, 1, 1},
@@ -20017,7 +20041,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
 };
 static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
   __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 26, __pyx_L1_error)
-  __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) __PYX_ERR(0, 43, __pyx_L1_error)
+  __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) __PYX_ERR(0, 45, __pyx_L1_error)
   __pyx_builtin_RuntimeError = __Pyx_GetBuiltinName(__pyx_n_s_RuntimeError); if (!__pyx_builtin_RuntimeError) __PYX_ERR(1, 856, __pyx_L1_error)
   __pyx_builtin_ImportError = __Pyx_GetBuiltinName(__pyx_n_s_ImportError); if (!__pyx_builtin_ImportError) __PYX_ERR(1, 1038, __pyx_L1_error)
   __pyx_builtin_MemoryError = __Pyx_GetBuiltinName(__pyx_n_s_MemoryError); if (!__pyx_builtin_MemoryError) __PYX_ERR(2, 148, __pyx_L1_error)
@@ -20035,14 +20059,14 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "tinybrain/accelerated.pyx":43
+  /* "tinybrain/accelerated.pyx":45
  * 
  *   if min(sx, sy) <= 2 ** num_mips:
  *     raise ValueError("Can't downsample smaller than the smallest XY plane dimension.")             # <<<<<<<<<<<<<<
  * 
  *   cdef size_t osx = (sx + 1) // 2
  */
-  __pyx_tuple_ = PyTuple_Pack(1, __pyx_kp_u_Can_t_downsample_smaller_than_th); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 43, __pyx_L1_error)
+  __pyx_tuple_ = PyTuple_Pack(1, __pyx_kp_u_Can_t_downsample_smaller_than_th); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 45, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple_);
   __Pyx_GIVEREF(__pyx_tuple_);
 
@@ -20330,14 +20354,14 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   /* "tinybrain/accelerated.pyx":30
  *   return oimg
  * 
- * def average_pooling_2x2x1(             # <<<<<<<<<<<<<<
- *     np.ndarray[uint8_t, ndim=3] channel,
+ * def average_pooling_2x2(             # <<<<<<<<<<<<<<
+ *     np.ndarray[uint8_t, ndim=4] channel,
  *     uint32_t num_mips=1
  */
-  __pyx_tuple__34 = PyTuple_Pack(19, __pyx_n_s_channel, __pyx_n_s_num_mips, __pyx_n_s_sx, __pyx_n_s_sy, __pyx_n_s_sz, __pyx_n_s_sxy, __pyx_n_s_osx, __pyx_n_s_osy, __pyx_n_s_osxy, __pyx_n_s_ovoxels, __pyx_n_s_channelview, __pyx_n_s_accum, __pyx_n_s_accumview, __pyx_n_s_tmp, __pyx_n_s_i, __pyx_n_s_mip, __pyx_n_s_bitshift, __pyx_n_s_results, __pyx_n_s_oimg); if (unlikely(!__pyx_tuple__34)) __PYX_ERR(0, 30, __pyx_L1_error)
+  __pyx_tuple__34 = PyTuple_Pack(20, __pyx_n_s_channel, __pyx_n_s_num_mips, __pyx_n_s_sx, __pyx_n_s_sy, __pyx_n_s_sz, __pyx_n_s_sw, __pyx_n_s_sxy, __pyx_n_s_osx, __pyx_n_s_osy, __pyx_n_s_osxy, __pyx_n_s_ovoxels, __pyx_n_s_channelview, __pyx_n_s_accum, __pyx_n_s_accumview, __pyx_n_s_tmp, __pyx_n_s_i, __pyx_n_s_mip, __pyx_n_s_bitshift, __pyx_n_s_results, __pyx_n_s_oimg); if (unlikely(!__pyx_tuple__34)) __PYX_ERR(0, 30, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__34);
   __Pyx_GIVEREF(__pyx_tuple__34);
-  __pyx_codeobj__35 = (PyObject*)__Pyx_PyCode_New(2, 0, 19, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__34, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_tinybrain_accelerated_pyx, __pyx_n_s_average_pooling_2x2x1, 30, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__35)) __PYX_ERR(0, 30, __pyx_L1_error)
+  __pyx_codeobj__35 = (PyObject*)__Pyx_PyCode_New(2, 0, 20, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__34, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_tinybrain_accelerated_pyx, __pyx_n_s_average_pooling_2x2, 30, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__35)) __PYX_ERR(0, 30, __pyx_L1_error)
 
   /* "View.MemoryView":286
  *         return self.name
@@ -20791,13 +20815,13 @@ if (!__Pyx_RefNanny) {
   /* "tinybrain/accelerated.pyx":30
  *   return oimg
  * 
- * def average_pooling_2x2x1(             # <<<<<<<<<<<<<<
- *     np.ndarray[uint8_t, ndim=3] channel,
+ * def average_pooling_2x2(             # <<<<<<<<<<<<<<
+ *     np.ndarray[uint8_t, ndim=4] channel,
  *     uint32_t num_mips=1
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_9tinybrain_11accelerated_3average_pooling_2x2x1, NULL, __pyx_n_s_tinybrain_accelerated); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 30, __pyx_L1_error)
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_9tinybrain_11accelerated_3average_pooling_2x2, NULL, __pyx_n_s_tinybrain_accelerated); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 30, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_average_pooling_2x2x1, __pyx_t_1) < 0) __PYX_ERR(0, 30, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_average_pooling_2x2, __pyx_t_1) < 0) __PYX_ERR(0, 30, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "tinybrain/accelerated.pyx":1
@@ -25885,17 +25909,17 @@ raise_neg_overflow:
 }
 
 /* ObjectToMemviewSlice */
-  static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_dsdsds_nn_uint8_t(PyObject *obj, int writable_flag) {
+  static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_dsdsdsds_nn_uint8_t(PyObject *obj, int writable_flag) {
     __Pyx_memviewslice result = { 0, 0, { 0 }, { 0 }, { 0 } };
     __Pyx_BufFmt_StackElem stack[1];
-    int axes_specs[] = { (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_STRIDED), (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_STRIDED), (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_STRIDED) };
+    int axes_specs[] = { (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_STRIDED), (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_STRIDED), (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_STRIDED), (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_STRIDED) };
     int retcode;
     if (obj == Py_None) {
         result.memview = (struct __pyx_memoryview_obj *) Py_None;
         return result;
     }
     retcode = __Pyx_ValidateAndInit_memviewslice(axes_specs, 0,
-                                                 PyBUF_RECORDS_RO | writable_flag, 3,
+                                                 PyBUF_RECORDS_RO | writable_flag, 4,
                                                  &__Pyx_TypeInfo_nn_uint8_t, stack,
                                                  &result, obj);
     if (unlikely(retcode == -1))
