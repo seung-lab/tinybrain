@@ -2619,7 +2619,7 @@ static PyObject *__pyx_codeobj__42;
 /* Late includes */
 
 /* "tinybrain/accelerated.pyx":23
- *   cdef uint16_t* accumulate_2x2[T](T* arr, size_t sx, size_t sy, size_t sz)
+ *   cdef U* accumulate_2x2[T, U](T* arr, size_t sx, size_t sy, size_t sz)
  * 
  * def render_image(uint16_t[:] accum, uint32_t bitshift, size_t ovoxels):             # <<<<<<<<<<<<<<
  *   cdef np.ndarray[uint8_t, ndim=1] oimg = np.zeros( (ovoxels,), dtype=np.uint8 )
@@ -2834,7 +2834,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_render_image(CYTHON_UNUSED Py
   goto __pyx_L0;
 
   /* "tinybrain/accelerated.pyx":23
- *   cdef uint16_t* accumulate_2x2[T](T* arr, size_t sx, size_t sy, size_t sz)
+ *   cdef U* accumulate_2x2[T, U](T* arr, size_t sx, size_t sy, size_t sz)
  * 
  * def render_image(uint16_t[:] accum, uint32_t bitshift, size_t ovoxels):             # <<<<<<<<<<<<<<
  *   cdef np.ndarray[uint8_t, ndim=1] oimg = np.zeros( (ovoxels,), dtype=np.uint8 )
@@ -3164,7 +3164,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2(CYTHON_U
  *   cdef size_t ovoxels = osxy * sz * sw
  * 
  *   cdef uint8_t[:,:,:,:] channelview = channel             # <<<<<<<<<<<<<<
- *   cdef uint16_t* accum = accumulate_2x2[uint8_t](&channelview[0,0,0,0], sx, sy, sz, sw)
+ *   cdef uint16_t* accum = accumulate_2x2[uint8_t, uint16_t](&channelview[0,0,0,0], sx, sy, sz, sw)
  *   cdef uint16_t[:] accumview = <uint16_t[:ovoxels]>accum
  */
   __pyx_t_6 = __Pyx_PyObject_to_MemoryviewSlice_dsdsdsds_nn_uint8_t(((PyObject *)__pyx_v_channel), PyBUF_WRITABLE); if (unlikely(!__pyx_t_6.memview)) __PYX_ERR(0, 52, __pyx_L1_error)
@@ -3175,7 +3175,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2(CYTHON_U
   /* "tinybrain/accelerated.pyx":53
  * 
  *   cdef uint8_t[:,:,:,:] channelview = channel
- *   cdef uint16_t* accum = accumulate_2x2[uint8_t](&channelview[0,0,0,0], sx, sy, sz, sw)             # <<<<<<<<<<<<<<
+ *   cdef uint16_t* accum = accumulate_2x2[uint8_t, uint16_t](&channelview[0,0,0,0], sx, sy, sz, sw)             # <<<<<<<<<<<<<<
  *   cdef uint16_t[:] accumview = <uint16_t[:ovoxels]>accum
  *   cdef uint16_t* tmp
  */
@@ -3204,11 +3204,11 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2(CYTHON_U
     __Pyx_RaiseBufferIndexError(__pyx_t_11);
     __PYX_ERR(0, 53, __pyx_L1_error)
   }
-  __pyx_v_accum = accelerated::accumulate_2x2<uint8_t>((&(*((uint8_t *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_channelview.data + __pyx_t_7 * __pyx_v_channelview.strides[0]) ) + __pyx_t_8 * __pyx_v_channelview.strides[1]) ) + __pyx_t_9 * __pyx_v_channelview.strides[2]) ) + __pyx_t_10 * __pyx_v_channelview.strides[3]) )))), __pyx_v_sx, __pyx_v_sy, __pyx_v_sz, __pyx_v_sw);
+  __pyx_v_accum = accelerated::accumulate_2x2<uint8_t,uint16_t>((&(*((uint8_t *) ( /* dim=3 */ (( /* dim=2 */ (( /* dim=1 */ (( /* dim=0 */ (__pyx_v_channelview.data + __pyx_t_7 * __pyx_v_channelview.strides[0]) ) + __pyx_t_8 * __pyx_v_channelview.strides[1]) ) + __pyx_t_9 * __pyx_v_channelview.strides[2]) ) + __pyx_t_10 * __pyx_v_channelview.strides[3]) )))), __pyx_v_sx, __pyx_v_sy, __pyx_v_sz, __pyx_v_sw);
 
   /* "tinybrain/accelerated.pyx":54
  *   cdef uint8_t[:,:,:,:] channelview = channel
- *   cdef uint16_t* accum = accumulate_2x2[uint8_t](&channelview[0,0,0,0], sx, sy, sz, sw)
+ *   cdef uint16_t* accum = accumulate_2x2[uint8_t, uint16_t](&channelview[0,0,0,0], sx, sy, sz, sw)
  *   cdef uint16_t[:] accumview = <uint16_t[:ovoxels]>accum             # <<<<<<<<<<<<<<
  *   cdef uint16_t* tmp
  *   cdef size_t i
@@ -3530,7 +3530,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2(CYTHON_U
  *         accum[i] >>= 8
  * 
  *     tmp = accum             # <<<<<<<<<<<<<<
- *     accum = accumulate_2x2[uint16_t](accum, sx, sy, sz, sw)
+ *     accum = accumulate_2x2[uint16_t, uint16_t](accum, sx, sy, sz, sw)
  *     accumview = <uint16_t[:ovoxels]>accum
  */
     __pyx_v_tmp = __pyx_v_accum;
@@ -3538,15 +3538,15 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2(CYTHON_U
     /* "tinybrain/accelerated.pyx":84
  * 
  *     tmp = accum
- *     accum = accumulate_2x2[uint16_t](accum, sx, sy, sz, sw)             # <<<<<<<<<<<<<<
+ *     accum = accumulate_2x2[uint16_t, uint16_t](accum, sx, sy, sz, sw)             # <<<<<<<<<<<<<<
  *     accumview = <uint16_t[:ovoxels]>accum
  *     PyMem_Free(tmp)
  */
-    __pyx_v_accum = accelerated::accumulate_2x2<uint16_t>(__pyx_v_accum, __pyx_v_sx, __pyx_v_sy, __pyx_v_sz, __pyx_v_sw);
+    __pyx_v_accum = accelerated::accumulate_2x2<uint16_t,uint16_t>(__pyx_v_accum, __pyx_v_sx, __pyx_v_sy, __pyx_v_sz, __pyx_v_sw);
 
     /* "tinybrain/accelerated.pyx":85
  *     tmp = accum
- *     accum = accumulate_2x2[uint16_t](accum, sx, sy, sz, sw)
+ *     accum = accumulate_2x2[uint16_t, uint16_t](accum, sx, sy, sz, sw)
  *     accumview = <uint16_t[:ovoxels]>accum             # <<<<<<<<<<<<<<
  *     PyMem_Free(tmp)
  * 
@@ -3573,7 +3573,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_2average_pooling_2x2(CYTHON_U
     __pyx_t_14.data = NULL;
 
     /* "tinybrain/accelerated.pyx":86
- *     accum = accumulate_2x2[uint16_t](accum, sx, sy, sz, sw)
+ *     accum = accumulate_2x2[uint16_t, uint16_t](accum, sx, sy, sz, sw)
  *     accumview = <uint16_t[:ovoxels]>accum
  *     PyMem_Free(tmp)             # <<<<<<<<<<<<<<
  * 
@@ -20340,7 +20340,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GIVEREF(__pyx_tuple__26);
 
   /* "tinybrain/accelerated.pyx":23
- *   cdef uint16_t* accumulate_2x2[T](T* arr, size_t sx, size_t sy, size_t sz)
+ *   cdef U* accumulate_2x2[T, U](T* arr, size_t sx, size_t sy, size_t sz)
  * 
  * def render_image(uint16_t[:] accum, uint32_t bitshift, size_t ovoxels):             # <<<<<<<<<<<<<<
  *   cdef np.ndarray[uint8_t, ndim=1] oimg = np.zeros( (ovoxels,), dtype=np.uint8 )
@@ -20801,7 +20801,7 @@ if (!__Pyx_RefNanny) {
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "tinybrain/accelerated.pyx":23
- *   cdef uint16_t* accumulate_2x2[T](T* arr, size_t sx, size_t sy, size_t sz)
+ *   cdef U* accumulate_2x2[T, U](T* arr, size_t sx, size_t sy, size_t sz)
  * 
  * def render_image(uint16_t[:] accum, uint32_t bitshift, size_t ovoxels):             # <<<<<<<<<<<<<<
  *   cdef np.ndarray[uint8_t, ndim=1] oimg = np.zeros( (ovoxels,), dtype=np.uint8 )

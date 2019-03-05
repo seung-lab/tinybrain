@@ -18,7 +18,7 @@ cimport numpy as np
 import numpy as np
 
 cdef extern from "accelerated.hpp" namespace "accelerated":
-  cdef uint16_t* accumulate_2x2[T](T* arr, size_t sx, size_t sy, size_t sz)
+  cdef U* accumulate_2x2[T, U](T* arr, size_t sx, size_t sy, size_t sz)
 
 def render_image(uint16_t[:] accum, uint32_t bitshift, size_t ovoxels):
   cdef np.ndarray[uint8_t, ndim=1] oimg = np.zeros( (ovoxels,), dtype=np.uint8 )
@@ -50,7 +50,7 @@ def average_pooling_2x2(
   cdef size_t ovoxels = osxy * sz * sw
 
   cdef uint8_t[:,:,:,:] channelview = channel
-  cdef uint16_t* accum = accumulate_2x2[uint8_t](&channelview[0,0,0,0], sx, sy, sz, sw)
+  cdef uint16_t* accum = accumulate_2x2[uint8_t, uint16_t](&channelview[0,0,0,0], sx, sy, sz, sw)
   cdef uint16_t[:] accumview = <uint16_t[:ovoxels]>accum
   cdef uint16_t* tmp
   cdef size_t i
@@ -81,7 +81,7 @@ def average_pooling_2x2(
         accum[i] >>= 8
 
     tmp = accum 
-    accum = accumulate_2x2[uint16_t](accum, sx, sy, sz, sw)
+    accum = accumulate_2x2[uint16_t, uint16_t](accum, sx, sy, sz, sw)
     accumview = <uint16_t[:ovoxels]>accum
     PyMem_Free(tmp)
 
