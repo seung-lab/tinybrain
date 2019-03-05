@@ -43,14 +43,12 @@ uint16_t* accumulate_2x2(
   ) {
 
   const size_t sxy = sx * sy;
-  const size_t voxels = sx * sy * sz;
 
-  const size_t osx = (sx + 1) / 2;
-  const size_t osy = (sy + 1) / 2;
+  const size_t osx = (sx + 1) >> 1;
+  const size_t osy = (sy + 1) >> 1;
   const size_t osxy = osx * osy;
   const size_t ovoxels = osxy * sz;
 
-  const bool odd_x = (sx & 0x01);
   const bool odd_y = (sy & 0x01);
 
   uint16_t* accum = new uint16_t[ovoxels]();
@@ -110,7 +108,7 @@ uint16_t* accumulate_2x2(
 
 //   const size_t osx = (sx + 1) / 2;
 //   const size_t osy = (sy + 1) / 2;
-//   const size_t osxy = (sxy + 3) / 4;
+//   const size_t osxy = osx * osy;
 //   const size_t ovoxels = osxy * sz * sw;
 
 //   float* oimg = new float[ovoxels]();
