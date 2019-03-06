@@ -1,3 +1,9 @@
+# The following license applies to functions: 
+#     downsample_with_averaging_numpy
+#     downsample_with_striding
+
+# The license for the rest of the code is in GPLv3 in LICENSE
+
 # @license
 # Copyright 2017 The Neuroglancer Authors
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,18 +28,29 @@ import math
 import operator
 import numpy as np
 
-def method(layer_type, sparse=False):
-  if layer_type == 'image':
-    return downsample_with_averaging
-  elif layer_type == 'segmentation':
-    if sparse:
-      return partial(downsample_segmentation, sparse=sparse)
-    else:
-      return downsample_segmentation
-  elif layer_type == 'activation':
-    return downsample_with_max_pooling
+import tinybrain.accelerated
+
+def downsample_with_averaging(img, factor, num_mips=1):
+  if (
+    img.dtype in (np.uint8, np.uint16, np.float32, np.float64)
+    and img.flags['F_CONTIGUOUS']
+    and tuple(factor) in ( (2,2), (2,2,1), (2,2,1,1) )
+  ):
+    return tinybrain.accelerated.average_pooling_2x2(img, num_mips)
+
+  results = []
+  if np.dtype(img.dtype).itemsize < 4:
+    dtype = img.dtype
+    img = img.astype(np.float32)
+    for mip in num_mips:
+      img = downsample_with_averaging_numpy(img, factor)
+      results.append(img.astype(dtype))
   else:
-    return downsample_with_striding 
+    for mip in num_mips:
+      img = downsample_with_averaging_numpy(img, factor)
+      results.append(img)
+
+  return results
 
 def validate_factor(array, factor):
   factor = np.array(factor, dtype=np.int32)
@@ -86,35 +103,28 @@ def odd_to_even2d(image):
 
   return newimg
 
-def scale_series_to_downsample_factors(scales):
-  fullscales = [ np.array(scale) for scale in scales ] 
-  factors = []
-  for i in range(1, len(fullscales)):
-    factors.append( fullscales[i] / fullscales[i - 1]  )
-  return [ factor.astype(int) for factor in factors ]
+def downsample_with_averaging_numpy(array, factor):
+  """
+  Downsample x by factor using averaging.
 
-def downsample_with_averaging(array, factor):
-    """
-    Downsample x by factor using averaging.
+  If factor has fewer parameters than data.shape, the remainder
+  are assumed to be 1.
 
-    If factor has fewer parameters than data.shape, the remainder
-    are assumed to be 1.
+  @return: The downsampled array, of the same type as x.
+  """
+  factor = validate_factor(array, factor)
+  if np.array_equal(factor[:3], np.array([1,1,1])):
+    return array
 
-    @return: The downsampled array, of the same type as x.
-    """
-    factor = validate_factor(array, factor)
-    if np.array_equal(factor[:3], np.array([1,1,1])):
-      return array
-
-    output_shape = tuple(int(math.ceil(s / f)) for s, f in zip(array.shape, factor))
-    temp = np.zeros(output_shape, dtype=np.float32)
-    counts = np.zeros(output_shape, np.int)
-    for offset in np.ndindex(factor):
-        part = array[tuple(np.s_[o::f] for o, f in zip(offset, factor))]
-        indexing_expr = tuple(np.s_[:s] for s in part.shape)
-        temp[indexing_expr] += part
-        counts[indexing_expr] += 1
-    return np.cast[array.dtype](temp / counts)
+  output_shape = tuple(int(math.ceil(s / f)) for s, f in zip(array.shape, factor))
+  temp = np.zeros(output_shape, dtype=np.float32)
+  counts = np.zeros(output_shape, np.int)
+  for offset in np.ndindex(factor):
+    part = array[tuple(np.s_[o::f] for o, f in zip(offset, factor))]
+    indexing_expr = tuple(np.s_[:s] for s in part.shape)
+    temp[indexing_expr] += part
+    counts[indexing_expr] += 1
+  return np.cast[array.dtype](temp / counts)
 
 def downsample_with_max_pooling(array, factor):
   """

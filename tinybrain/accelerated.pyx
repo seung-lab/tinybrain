@@ -141,7 +141,7 @@ def _average_pooling_2x2_uint16(np.ndarray[uint16_t, ndim=4] channel, uint32_t n
   results = []
   for mip in range(num_mips):
     bitshift = 2 * ((mip % 4) + 1) # integer truncation every 4 mip levels
-    oimg = render_image_int(accumview, bitshift, ovoxels)
+    oimg = render_image_uint16(accumview, bitshift, ovoxels)
     results.append(
       oimg.reshape( (osx, osy, sz, sw), order='F' )
     )
@@ -267,7 +267,81 @@ def _average_pooling_2x2_double(np.ndarray[double, ndim=4] channel, uint32_t num
   return results
 
 
+ctypedef fused NUMBER:
+  uint8_t
+  uint16_t
+  uint32_t
+  uint64_t
+  int8_t
+  int16_t
+  int32_t
+  int64_t
+  float
+  double
 
+def mode_pooling_2x2(img, uint32_t num_mips=1):
+  while img.ndim < 4:
+    img = img[..., np.newaxis]
 
+  results = []
+  for mip in range(num_mips):
+    img = _mode_pooling_2x2(img)
+    results.append(img)
+  return results
 
+def _mode_pooling_2x2(np.ndarray[NUMBER, ndim=4] img):
+  cdef size_t sx = img.shape[0]
+  cdef size_t sy = img.shape[1]
+  cdef size_t sz = img.shape[2]
+  cdef size_t sw = img.shape[3]
+  cdef size_t sxy = sx * sy
 
+  cdef size_t osx = (sx + 1) // 2
+  cdef size_t osy = (sy + 1) // 2
+  cdef size_t osxy = osx * osy
+  cdef size_t ovoxels = osxy * sz * sw
+
+  cdef size_t x, y, z, w
+  cdef NUMBER a, b, c, d 
+
+  cdef np.ndarray[NUMBER, ndim=4] oimg = np.zeros( (osx, osy, sz, sw), dtype=img.dtype )
+
+  cdef size_t ox, oy
+
+  cdef size_t xodd = (sx & 0x01)
+  cdef size_t yodd = (sy & 0x01)
+
+  for w in range(sw):
+    for z in range(sz):
+      oy = 0
+      y = 0
+      for y in range(0, sy - yodd, 2):
+        ox = 0
+        for x in range(0, sx - xodd, 2):
+          a = img[x  ,y  , z, w]
+          b = img[x+1,y  , z, w]
+          c = img[x  ,y+1, z, w]
+          d = img[x+1,y+1, z, w]
+
+          if a == b:
+            oimg[ox, oy, z, w] = a
+          elif b == c:
+            oimg[ox, oy, z, w] = b
+          elif a == c:
+            oimg[ox, oy, z, w] = a
+          else:
+            oimg[ox, oy, z, w] = d
+
+          ox += 1
+        if xodd:
+          oimg[ox, oy, z, w] = img[ sx - 1, y, z, w ]
+          ox += 1
+        oy += 1
+
+      if yodd:
+        for x in range(osx - xodd):
+          oimg[x, oy, z, w] = img[ x*2, y, z, w ]
+        if xodd:
+          oimg[osx - 1, oy, z, w] = img[ sx - 1, y, z, w]
+
+  return oimg.reshape( (osx, osy, sz, sw) )

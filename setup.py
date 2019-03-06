@@ -1,10 +1,7 @@
-import os
 import setuptools
 
-join = os.path.join
-
-# NOTE: If cc3d.cpp does not exist:
-# cython -3 --fast-fail -v --cplus cc3d.pyx
+# NOTE: If accelerated.cpp does not exist:
+# cython -3 --fast-fail -v --cplus tinybrain/accelerated.pyx
 
 import numpy as np
 
