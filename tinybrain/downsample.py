@@ -42,11 +42,11 @@ def downsample_with_averaging(img, factor, num_mips=1):
   if np.dtype(img.dtype).itemsize < 4:
     dtype = img.dtype
     img = img.astype(np.float32)
-    for mip in num_mips:
+    for mip in range(num_mips):
       img = downsample_with_averaging_numpy(img, factor)
       results.append(img.astype(dtype))
   else:
-    for mip in num_mips:
+    for mip in range(num_mips):
       img = downsample_with_averaging_numpy(img, factor)
       results.append(img)
 
