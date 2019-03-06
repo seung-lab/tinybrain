@@ -1,3 +1,5 @@
+[![PyPI version](https://badge.fury.io/py/tinybrain.svg)](https://badge.fury.io/py/tinybrain)  
+
 # tinybrain
 
 Image pyramid generation specialized for connectomics data types and procedures. 

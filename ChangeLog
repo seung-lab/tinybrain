@@ -1,0 +1,11 @@
+CHANGES
+=======
+
+* fix: slow path in downsample\_with\_averaging
+* feat: workable downsample\_with\_averaging function
+* feat: added float, double, uint16 support for accelerated avg pooling
+* refactor: made c++ accumulation code more data type flexible
+* feat: added 4d support for accelerated 2x2 avg pooling
+* refactor: remove unused variables
+* feat: accelerated 2x2x1 downsample with averaging working
+* Initial commit
