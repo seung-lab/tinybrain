@@ -328,6 +328,8 @@ def stippled_countless2d(data):
   that treats zero as "background" and inflates lone
   pixels.
   
+  https://medium.com/@willsilversmith/countless-2d-inflated-2x-downsampling-of-labeled-images-holding-zero-values-as-background-4d13a7675f2d
+  
   data is a 2D numpy array with even dimensions.
   """
   sections = []
