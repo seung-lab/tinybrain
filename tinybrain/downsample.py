@@ -244,6 +244,7 @@ def downsample_segmentation_2d(data, factor, sparse):
   for both even and odd sided images. Swap axes to enable
   alternate axis downsampling.
   """
+  factor = np.array(factor, dtype=np.uint32)
   preserved_axis = np.where(factor == 1)[0][0] # e.g. 0, 1, 2
 
   shape3d = np.array(data.shape[:3])

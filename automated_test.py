@@ -124,10 +124,8 @@ def test_even_odd2d():
   assert np.array_equal(oddimg, ans3x3x3)
   assert np.array_equal(oddimgf, ans3x3x3)
 
-def test_accelerated_vs_normal_pooling():
+def test_accelerated_vs_numpy_avg_pooling():
   image = np.random.randint(0,255, size=(512, 512, 6), dtype=np.uint8)
-  # image = np.ones((15,13,5), dtype=np.uint8) * 4
-  # image[3:] *= 3
   imagef = np.asfortranarray(image)
 
   accimg = tinybrain.accelerated.average_pooling_2x2(imagef) 
@@ -146,6 +144,24 @@ def test_accelerated_vs_normal_pooling():
   
   assert np.all(mips[-1] == npimg)
 
+def test_accelerated_vs_numpy_mode_pooling():
+  image = np.random.randint(0,255, size=(512, 512, 6, 1), dtype=np.uint8)
+
+  accimg = tinybrain.accelerated.mode_pooling_2x2(image) 
+  npimg = tinybrain.downsample.countless2d(image)
+  assert np.all(accimg == npimg)
+
+  # There are slight differences in how the accelerated version and 
+  # the numpy version handle the edge so we only compare a nice 
+  # even power of two where there's no edge. We also can't do iterated
+  # downsamples of the (naked) numpy version because it will result in
+  # integer truncation. We can't compare above mip 4 because the accelerated
+  # version will exhibit integer truncation.
+
+  mips = tinybrain.downsample_segmentation(image, (2,2,1), num_mips=4)
+  npimg = tinybrain.downsample.downsample_segmentation_2d(image, (16,16,1), sparse=False)
+  
+  assert np.all(mips[-1] == npimg)
 
 def test_downsample_segmentation_4x_z():
   for order in ('C', 'F'):
