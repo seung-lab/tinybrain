@@ -3531,7 +3531,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_4average_pooling_2x2(CYTHON_U
  *   results = []
  *   if channel.dtype == np.uint8:             # <<<<<<<<<<<<<<
  *     results = _average_pooling_2x2_uint8(channel, num_mips)
- *   if channel.dtype == np.uint16:
+ *   elif channel.dtype == np.uint16:
  */
   __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_channel, __pyx_n_s_dtype); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 47, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -3551,7 +3551,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_4average_pooling_2x2(CYTHON_U
  *   results = []
  *   if channel.dtype == np.uint8:
  *     results = _average_pooling_2x2_uint8(channel, num_mips)             # <<<<<<<<<<<<<<
- *   if channel.dtype == np.uint16:
+ *   elif channel.dtype == np.uint16:
  *     results = _average_pooling_2x2_uint16(channel, num_mips)
  */
     __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_average_pooling_2x2_uint8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 48, __pyx_L1_error)
@@ -3613,14 +3613,15 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_4average_pooling_2x2(CYTHON_U
  *   results = []
  *   if channel.dtype == np.uint8:             # <<<<<<<<<<<<<<
  *     results = _average_pooling_2x2_uint8(channel, num_mips)
- *   if channel.dtype == np.uint16:
+ *   elif channel.dtype == np.uint16:
  */
+    goto __pyx_L4;
   }
 
   /* "tinybrain/accelerated.pyx":49
  *   if channel.dtype == np.uint8:
  *     results = _average_pooling_2x2_uint8(channel, num_mips)
- *   if channel.dtype == np.uint16:             # <<<<<<<<<<<<<<
+ *   elif channel.dtype == np.uint16:             # <<<<<<<<<<<<<<
  *     results = _average_pooling_2x2_uint16(channel, num_mips)
  *   elif channel.dtype == np.float32:
  */
@@ -3640,7 +3641,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_4average_pooling_2x2(CYTHON_U
 
     /* "tinybrain/accelerated.pyx":50
  *     results = _average_pooling_2x2_uint8(channel, num_mips)
- *   if channel.dtype == np.uint16:
+ *   elif channel.dtype == np.uint16:
  *     results = _average_pooling_2x2_uint16(channel, num_mips)             # <<<<<<<<<<<<<<
  *   elif channel.dtype == np.float32:
  *     results = _average_pooling_2x2_float(channel, num_mips)
@@ -3702,15 +3703,15 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_4average_pooling_2x2(CYTHON_U
     /* "tinybrain/accelerated.pyx":49
  *   if channel.dtype == np.uint8:
  *     results = _average_pooling_2x2_uint8(channel, num_mips)
- *   if channel.dtype == np.uint16:             # <<<<<<<<<<<<<<
+ *   elif channel.dtype == np.uint16:             # <<<<<<<<<<<<<<
  *     results = _average_pooling_2x2_uint16(channel, num_mips)
  *   elif channel.dtype == np.float32:
  */
-    goto __pyx_L5;
+    goto __pyx_L4;
   }
 
   /* "tinybrain/accelerated.pyx":51
- *   if channel.dtype == np.uint16:
+ *   elif channel.dtype == np.uint16:
  *     results = _average_pooling_2x2_uint16(channel, num_mips)
  *   elif channel.dtype == np.float32:             # <<<<<<<<<<<<<<
  *     results = _average_pooling_2x2_float(channel, num_mips)
@@ -3792,13 +3793,13 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_4average_pooling_2x2(CYTHON_U
     __pyx_t_10 = 0;
 
     /* "tinybrain/accelerated.pyx":51
- *   if channel.dtype == np.uint16:
+ *   elif channel.dtype == np.uint16:
  *     results = _average_pooling_2x2_uint16(channel, num_mips)
  *   elif channel.dtype == np.float32:             # <<<<<<<<<<<<<<
  *     results = _average_pooling_2x2_float(channel, num_mips)
  *   elif channel.dtype == np.float64:
  */
-    goto __pyx_L5;
+    goto __pyx_L4;
   }
 
   /* "tinybrain/accelerated.pyx":53
@@ -3890,7 +3891,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_4average_pooling_2x2(CYTHON_U
  *     results = _average_pooling_2x2_double(channel, num_mips)
  *   else:
  */
-    goto __pyx_L5;
+    goto __pyx_L4;
   }
 
   /* "tinybrain/accelerated.pyx":56
@@ -3918,7 +3919,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_4average_pooling_2x2(CYTHON_U
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __PYX_ERR(0, 56, __pyx_L1_error)
   }
-  __pyx_L5:;
+  __pyx_L4:;
 
   /* "tinybrain/accelerated.pyx":58
  *     raise TypeError("Unsupported data type: ", channel.dtype)

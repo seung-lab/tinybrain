@@ -46,7 +46,7 @@ def average_pooling_2x2(channel, uint32_t num_mips=1):
   results = []
   if channel.dtype == np.uint8:
     results = _average_pooling_2x2_uint8(channel, num_mips)
-  if channel.dtype == np.uint16:
+  elif channel.dtype == np.uint16:
     results = _average_pooling_2x2_uint16(channel, num_mips)
   elif channel.dtype == np.float32:
     results = _average_pooling_2x2_float(channel, num_mips)
