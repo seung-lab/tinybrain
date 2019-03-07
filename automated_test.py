@@ -5,6 +5,7 @@ import numpy as np
 import tinybrain
 
 image1x1x1 = np.array([[[[0]]]])
+image1x1x1f = np.asfortranarray(image1x1x1)
 
 image2x2x2 = np.array([ 
   [
@@ -16,6 +17,7 @@ image2x2x2 = np.array([
     [ [0], [30] ],
   ] 
 ])
+image2x2x2f = np.asfortranarray(image2x2x2)
 
 image3x3x3 = np.array([ 
   [#z 0  1  2   
@@ -34,6 +36,7 @@ image3x3x3 = np.array([
     [ [3], [3], [3] ], # y=2
   ],
 ])
+image3x3x3f = np.asfortranarray(image3x3x3)
 
 image4x4x4 = np.array([ 
   [ #z 0    1    2   3 
@@ -61,12 +64,18 @@ image4x4x4 = np.array([
     [ [4], [4], [4], [4] ], # y=3
   ], 
 ])
+image4x4x4f = np.asfortranarray(image4x4x4)
+
 
 def test_even_odd2d():
   evenimg = tinybrain.downsample.odd_to_even2d(image2x2x2)
   assert np.array_equal(evenimg, image2x2x2)
 
+  evenimg = tinybrain.downsample.odd_to_even2d(image2x2x2f)
+  assert np.array_equal(evenimg, image2x2x2f)
+
   oddimg = tinybrain.downsample.odd_to_even2d(image1x1x1).astype(int)
+  oddimgf = tinybrain.downsample.odd_to_even2d(image1x1x1f).astype(int)
   
   ans1x1x1 = np.array([
     [
@@ -80,8 +89,10 @@ def test_even_odd2d():
   ])
 
   assert np.array_equal(oddimg, ans1x1x1)
+  assert np.array_equal(oddimgf, ans1x1x1)
 
   oddimg = tinybrain.downsample.odd_to_even2d(image3x3x3)
+  oddimgf = tinybrain.downsample.odd_to_even2d(image3x3x3f)
 
   ans3x3x3 = np.array([
     [
@@ -111,61 +122,86 @@ def test_even_odd2d():
   ])
 
   assert np.array_equal(oddimg, ans3x3x3)
+  assert np.array_equal(oddimgf, ans3x3x3)
+
+def test_accelerated_vs_normal_pooling():
+  image = np.random.randint(0,255, size=(512, 512, 6), dtype=np.uint8)
+  # image = np.ones((15,13,5), dtype=np.uint8) * 4
+  # image[3:] *= 3
+  imagef = np.asfortranarray(image)
+
+  accimg = tinybrain.accelerated.average_pooling_2x2(imagef) 
+  npimg = tinybrain.downsample.downsample_with_averaging_numpy(imagef, (2,2,1))
+  assert np.all(accimg == npimg)
+
+  # There are slight differences in how the accelerated version and 
+  # the numpy version handle the edge so we only compare a nice 
+  # even power of two where there's no edge. We also can't do iterated
+  # downsamples of the (naked) numpy version because it will result in
+  # integer truncation. We can't compare above mip 4 because the accelerated
+  # version will exhibit integer truncation.
+
+  mips = tinybrain.downsample_with_averaging(imagef, (2,2,1), num_mips=4)
+  npimg = tinybrain.downsample.downsample_with_averaging_numpy(imagef, (16,16,1))
+  
+  assert np.all(mips[-1] == npimg)
+
 
 def test_downsample_segmentation_4x_z():
-  case1 = np.array([ [ 0, 1 ], [ 2, 3 ] ]).reshape((2,2,1,1)) # all different
-  case2 = np.array([ [ 0, 0 ], [ 2, 3 ] ]).reshape((2,2,1,1)) # two are same
-  case3 = np.array([ [ 1, 1 ], [ 2, 2 ] ]).reshape((2,2,1,1)) # two groups are same
-  case4 = np.array([ [ 1, 2 ], [ 2, 2 ] ]).reshape((2,2,1,1)) # 3 are the same
-  case5 = np.array([ [ 5, 5 ], [ 5, 5 ] ]).reshape((2,2,1,1)) # all are the same
+  for order in ('C', 'F'):
+    case1 = np.array([ [ 0, 1 ], [ 2, 3 ] ]).reshape((2,2,1,1), order=order) # all different
+    case2 = np.array([ [ 0, 0 ], [ 2, 3 ] ]).reshape((2,2,1,1), order=order) # two are same
+    case3 = np.array([ [ 1, 1 ], [ 2, 2 ] ]).reshape((2,2,1,1), order=order) # two groups are same
+    case4 = np.array([ [ 1, 2 ], [ 2, 2 ] ]).reshape((2,2,1,1), order=order) # 3 are the same
+    case5 = np.array([ [ 5, 5 ], [ 5, 5 ] ]).reshape((2,2,1,1), order=order) # all are the same
 
-  is_255_handled = np.array([ [ 255, 255 ], [ 1, 2 ] ], dtype=np.uint8).reshape((2,2,1,1))
+    is_255_handled = np.array([ [ 255, 255 ], [ 1, 2 ] ], dtype=np.uint8).reshape((2,2,1,1))
 
-  test = lambda case: tinybrain.downsample.countless2d(case)[0][0][0][0]
+    test = lambda case: tinybrain.downsample.countless2d(case)[0][0][0][0]
 
-  assert test(case1) == 3 # d
-  assert test(case2) == 0 # a==b
-  assert test(case3) == 1 # a==b
-  assert test(case4) == 2 # b==c
-  assert test(case5) == 5 # a==b
+    assert test(case1) == 3 # d
+    assert test(case2) == 0 # a==b
+    assert test(case3) == 1 # a==b
+    assert test(case4) == 2 # b==c
+    assert test(case5) == 5 # a==b
 
-  assert test(is_255_handled) == 255 
+    assert test(is_255_handled) == 255 
 
-  assert tinybrain.downsample.countless2d(case1).dtype == case1.dtype
+    assert tinybrain.downsample.countless2d(case1).dtype == case1.dtype
 
-  #  0 0 1 3 
-  #  1 1 6 3  => 1 3
+    #  0 0 1 3 
+    #  1 1 6 3  => 1 3
 
-  case_odd = np.array([ 
-    [
-      [ [1] ], 
-      [ [0] ] 
-    ],
-    [
-      [ [1] ],
-      [ [6] ],
-    ],
-    [
-      [ [3] ],
-      [ [3] ],
-    ],
-  ]) # all are the same
+    case_odd = np.array([ 
+      [
+        [ [1] ], 
+        [ [0] ] 
+      ],
+      [
+        [ [1] ],
+        [ [6] ],
+      ],
+      [
+        [ [3] ],
+        [ [3] ],
+      ],
+    ]) # all are the same
 
-  downsamplefn = tinybrain.downsample.downsample_segmentation
+    downsamplefn = tinybrain.downsample.downsample_segmentation
 
-  result, = downsamplefn(case_odd, (2,2,1))
-  assert np.array_equal(result, np.array([
-    [
-      [ [1] ]
-    ],
-    [
-      [ [3] ]
-    ]
-  ]))
+    result, = downsamplefn(case_odd, (2,2,1))
+    assert np.array_equal(result, np.array([
+      [
+        [ [1] ]
+      ],
+      [
+        [ [3] ]
+      ]
+    ]))
 
-  data = np.ones(shape=(1024, 511, 62, 1), dtype=int)
-  result, = downsamplefn(data, (2,2,1))
-  assert result.shape == (512, 256, 62, 1)
+    data = np.ones(shape=(1024, 511, 62, 1), dtype=int)
+    result, = downsamplefn(data, (2,2,1))
+    assert result.shape == (512, 256, 62, 1)
 
 def test_downsample_segmentation_4x_x():
   case1 = np.array([ [ 0, 1 ], [ 2, 3 ] ]).reshape((1,2,2,1)) # all different
