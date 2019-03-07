@@ -1,6 +1,20 @@
 CHANGES
 =======
 
+0.0.1
+-----
+
+* chore: add \_\_version\_\_ = 0.0.1
+* docs: add Travis testing badge
+* test: add travis CI integration
+* test: compare accelerated mode pooling and countless mode pooling
+* test: add simple test to compare averaging implementations
+* fix: if to elif
+* fix: accelerated mode pooling was preempting stippled
+* fix: slight discrepency between numpy countless2d and the Cython version
+* test: adding automated testing (and solving issues!)
+* docs: snarky comment
+* docs: developmental PyPI release
 * fix: slow path in downsample\_with\_averaging
 * feat: workable downsample\_with\_averaging function
 * feat: added float, double, uint16 support for accelerated avg pooling

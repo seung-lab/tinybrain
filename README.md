@@ -16,6 +16,13 @@ labels = load_3d_labels()
 label_pyramid = tinybrain.downsample_segmentation(labels, factor=(2,2,1), num_mips=5)
 ```
 
+## Installation 
+
+```bash
+pip install numpy
+pip install tinybrain
+```
+
 ## Motivation
 
 Image heirarchy generation in connectomics uses a few different techniques for
