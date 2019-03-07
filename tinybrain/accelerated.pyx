@@ -348,10 +348,10 @@ def _mode_pooling_2x2(np.ndarray[NUMBER, ndim=4] img):
 
           if a == b:
             oimg[ox, oy, z, w] = a
-          elif b == c:
-            oimg[ox, oy, z, w] = b
           elif a == c:
             oimg[ox, oy, z, w] = a
+          elif b == c:
+            oimg[ox, oy, z, w] = b
           else:
             oimg[ox, oy, z, w] = d
 

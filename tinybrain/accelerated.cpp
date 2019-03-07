@@ -9557,7 +9557,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_26_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:             # <<<<<<<<<<<<<<
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
+ *           elif a == c:
  */
           __pyx_t_37 = ((__pyx_v_a == __pyx_v_b) != 0);
           if (__pyx_t_37) {
@@ -9566,8 +9566,8 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_26_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:
  *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
+ *           elif a == c:
+ *             oimg[ox, oy, z, w] = a
  */
             __pyx_t_38 = __pyx_v_ox;
             __pyx_t_39 = __pyx_v_oy;
@@ -9589,7 +9589,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_26_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:             # <<<<<<<<<<<<<<
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
+ *           elif a == c:
  */
             goto __pyx_L11;
           }
@@ -9597,19 +9597,19 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_26_mode_pooling_2x2(CYTHON_UN
           /* "tinybrain/accelerated.pyx":351
  *           if a == b:
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:             # <<<<<<<<<<<<<<
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
+ *           elif a == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
  */
-          __pyx_t_37 = ((__pyx_v_b == __pyx_v_c) != 0);
+          __pyx_t_37 = ((__pyx_v_a == __pyx_v_c) != 0);
           if (__pyx_t_37) {
 
             /* "tinybrain/accelerated.pyx":352
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b             # <<<<<<<<<<<<<<
  *           elif a == c:
- *             oimg[ox, oy, z, w] = a
+ *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
+ *           elif b == c:
+ *             oimg[ox, oy, z, w] = b
  */
             __pyx_t_42 = __pyx_v_ox;
             __pyx_t_43 = __pyx_v_oy;
@@ -9624,32 +9624,32 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_26_mode_pooling_2x2(CYTHON_UN
               __Pyx_RaiseBufferIndexError(__pyx_t_24);
               __PYX_ERR(0, 352, __pyx_L1_error)
             }
-            *__Pyx_BufPtrStrided4d(uint8_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_42, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_43, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_44, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_45, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_b;
+            *__Pyx_BufPtrStrided4d(uint8_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_42, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_43, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_44, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_45, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_a;
 
             /* "tinybrain/accelerated.pyx":351
  *           if a == b:
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:             # <<<<<<<<<<<<<<
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
+ *           elif a == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
  */
             goto __pyx_L11;
           }
 
           /* "tinybrain/accelerated.pyx":353
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:             # <<<<<<<<<<<<<<
+ *           elif a == c:
  *             oimg[ox, oy, z, w] = a
+ *           elif b == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = b
  *           else:
  */
-          __pyx_t_37 = ((__pyx_v_a == __pyx_v_c) != 0);
+          __pyx_t_37 = ((__pyx_v_b == __pyx_v_c) != 0);
           if (__pyx_t_37) {
 
             /* "tinybrain/accelerated.pyx":354
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
- *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
+ *             oimg[ox, oy, z, w] = b             # <<<<<<<<<<<<<<
  *           else:
  *             oimg[ox, oy, z, w] = d
  */
@@ -9666,20 +9666,20 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_26_mode_pooling_2x2(CYTHON_UN
               __Pyx_RaiseBufferIndexError(__pyx_t_24);
               __PYX_ERR(0, 354, __pyx_L1_error)
             }
-            *__Pyx_BufPtrStrided4d(uint8_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_46, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_47, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_48, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_49, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_a;
+            *__Pyx_BufPtrStrided4d(uint8_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_46, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_47, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_48, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_49, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_b;
 
             /* "tinybrain/accelerated.pyx":353
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:             # <<<<<<<<<<<<<<
+ *           elif a == c:
  *             oimg[ox, oy, z, w] = a
+ *           elif b == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = b
  *           else:
  */
             goto __pyx_L11;
           }
 
           /* "tinybrain/accelerated.pyx":356
- *             oimg[ox, oy, z, w] = a
+ *             oimg[ox, oy, z, w] = b
  *           else:
  *             oimg[ox, oy, z, w] = d             # <<<<<<<<<<<<<<
  * 
@@ -10462,7 +10462,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_28_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:             # <<<<<<<<<<<<<<
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
+ *           elif a == c:
  */
           __pyx_t_37 = ((__pyx_v_a == __pyx_v_b) != 0);
           if (__pyx_t_37) {
@@ -10471,8 +10471,8 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_28_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:
  *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
+ *           elif a == c:
+ *             oimg[ox, oy, z, w] = a
  */
             __pyx_t_38 = __pyx_v_ox;
             __pyx_t_39 = __pyx_v_oy;
@@ -10494,7 +10494,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_28_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:             # <<<<<<<<<<<<<<
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
+ *           elif a == c:
  */
             goto __pyx_L11;
           }
@@ -10502,19 +10502,19 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_28_mode_pooling_2x2(CYTHON_UN
           /* "tinybrain/accelerated.pyx":351
  *           if a == b:
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:             # <<<<<<<<<<<<<<
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
+ *           elif a == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
  */
-          __pyx_t_37 = ((__pyx_v_b == __pyx_v_c) != 0);
+          __pyx_t_37 = ((__pyx_v_a == __pyx_v_c) != 0);
           if (__pyx_t_37) {
 
             /* "tinybrain/accelerated.pyx":352
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b             # <<<<<<<<<<<<<<
  *           elif a == c:
- *             oimg[ox, oy, z, w] = a
+ *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
+ *           elif b == c:
+ *             oimg[ox, oy, z, w] = b
  */
             __pyx_t_42 = __pyx_v_ox;
             __pyx_t_43 = __pyx_v_oy;
@@ -10529,32 +10529,32 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_28_mode_pooling_2x2(CYTHON_UN
               __Pyx_RaiseBufferIndexError(__pyx_t_24);
               __PYX_ERR(0, 352, __pyx_L1_error)
             }
-            *__Pyx_BufPtrStrided4d(uint16_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_42, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_43, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_44, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_45, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_b;
+            *__Pyx_BufPtrStrided4d(uint16_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_42, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_43, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_44, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_45, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_a;
 
             /* "tinybrain/accelerated.pyx":351
  *           if a == b:
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:             # <<<<<<<<<<<<<<
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
+ *           elif a == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
  */
             goto __pyx_L11;
           }
 
           /* "tinybrain/accelerated.pyx":353
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:             # <<<<<<<<<<<<<<
+ *           elif a == c:
  *             oimg[ox, oy, z, w] = a
+ *           elif b == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = b
  *           else:
  */
-          __pyx_t_37 = ((__pyx_v_a == __pyx_v_c) != 0);
+          __pyx_t_37 = ((__pyx_v_b == __pyx_v_c) != 0);
           if (__pyx_t_37) {
 
             /* "tinybrain/accelerated.pyx":354
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
- *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
+ *             oimg[ox, oy, z, w] = b             # <<<<<<<<<<<<<<
  *           else:
  *             oimg[ox, oy, z, w] = d
  */
@@ -10571,20 +10571,20 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_28_mode_pooling_2x2(CYTHON_UN
               __Pyx_RaiseBufferIndexError(__pyx_t_24);
               __PYX_ERR(0, 354, __pyx_L1_error)
             }
-            *__Pyx_BufPtrStrided4d(uint16_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_46, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_47, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_48, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_49, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_a;
+            *__Pyx_BufPtrStrided4d(uint16_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_46, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_47, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_48, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_49, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_b;
 
             /* "tinybrain/accelerated.pyx":353
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:             # <<<<<<<<<<<<<<
+ *           elif a == c:
  *             oimg[ox, oy, z, w] = a
+ *           elif b == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = b
  *           else:
  */
             goto __pyx_L11;
           }
 
           /* "tinybrain/accelerated.pyx":356
- *             oimg[ox, oy, z, w] = a
+ *             oimg[ox, oy, z, w] = b
  *           else:
  *             oimg[ox, oy, z, w] = d             # <<<<<<<<<<<<<<
  * 
@@ -11367,7 +11367,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_30_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:             # <<<<<<<<<<<<<<
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
+ *           elif a == c:
  */
           __pyx_t_37 = ((__pyx_v_a == __pyx_v_b) != 0);
           if (__pyx_t_37) {
@@ -11376,8 +11376,8 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_30_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:
  *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
+ *           elif a == c:
+ *             oimg[ox, oy, z, w] = a
  */
             __pyx_t_38 = __pyx_v_ox;
             __pyx_t_39 = __pyx_v_oy;
@@ -11399,7 +11399,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_30_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:             # <<<<<<<<<<<<<<
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
+ *           elif a == c:
  */
             goto __pyx_L11;
           }
@@ -11407,19 +11407,19 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_30_mode_pooling_2x2(CYTHON_UN
           /* "tinybrain/accelerated.pyx":351
  *           if a == b:
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:             # <<<<<<<<<<<<<<
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
+ *           elif a == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
  */
-          __pyx_t_37 = ((__pyx_v_b == __pyx_v_c) != 0);
+          __pyx_t_37 = ((__pyx_v_a == __pyx_v_c) != 0);
           if (__pyx_t_37) {
 
             /* "tinybrain/accelerated.pyx":352
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b             # <<<<<<<<<<<<<<
  *           elif a == c:
- *             oimg[ox, oy, z, w] = a
+ *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
+ *           elif b == c:
+ *             oimg[ox, oy, z, w] = b
  */
             __pyx_t_42 = __pyx_v_ox;
             __pyx_t_43 = __pyx_v_oy;
@@ -11434,32 +11434,32 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_30_mode_pooling_2x2(CYTHON_UN
               __Pyx_RaiseBufferIndexError(__pyx_t_24);
               __PYX_ERR(0, 352, __pyx_L1_error)
             }
-            *__Pyx_BufPtrStrided4d(uint32_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_42, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_43, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_44, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_45, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_b;
+            *__Pyx_BufPtrStrided4d(uint32_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_42, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_43, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_44, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_45, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_a;
 
             /* "tinybrain/accelerated.pyx":351
  *           if a == b:
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:             # <<<<<<<<<<<<<<
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
+ *           elif a == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
  */
             goto __pyx_L11;
           }
 
           /* "tinybrain/accelerated.pyx":353
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:             # <<<<<<<<<<<<<<
+ *           elif a == c:
  *             oimg[ox, oy, z, w] = a
+ *           elif b == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = b
  *           else:
  */
-          __pyx_t_37 = ((__pyx_v_a == __pyx_v_c) != 0);
+          __pyx_t_37 = ((__pyx_v_b == __pyx_v_c) != 0);
           if (__pyx_t_37) {
 
             /* "tinybrain/accelerated.pyx":354
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
- *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
+ *             oimg[ox, oy, z, w] = b             # <<<<<<<<<<<<<<
  *           else:
  *             oimg[ox, oy, z, w] = d
  */
@@ -11476,20 +11476,20 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_30_mode_pooling_2x2(CYTHON_UN
               __Pyx_RaiseBufferIndexError(__pyx_t_24);
               __PYX_ERR(0, 354, __pyx_L1_error)
             }
-            *__Pyx_BufPtrStrided4d(uint32_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_46, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_47, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_48, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_49, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_a;
+            *__Pyx_BufPtrStrided4d(uint32_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_46, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_47, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_48, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_49, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_b;
 
             /* "tinybrain/accelerated.pyx":353
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:             # <<<<<<<<<<<<<<
+ *           elif a == c:
  *             oimg[ox, oy, z, w] = a
+ *           elif b == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = b
  *           else:
  */
             goto __pyx_L11;
           }
 
           /* "tinybrain/accelerated.pyx":356
- *             oimg[ox, oy, z, w] = a
+ *             oimg[ox, oy, z, w] = b
  *           else:
  *             oimg[ox, oy, z, w] = d             # <<<<<<<<<<<<<<
  * 
@@ -12272,7 +12272,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_32_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:             # <<<<<<<<<<<<<<
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
+ *           elif a == c:
  */
           __pyx_t_37 = ((__pyx_v_a == __pyx_v_b) != 0);
           if (__pyx_t_37) {
@@ -12281,8 +12281,8 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_32_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:
  *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
+ *           elif a == c:
+ *             oimg[ox, oy, z, w] = a
  */
             __pyx_t_38 = __pyx_v_ox;
             __pyx_t_39 = __pyx_v_oy;
@@ -12304,7 +12304,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_32_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:             # <<<<<<<<<<<<<<
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
+ *           elif a == c:
  */
             goto __pyx_L11;
           }
@@ -12312,19 +12312,19 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_32_mode_pooling_2x2(CYTHON_UN
           /* "tinybrain/accelerated.pyx":351
  *           if a == b:
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:             # <<<<<<<<<<<<<<
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
+ *           elif a == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
  */
-          __pyx_t_37 = ((__pyx_v_b == __pyx_v_c) != 0);
+          __pyx_t_37 = ((__pyx_v_a == __pyx_v_c) != 0);
           if (__pyx_t_37) {
 
             /* "tinybrain/accelerated.pyx":352
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b             # <<<<<<<<<<<<<<
  *           elif a == c:
- *             oimg[ox, oy, z, w] = a
+ *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
+ *           elif b == c:
+ *             oimg[ox, oy, z, w] = b
  */
             __pyx_t_42 = __pyx_v_ox;
             __pyx_t_43 = __pyx_v_oy;
@@ -12339,32 +12339,32 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_32_mode_pooling_2x2(CYTHON_UN
               __Pyx_RaiseBufferIndexError(__pyx_t_24);
               __PYX_ERR(0, 352, __pyx_L1_error)
             }
-            *__Pyx_BufPtrStrided4d(uint64_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_42, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_43, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_44, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_45, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_b;
+            *__Pyx_BufPtrStrided4d(uint64_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_42, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_43, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_44, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_45, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_a;
 
             /* "tinybrain/accelerated.pyx":351
  *           if a == b:
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:             # <<<<<<<<<<<<<<
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
+ *           elif a == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
  */
             goto __pyx_L11;
           }
 
           /* "tinybrain/accelerated.pyx":353
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:             # <<<<<<<<<<<<<<
+ *           elif a == c:
  *             oimg[ox, oy, z, w] = a
+ *           elif b == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = b
  *           else:
  */
-          __pyx_t_37 = ((__pyx_v_a == __pyx_v_c) != 0);
+          __pyx_t_37 = ((__pyx_v_b == __pyx_v_c) != 0);
           if (__pyx_t_37) {
 
             /* "tinybrain/accelerated.pyx":354
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
- *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
+ *             oimg[ox, oy, z, w] = b             # <<<<<<<<<<<<<<
  *           else:
  *             oimg[ox, oy, z, w] = d
  */
@@ -12381,20 +12381,20 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_32_mode_pooling_2x2(CYTHON_UN
               __Pyx_RaiseBufferIndexError(__pyx_t_24);
               __PYX_ERR(0, 354, __pyx_L1_error)
             }
-            *__Pyx_BufPtrStrided4d(uint64_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_46, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_47, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_48, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_49, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_a;
+            *__Pyx_BufPtrStrided4d(uint64_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_46, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_47, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_48, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_49, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_b;
 
             /* "tinybrain/accelerated.pyx":353
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:             # <<<<<<<<<<<<<<
+ *           elif a == c:
  *             oimg[ox, oy, z, w] = a
+ *           elif b == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = b
  *           else:
  */
             goto __pyx_L11;
           }
 
           /* "tinybrain/accelerated.pyx":356
- *             oimg[ox, oy, z, w] = a
+ *             oimg[ox, oy, z, w] = b
  *           else:
  *             oimg[ox, oy, z, w] = d             # <<<<<<<<<<<<<<
  * 
@@ -13177,7 +13177,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_34_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:             # <<<<<<<<<<<<<<
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
+ *           elif a == c:
  */
           __pyx_t_37 = ((__pyx_v_a == __pyx_v_b) != 0);
           if (__pyx_t_37) {
@@ -13186,8 +13186,8 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_34_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:
  *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
+ *           elif a == c:
+ *             oimg[ox, oy, z, w] = a
  */
             __pyx_t_38 = __pyx_v_ox;
             __pyx_t_39 = __pyx_v_oy;
@@ -13209,7 +13209,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_34_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:             # <<<<<<<<<<<<<<
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
+ *           elif a == c:
  */
             goto __pyx_L11;
           }
@@ -13217,19 +13217,19 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_34_mode_pooling_2x2(CYTHON_UN
           /* "tinybrain/accelerated.pyx":351
  *           if a == b:
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:             # <<<<<<<<<<<<<<
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
+ *           elif a == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
  */
-          __pyx_t_37 = ((__pyx_v_b == __pyx_v_c) != 0);
+          __pyx_t_37 = ((__pyx_v_a == __pyx_v_c) != 0);
           if (__pyx_t_37) {
 
             /* "tinybrain/accelerated.pyx":352
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b             # <<<<<<<<<<<<<<
  *           elif a == c:
- *             oimg[ox, oy, z, w] = a
+ *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
+ *           elif b == c:
+ *             oimg[ox, oy, z, w] = b
  */
             __pyx_t_42 = __pyx_v_ox;
             __pyx_t_43 = __pyx_v_oy;
@@ -13244,32 +13244,32 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_34_mode_pooling_2x2(CYTHON_UN
               __Pyx_RaiseBufferIndexError(__pyx_t_24);
               __PYX_ERR(0, 352, __pyx_L1_error)
             }
-            *__Pyx_BufPtrStrided4d(int8_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_42, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_43, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_44, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_45, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_b;
+            *__Pyx_BufPtrStrided4d(int8_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_42, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_43, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_44, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_45, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_a;
 
             /* "tinybrain/accelerated.pyx":351
  *           if a == b:
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:             # <<<<<<<<<<<<<<
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
+ *           elif a == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
  */
             goto __pyx_L11;
           }
 
           /* "tinybrain/accelerated.pyx":353
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:             # <<<<<<<<<<<<<<
+ *           elif a == c:
  *             oimg[ox, oy, z, w] = a
+ *           elif b == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = b
  *           else:
  */
-          __pyx_t_37 = ((__pyx_v_a == __pyx_v_c) != 0);
+          __pyx_t_37 = ((__pyx_v_b == __pyx_v_c) != 0);
           if (__pyx_t_37) {
 
             /* "tinybrain/accelerated.pyx":354
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
- *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
+ *             oimg[ox, oy, z, w] = b             # <<<<<<<<<<<<<<
  *           else:
  *             oimg[ox, oy, z, w] = d
  */
@@ -13286,20 +13286,20 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_34_mode_pooling_2x2(CYTHON_UN
               __Pyx_RaiseBufferIndexError(__pyx_t_24);
               __PYX_ERR(0, 354, __pyx_L1_error)
             }
-            *__Pyx_BufPtrStrided4d(int8_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_46, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_47, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_48, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_49, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_a;
+            *__Pyx_BufPtrStrided4d(int8_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_46, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_47, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_48, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_49, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_b;
 
             /* "tinybrain/accelerated.pyx":353
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:             # <<<<<<<<<<<<<<
+ *           elif a == c:
  *             oimg[ox, oy, z, w] = a
+ *           elif b == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = b
  *           else:
  */
             goto __pyx_L11;
           }
 
           /* "tinybrain/accelerated.pyx":356
- *             oimg[ox, oy, z, w] = a
+ *             oimg[ox, oy, z, w] = b
  *           else:
  *             oimg[ox, oy, z, w] = d             # <<<<<<<<<<<<<<
  * 
@@ -14082,7 +14082,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_36_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:             # <<<<<<<<<<<<<<
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
+ *           elif a == c:
  */
           __pyx_t_37 = ((__pyx_v_a == __pyx_v_b) != 0);
           if (__pyx_t_37) {
@@ -14091,8 +14091,8 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_36_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:
  *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
+ *           elif a == c:
+ *             oimg[ox, oy, z, w] = a
  */
             __pyx_t_38 = __pyx_v_ox;
             __pyx_t_39 = __pyx_v_oy;
@@ -14114,7 +14114,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_36_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:             # <<<<<<<<<<<<<<
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
+ *           elif a == c:
  */
             goto __pyx_L11;
           }
@@ -14122,19 +14122,19 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_36_mode_pooling_2x2(CYTHON_UN
           /* "tinybrain/accelerated.pyx":351
  *           if a == b:
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:             # <<<<<<<<<<<<<<
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
+ *           elif a == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
  */
-          __pyx_t_37 = ((__pyx_v_b == __pyx_v_c) != 0);
+          __pyx_t_37 = ((__pyx_v_a == __pyx_v_c) != 0);
           if (__pyx_t_37) {
 
             /* "tinybrain/accelerated.pyx":352
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b             # <<<<<<<<<<<<<<
  *           elif a == c:
- *             oimg[ox, oy, z, w] = a
+ *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
+ *           elif b == c:
+ *             oimg[ox, oy, z, w] = b
  */
             __pyx_t_42 = __pyx_v_ox;
             __pyx_t_43 = __pyx_v_oy;
@@ -14149,32 +14149,32 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_36_mode_pooling_2x2(CYTHON_UN
               __Pyx_RaiseBufferIndexError(__pyx_t_24);
               __PYX_ERR(0, 352, __pyx_L1_error)
             }
-            *__Pyx_BufPtrStrided4d(int16_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_42, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_43, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_44, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_45, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_b;
+            *__Pyx_BufPtrStrided4d(int16_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_42, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_43, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_44, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_45, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_a;
 
             /* "tinybrain/accelerated.pyx":351
  *           if a == b:
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:             # <<<<<<<<<<<<<<
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
+ *           elif a == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
  */
             goto __pyx_L11;
           }
 
           /* "tinybrain/accelerated.pyx":353
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:             # <<<<<<<<<<<<<<
+ *           elif a == c:
  *             oimg[ox, oy, z, w] = a
+ *           elif b == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = b
  *           else:
  */
-          __pyx_t_37 = ((__pyx_v_a == __pyx_v_c) != 0);
+          __pyx_t_37 = ((__pyx_v_b == __pyx_v_c) != 0);
           if (__pyx_t_37) {
 
             /* "tinybrain/accelerated.pyx":354
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
- *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
+ *             oimg[ox, oy, z, w] = b             # <<<<<<<<<<<<<<
  *           else:
  *             oimg[ox, oy, z, w] = d
  */
@@ -14191,20 +14191,20 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_36_mode_pooling_2x2(CYTHON_UN
               __Pyx_RaiseBufferIndexError(__pyx_t_24);
               __PYX_ERR(0, 354, __pyx_L1_error)
             }
-            *__Pyx_BufPtrStrided4d(int16_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_46, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_47, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_48, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_49, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_a;
+            *__Pyx_BufPtrStrided4d(int16_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_46, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_47, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_48, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_49, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_b;
 
             /* "tinybrain/accelerated.pyx":353
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:             # <<<<<<<<<<<<<<
+ *           elif a == c:
  *             oimg[ox, oy, z, w] = a
+ *           elif b == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = b
  *           else:
  */
             goto __pyx_L11;
           }
 
           /* "tinybrain/accelerated.pyx":356
- *             oimg[ox, oy, z, w] = a
+ *             oimg[ox, oy, z, w] = b
  *           else:
  *             oimg[ox, oy, z, w] = d             # <<<<<<<<<<<<<<
  * 
@@ -14987,7 +14987,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_38_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:             # <<<<<<<<<<<<<<
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
+ *           elif a == c:
  */
           __pyx_t_37 = ((__pyx_v_a == __pyx_v_b) != 0);
           if (__pyx_t_37) {
@@ -14996,8 +14996,8 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_38_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:
  *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
+ *           elif a == c:
+ *             oimg[ox, oy, z, w] = a
  */
             __pyx_t_38 = __pyx_v_ox;
             __pyx_t_39 = __pyx_v_oy;
@@ -15019,7 +15019,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_38_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:             # <<<<<<<<<<<<<<
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
+ *           elif a == c:
  */
             goto __pyx_L11;
           }
@@ -15027,19 +15027,19 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_38_mode_pooling_2x2(CYTHON_UN
           /* "tinybrain/accelerated.pyx":351
  *           if a == b:
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:             # <<<<<<<<<<<<<<
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
+ *           elif a == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
  */
-          __pyx_t_37 = ((__pyx_v_b == __pyx_v_c) != 0);
+          __pyx_t_37 = ((__pyx_v_a == __pyx_v_c) != 0);
           if (__pyx_t_37) {
 
             /* "tinybrain/accelerated.pyx":352
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b             # <<<<<<<<<<<<<<
  *           elif a == c:
- *             oimg[ox, oy, z, w] = a
+ *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
+ *           elif b == c:
+ *             oimg[ox, oy, z, w] = b
  */
             __pyx_t_42 = __pyx_v_ox;
             __pyx_t_43 = __pyx_v_oy;
@@ -15054,32 +15054,32 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_38_mode_pooling_2x2(CYTHON_UN
               __Pyx_RaiseBufferIndexError(__pyx_t_24);
               __PYX_ERR(0, 352, __pyx_L1_error)
             }
-            *__Pyx_BufPtrStrided4d(int32_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_42, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_43, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_44, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_45, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_b;
+            *__Pyx_BufPtrStrided4d(int32_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_42, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_43, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_44, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_45, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_a;
 
             /* "tinybrain/accelerated.pyx":351
  *           if a == b:
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:             # <<<<<<<<<<<<<<
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
+ *           elif a == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
  */
             goto __pyx_L11;
           }
 
           /* "tinybrain/accelerated.pyx":353
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:             # <<<<<<<<<<<<<<
+ *           elif a == c:
  *             oimg[ox, oy, z, w] = a
+ *           elif b == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = b
  *           else:
  */
-          __pyx_t_37 = ((__pyx_v_a == __pyx_v_c) != 0);
+          __pyx_t_37 = ((__pyx_v_b == __pyx_v_c) != 0);
           if (__pyx_t_37) {
 
             /* "tinybrain/accelerated.pyx":354
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
- *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
+ *             oimg[ox, oy, z, w] = b             # <<<<<<<<<<<<<<
  *           else:
  *             oimg[ox, oy, z, w] = d
  */
@@ -15096,20 +15096,20 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_38_mode_pooling_2x2(CYTHON_UN
               __Pyx_RaiseBufferIndexError(__pyx_t_24);
               __PYX_ERR(0, 354, __pyx_L1_error)
             }
-            *__Pyx_BufPtrStrided4d(int32_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_46, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_47, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_48, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_49, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_a;
+            *__Pyx_BufPtrStrided4d(int32_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_46, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_47, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_48, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_49, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_b;
 
             /* "tinybrain/accelerated.pyx":353
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:             # <<<<<<<<<<<<<<
+ *           elif a == c:
  *             oimg[ox, oy, z, w] = a
+ *           elif b == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = b
  *           else:
  */
             goto __pyx_L11;
           }
 
           /* "tinybrain/accelerated.pyx":356
- *             oimg[ox, oy, z, w] = a
+ *             oimg[ox, oy, z, w] = b
  *           else:
  *             oimg[ox, oy, z, w] = d             # <<<<<<<<<<<<<<
  * 
@@ -15892,7 +15892,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_40_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:             # <<<<<<<<<<<<<<
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
+ *           elif a == c:
  */
           __pyx_t_37 = ((__pyx_v_a == __pyx_v_b) != 0);
           if (__pyx_t_37) {
@@ -15901,8 +15901,8 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_40_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:
  *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
+ *           elif a == c:
+ *             oimg[ox, oy, z, w] = a
  */
             __pyx_t_38 = __pyx_v_ox;
             __pyx_t_39 = __pyx_v_oy;
@@ -15924,7 +15924,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_40_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:             # <<<<<<<<<<<<<<
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
+ *           elif a == c:
  */
             goto __pyx_L11;
           }
@@ -15932,19 +15932,19 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_40_mode_pooling_2x2(CYTHON_UN
           /* "tinybrain/accelerated.pyx":351
  *           if a == b:
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:             # <<<<<<<<<<<<<<
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
+ *           elif a == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
  */
-          __pyx_t_37 = ((__pyx_v_b == __pyx_v_c) != 0);
+          __pyx_t_37 = ((__pyx_v_a == __pyx_v_c) != 0);
           if (__pyx_t_37) {
 
             /* "tinybrain/accelerated.pyx":352
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b             # <<<<<<<<<<<<<<
  *           elif a == c:
- *             oimg[ox, oy, z, w] = a
+ *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
+ *           elif b == c:
+ *             oimg[ox, oy, z, w] = b
  */
             __pyx_t_42 = __pyx_v_ox;
             __pyx_t_43 = __pyx_v_oy;
@@ -15959,32 +15959,32 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_40_mode_pooling_2x2(CYTHON_UN
               __Pyx_RaiseBufferIndexError(__pyx_t_24);
               __PYX_ERR(0, 352, __pyx_L1_error)
             }
-            *__Pyx_BufPtrStrided4d(int64_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_42, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_43, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_44, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_45, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_b;
+            *__Pyx_BufPtrStrided4d(int64_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_42, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_43, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_44, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_45, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_a;
 
             /* "tinybrain/accelerated.pyx":351
  *           if a == b:
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:             # <<<<<<<<<<<<<<
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
+ *           elif a == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
  */
             goto __pyx_L11;
           }
 
           /* "tinybrain/accelerated.pyx":353
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:             # <<<<<<<<<<<<<<
+ *           elif a == c:
  *             oimg[ox, oy, z, w] = a
+ *           elif b == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = b
  *           else:
  */
-          __pyx_t_37 = ((__pyx_v_a == __pyx_v_c) != 0);
+          __pyx_t_37 = ((__pyx_v_b == __pyx_v_c) != 0);
           if (__pyx_t_37) {
 
             /* "tinybrain/accelerated.pyx":354
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
- *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
+ *             oimg[ox, oy, z, w] = b             # <<<<<<<<<<<<<<
  *           else:
  *             oimg[ox, oy, z, w] = d
  */
@@ -16001,20 +16001,20 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_40_mode_pooling_2x2(CYTHON_UN
               __Pyx_RaiseBufferIndexError(__pyx_t_24);
               __PYX_ERR(0, 354, __pyx_L1_error)
             }
-            *__Pyx_BufPtrStrided4d(int64_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_46, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_47, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_48, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_49, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_a;
+            *__Pyx_BufPtrStrided4d(int64_t *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_46, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_47, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_48, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_49, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_b;
 
             /* "tinybrain/accelerated.pyx":353
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:             # <<<<<<<<<<<<<<
+ *           elif a == c:
  *             oimg[ox, oy, z, w] = a
+ *           elif b == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = b
  *           else:
  */
             goto __pyx_L11;
           }
 
           /* "tinybrain/accelerated.pyx":356
- *             oimg[ox, oy, z, w] = a
+ *             oimg[ox, oy, z, w] = b
  *           else:
  *             oimg[ox, oy, z, w] = d             # <<<<<<<<<<<<<<
  * 
@@ -16797,7 +16797,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_42_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:             # <<<<<<<<<<<<<<
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
+ *           elif a == c:
  */
           __pyx_t_37 = ((__pyx_v_a == __pyx_v_b) != 0);
           if (__pyx_t_37) {
@@ -16806,8 +16806,8 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_42_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:
  *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
+ *           elif a == c:
+ *             oimg[ox, oy, z, w] = a
  */
             __pyx_t_38 = __pyx_v_ox;
             __pyx_t_39 = __pyx_v_oy;
@@ -16829,7 +16829,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_42_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:             # <<<<<<<<<<<<<<
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
+ *           elif a == c:
  */
             goto __pyx_L11;
           }
@@ -16837,19 +16837,19 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_42_mode_pooling_2x2(CYTHON_UN
           /* "tinybrain/accelerated.pyx":351
  *           if a == b:
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:             # <<<<<<<<<<<<<<
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
+ *           elif a == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
  */
-          __pyx_t_37 = ((__pyx_v_b == __pyx_v_c) != 0);
+          __pyx_t_37 = ((__pyx_v_a == __pyx_v_c) != 0);
           if (__pyx_t_37) {
 
             /* "tinybrain/accelerated.pyx":352
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b             # <<<<<<<<<<<<<<
  *           elif a == c:
- *             oimg[ox, oy, z, w] = a
+ *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
+ *           elif b == c:
+ *             oimg[ox, oy, z, w] = b
  */
             __pyx_t_42 = __pyx_v_ox;
             __pyx_t_43 = __pyx_v_oy;
@@ -16864,32 +16864,32 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_42_mode_pooling_2x2(CYTHON_UN
               __Pyx_RaiseBufferIndexError(__pyx_t_24);
               __PYX_ERR(0, 352, __pyx_L1_error)
             }
-            *__Pyx_BufPtrStrided4d(float *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_42, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_43, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_44, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_45, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_b;
+            *__Pyx_BufPtrStrided4d(float *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_42, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_43, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_44, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_45, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_a;
 
             /* "tinybrain/accelerated.pyx":351
  *           if a == b:
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:             # <<<<<<<<<<<<<<
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
+ *           elif a == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
  */
             goto __pyx_L11;
           }
 
           /* "tinybrain/accelerated.pyx":353
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:             # <<<<<<<<<<<<<<
+ *           elif a == c:
  *             oimg[ox, oy, z, w] = a
+ *           elif b == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = b
  *           else:
  */
-          __pyx_t_37 = ((__pyx_v_a == __pyx_v_c) != 0);
+          __pyx_t_37 = ((__pyx_v_b == __pyx_v_c) != 0);
           if (__pyx_t_37) {
 
             /* "tinybrain/accelerated.pyx":354
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
- *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
+ *             oimg[ox, oy, z, w] = b             # <<<<<<<<<<<<<<
  *           else:
  *             oimg[ox, oy, z, w] = d
  */
@@ -16906,20 +16906,20 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_42_mode_pooling_2x2(CYTHON_UN
               __Pyx_RaiseBufferIndexError(__pyx_t_24);
               __PYX_ERR(0, 354, __pyx_L1_error)
             }
-            *__Pyx_BufPtrStrided4d(float *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_46, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_47, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_48, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_49, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_a;
+            *__Pyx_BufPtrStrided4d(float *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_46, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_47, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_48, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_49, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_b;
 
             /* "tinybrain/accelerated.pyx":353
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:             # <<<<<<<<<<<<<<
+ *           elif a == c:
  *             oimg[ox, oy, z, w] = a
+ *           elif b == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = b
  *           else:
  */
             goto __pyx_L11;
           }
 
           /* "tinybrain/accelerated.pyx":356
- *             oimg[ox, oy, z, w] = a
+ *             oimg[ox, oy, z, w] = b
  *           else:
  *             oimg[ox, oy, z, w] = d             # <<<<<<<<<<<<<<
  * 
@@ -17702,7 +17702,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_44_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:             # <<<<<<<<<<<<<<
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
+ *           elif a == c:
  */
           __pyx_t_37 = ((__pyx_v_a == __pyx_v_b) != 0);
           if (__pyx_t_37) {
@@ -17711,8 +17711,8 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_44_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:
  *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
+ *           elif a == c:
+ *             oimg[ox, oy, z, w] = a
  */
             __pyx_t_38 = __pyx_v_ox;
             __pyx_t_39 = __pyx_v_oy;
@@ -17734,7 +17734,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_44_mode_pooling_2x2(CYTHON_UN
  * 
  *           if a == b:             # <<<<<<<<<<<<<<
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
+ *           elif a == c:
  */
             goto __pyx_L11;
           }
@@ -17742,19 +17742,19 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_44_mode_pooling_2x2(CYTHON_UN
           /* "tinybrain/accelerated.pyx":351
  *           if a == b:
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:             # <<<<<<<<<<<<<<
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
+ *           elif a == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
  */
-          __pyx_t_37 = ((__pyx_v_b == __pyx_v_c) != 0);
+          __pyx_t_37 = ((__pyx_v_a == __pyx_v_c) != 0);
           if (__pyx_t_37) {
 
             /* "tinybrain/accelerated.pyx":352
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b             # <<<<<<<<<<<<<<
  *           elif a == c:
- *             oimg[ox, oy, z, w] = a
+ *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
+ *           elif b == c:
+ *             oimg[ox, oy, z, w] = b
  */
             __pyx_t_42 = __pyx_v_ox;
             __pyx_t_43 = __pyx_v_oy;
@@ -17769,32 +17769,32 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_44_mode_pooling_2x2(CYTHON_UN
               __Pyx_RaiseBufferIndexError(__pyx_t_24);
               __PYX_ERR(0, 352, __pyx_L1_error)
             }
-            *__Pyx_BufPtrStrided4d(double *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_42, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_43, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_44, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_45, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_b;
+            *__Pyx_BufPtrStrided4d(double *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_42, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_43, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_44, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_45, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_a;
 
             /* "tinybrain/accelerated.pyx":351
  *           if a == b:
  *             oimg[ox, oy, z, w] = a
- *           elif b == c:             # <<<<<<<<<<<<<<
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
+ *           elif a == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
  */
             goto __pyx_L11;
           }
 
           /* "tinybrain/accelerated.pyx":353
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:             # <<<<<<<<<<<<<<
+ *           elif a == c:
  *             oimg[ox, oy, z, w] = a
+ *           elif b == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = b
  *           else:
  */
-          __pyx_t_37 = ((__pyx_v_a == __pyx_v_c) != 0);
+          __pyx_t_37 = ((__pyx_v_b == __pyx_v_c) != 0);
           if (__pyx_t_37) {
 
             /* "tinybrain/accelerated.pyx":354
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:
- *             oimg[ox, oy, z, w] = a             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = a
+ *           elif b == c:
+ *             oimg[ox, oy, z, w] = b             # <<<<<<<<<<<<<<
  *           else:
  *             oimg[ox, oy, z, w] = d
  */
@@ -17811,20 +17811,20 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_44_mode_pooling_2x2(CYTHON_UN
               __Pyx_RaiseBufferIndexError(__pyx_t_24);
               __PYX_ERR(0, 354, __pyx_L1_error)
             }
-            *__Pyx_BufPtrStrided4d(double *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_46, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_47, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_48, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_49, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_a;
+            *__Pyx_BufPtrStrided4d(double *, __pyx_pybuffernd_oimg.rcbuffer->pybuffer.buf, __pyx_t_46, __pyx_pybuffernd_oimg.diminfo[0].strides, __pyx_t_47, __pyx_pybuffernd_oimg.diminfo[1].strides, __pyx_t_48, __pyx_pybuffernd_oimg.diminfo[2].strides, __pyx_t_49, __pyx_pybuffernd_oimg.diminfo[3].strides) = __pyx_v_b;
 
             /* "tinybrain/accelerated.pyx":353
- *           elif b == c:
- *             oimg[ox, oy, z, w] = b
- *           elif a == c:             # <<<<<<<<<<<<<<
+ *           elif a == c:
  *             oimg[ox, oy, z, w] = a
+ *           elif b == c:             # <<<<<<<<<<<<<<
+ *             oimg[ox, oy, z, w] = b
  *           else:
  */
             goto __pyx_L11;
           }
 
           /* "tinybrain/accelerated.pyx":356
- *             oimg[ox, oy, z, w] = a
+ *             oimg[ox, oy, z, w] = b
  *           else:
  *             oimg[ox, oy, z, w] = d             # <<<<<<<<<<<<<<
  * 
