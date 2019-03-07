@@ -30,6 +30,9 @@ import numpy as np
 
 import tinybrain.accelerated
 
+class DimensionError(Exception):
+  pass
+
 def downsample_with_averaging(img, factor, num_mips=1):
   if (
     img.dtype in (np.uint8, np.uint16, np.float32, np.float64)
@@ -126,7 +129,21 @@ def downsample_with_averaging_numpy(array, factor):
     counts[indexing_expr] += 1
   return np.cast[array.dtype](temp / counts)
 
-def downsample_with_max_pooling(array, factor):
+def downsample_with_max_pooling(array, factor, num_mips=1):
+  """
+  Downsample by picking the maximum value within a
+  cuboid specified by factor. That is, a reduction factor
+  of 2x2 works by summarizing many 2x2 cuboids. If factor's 
+  length is smaller than array.shape, the remaining factors will
+  be filled with 1.
+  """
+  results = []
+  for mip in range(num_mips):
+    array = _downsample_with_max_pooling(array, factor)
+    results.append(array)
+  return results
+
+def _downsample_with_max_pooling(array, factor):
   """
   Downsample by picking the maximum value within a
   cuboid specified by factor. That is, a reduction factor
@@ -151,7 +168,7 @@ def downsample_with_max_pooling(array, factor):
 
   return output
 
-def downsample_segmentation(data, factor, sparse=False):
+def downsample_segmentation(img, factor, sparse=False, num_mips=1):
   """
   Downsampling machine labels requires choosing an actual
   pixel, not a linear combination (or otherwise) of the
@@ -170,23 +187,37 @@ def downsample_segmentation(data, factor, sparse=False):
   of two factors are handled by recursive calculation (so only the first
   downsample is fully accurate in the sense of being the mode).
 
-  If factor has fewer parameters than data.shape, the remainder
+  If factor has fewer parameters than img.shape, the remainder
   are assumed to be 1.
 
   Required:
-    data: A 3d or 4d numpy array representing a segmentation image.
+    img: A 3d or 4d numpy array representing a segmentation image.
     factor: a tuple of downsample factors. Commonly: (2,2,1) to achieve
       a planar downsampling of 2x2 that preserves Z.
 
   Returns: a downsampled numpy array
   """
-  if len(factor) == 4:
-    assert factor[3] == 1 
-    factor = factor[:3]
+  ndim = img.ndim
+  img = expand_dims(img, 4)
 
   factor = np.array(factor)
   if np.all(np.array(factor, int) == 1):
-      return data
+      return [ img ] * num_mips
+
+  if tuple(factor) in ( (2,2), (2,2,1), (2,2,1,1) ):
+    return tinybrain.accelerated.mode_pooling_2x2(img, num_mips=num_mips)
+
+  results = []
+  for mip in range(num_mips):
+    img = _downsample_segmentation(img, factor, sparse)
+    img = squeeze_dims(img, ndim)
+    results.append(img)
+
+  return results
+
+def _downsample_segmentation(data, factor, sparse=False):
+  if np.all(np.array(factor) == 1):
+    return data
 
   if data.dtype.kind not in ('u', 'i'): # integer types
     return downsample_with_striding(data, tuple(factor))
@@ -200,7 +231,7 @@ def downsample_segmentation(data, factor, sparse=False):
   # it's possible to write a 3d even to odd to make this 
   # work for all data shapes.
   if is_threed_pot_downsample and sum(modulo_shape) == 0: # power of two downsample on an even shape
-    return downsample_segmentation(countless3d(data), factor / 2)
+    return _downsample_segmentation(countless3d(data), factor / 2)
 
   if not is_twod_pot_downsample:
     return downsample_with_striding(data, tuple(factor))
@@ -242,12 +273,12 @@ def downsample_segmentation_2d(data, factor, sparse):
     for z in range(data.shape[2]):
       output[:,:,z,:] = countless2d(data[:,:,z,:])
 
-  factor = factor / 2
+  factor = np.array((factor / 2), dtype=np.int32)
   factor[preserved_axis] = 1
 
   output = np.swapaxes(output, preserved_axis, 2)
   
-  return downsample_segmentation(output, factor)
+  return _downsample_segmentation(output, factor)
 
 def countless2d(data):
   """
@@ -317,10 +348,14 @@ def stippled_countless2d(data):
 
 def countless3d(data):
   """return downsampled 2x2x2 data for even sided images."""
-  modshape = np.array(data.shape) % 2
-  assert sum(modshape) == 0, "COUNTLESS 3D currently only supports even sided images." # someone has to write even_to_odd3d
+  ndim = data.ndim
+  data = expand_dims(data, 4)
+  modshape = np.array(data.shape[:3]) % 2
+  if sum(modshape) != 0 or data.shape[3] != 1:
+    raise DimensionError("COUNTLESS 3D currently only supports even sided images.") # someone has to write even_to_odd3d
 
-  return countless(data, (2,2,2))
+  data = countless(data, (2,2,2))
+  return squeeze_dims(data, ndim)
 
 def countless(data, factor):
   """
@@ -426,3 +461,14 @@ def downsample_with_striding(array, factor):
     if np.all(np.array(factor, int) == 1):
       return array
     return array[tuple(np.s_[::f] for f in factor)]
+
+
+def expand_dims(img, ndim):
+  while img.ndim < ndim:
+    img = img[..., np.newaxis]
+  return img
+
+def squeeze_dims(img, ndim):
+  while img.ndim > ndim:
+    img = img[..., 0]
+  return img

@@ -21,9 +21,21 @@ import numpy as np
 cdef extern from "accelerated.hpp" namespace "accelerated":
   cdef U* accumulate_2x2[T, U](T* arr, size_t sx, size_t sy, size_t sz)
 
+def expand_dims(img, ndim):
+  while img.ndim < ndim:
+    img = img[..., np.newaxis]
+  return img
+
+def squeeze_dims(img, ndim):
+  while img.ndim > ndim:
+    img = img[..., 0]
+  return img
+
+### AVERAGE POOLING ####
+
 def average_pooling_2x2(channel, uint32_t num_mips=1):
-  while channel.ndim < 4:
-    channel = channel[..., np.newaxis]
+  ndim = channel.ndim
+  channel = expand_dims(channel, 4)
 
   cdef size_t sx = channel.shape[0]
   cdef size_t sy = channel.shape[1]
@@ -31,16 +43,22 @@ def average_pooling_2x2(channel, uint32_t num_mips=1):
   if min(sx, sy) <= 2 ** num_mips:
     raise ValueError("Can't downsample smaller than the smallest XY plane dimension.")
 
+  results = []
   if channel.dtype == np.uint8:
-    return _average_pooling_2x2_uint8(channel, num_mips)
+    results = _average_pooling_2x2_uint8(channel, num_mips)
   if channel.dtype == np.uint16:
-    return _average_pooling_2x2_uint16(channel, num_mips)
+    results = _average_pooling_2x2_uint16(channel, num_mips)
   elif channel.dtype == np.float32:
-    return _average_pooling_2x2_float(channel, num_mips)
+    results = _average_pooling_2x2_float(channel, num_mips)
   elif channel.dtype == np.float64:
-    return _average_pooling_2x2_double(channel, num_mips)
+    results = _average_pooling_2x2_double(channel, num_mips)
   else:
     raise TypeError("Unsupported data type: ", channel.dtype)
+
+  for i, img in enumerate(results):
+    results[i] = squeeze_dims(img, ndim)
+
+  return results
 
 def render_image_uint8(uint16_t[:] accum, uint32_t bitshift, size_t ovoxels):
   cdef np.ndarray[uint8_t, ndim=1] oimg = np.zeros( (ovoxels,), dtype=np.uint8 )
@@ -266,6 +284,7 @@ def _average_pooling_2x2_double(np.ndarray[double, ndim=4] channel, uint32_t num
 
   return results
 
+### MODE POOLING ####
 
 ctypedef fused NUMBER:
   uint8_t
@@ -280,13 +299,17 @@ ctypedef fused NUMBER:
   double
 
 def mode_pooling_2x2(img, uint32_t num_mips=1):
-  while img.ndim < 4:
-    img = img[..., np.newaxis]
+  ndim = img.ndim
+  img = expand_dims(img, 4)
 
   results = []
   for mip in range(num_mips):
     img = _mode_pooling_2x2(img)
     results.append(img)
+
+  for i, img in enumerate(results):
+    results[i] = squeeze_dims(img, ndim)
+
   return results
 
 def _mode_pooling_2x2(np.ndarray[NUMBER, ndim=4] img):
