@@ -220,7 +220,7 @@ def _downsample_segmentation(data, factor, sparse=False):
     return data
 
   if data.dtype.kind not in ('u', 'i'): # integer types
-    return downsample_with_striding(data, tuple(factor))
+    return downsample_with_striding(data, tuple(factor))[0]
 
   is_pot = lambda x: (x != 0) and not (x & (x - 1)) # is power of two
   is_twod_pot_downsample = np.any(factor == 1) and is_pot(reduce(operator.mul, factor))
@@ -234,7 +234,7 @@ def _downsample_segmentation(data, factor, sparse=False):
     return _downsample_segmentation(countless3d(data), factor / 2)
 
   if not is_twod_pot_downsample:
-    return downsample_with_striding(data, tuple(factor))
+    return downsample_with_striding(data, tuple(factor))[0]
 
   return downsample_segmentation_2d(data, factor, sparse)
 
@@ -449,20 +449,28 @@ def downgrade_type(arr):
   
   return arr
 
-def downsample_with_striding(array, factor): 
-    """
-    Downsample x by factor using striding.
+def downsample_with_striding(array, factor, num_mips=1): 
+  """
+  Downsample x by factor using striding.
 
-    If factor has fewer parameters than data.shape, the remainder
-    are assumed to be 1.
+  If factor has fewer parameters than data.shape, the remainder
+  are assumed to be 1.
 
-    @return: The downsampled array, of the same type as x.
-    """
-    factor = validate_factor(array, factor)
-    if np.all(np.array(factor, int) == 1):
-      return array
-    return array[tuple(np.s_[::f] for f in factor)]
+  @return: The downsampled array, of the same type as x.
+  """
+  ndim = array.ndim 
+  array = expand_dims(array, 4)
 
+  factor = validate_factor(array, factor)
+  if np.all(np.array(factor, int) == 1):
+    return []
+
+  results = []
+  for mip in range(num_mips):
+    array = array[tuple(np.s_[::f] for f in factor)]
+    results.append( squeeze_dims(array, ndim) )
+  
+  return results 
 
 def expand_dims(img, ndim):
   while img.ndim < ndim:
