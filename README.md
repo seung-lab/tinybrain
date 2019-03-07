@@ -2,7 +2,7 @@
 
 # tinybrain
 
-Image pyramid generation specialized for connectomics data types and procedures. 
+Image pyramid generation specialized for connectomics data types and procedures. If your brain wasn't tiny before, it will be now.  
 
 ```python 
 import tinybrain 
