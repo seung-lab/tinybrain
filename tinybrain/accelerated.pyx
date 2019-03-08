@@ -8,18 +8,24 @@ Date: March 2019
 
 cimport cython
 from cython cimport floating
+from cpython cimport PyObject, Py_INCREF
 from libc.stdint cimport (
   int8_t, int16_t, int32_t, int64_t,
   uint8_t, uint16_t, uint32_t, uint64_t,
 )
+import ctypes
 
+from libc.stdlib cimport malloc, free
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
 
 cimport numpy as np
 import numpy as np
+np.import_array()
 
 cdef extern from "accelerated.hpp" namespace "accelerated":
   cdef U* accumulate_2x2[T, U](T* arr, size_t sx, size_t sy, size_t sz)
+  cdef U* render_image[T, U](T* arr, U* oimg, uint32_t bitshift, size_t ovoxels)
+  cdef T* shift_eight[T](T* arr, size_t ovoxels)
 
 def expand_dims(img, ndim):
   while img.ndim < ndim:
@@ -60,13 +66,6 @@ def average_pooling_2x2(channel, uint32_t num_mips=1):
 
   return results
 
-def render_image_uint8(uint16_t[:] accum, uint32_t bitshift, size_t ovoxels):
-  cdef np.ndarray[uint8_t, ndim=1] oimg = np.zeros( (ovoxels,), dtype=np.uint8 )
-  cdef size_t i = 0
-  for i in range(ovoxels):
-    oimg[i] = <uint8_t>(accum[i] >> bitshift)
-  return oimg
-
 def render_image_uint16(uint32_t[:] accum, uint32_t bitshift, size_t ovoxels):
   cdef np.ndarray[uint16_t, ndim=1] oimg = np.zeros( (ovoxels,), dtype=np.uint16 )
   cdef size_t i = 0
@@ -106,16 +105,24 @@ def _average_pooling_2x2_uint8(np.ndarray[uint8_t, ndim=4] channel, uint32_t num
   cdef uint16_t* tmp
   cdef uint32_t mip, bitshift
 
+  cdef uint8_t[:] oimgview
+
   results = []
   for mip in range(num_mips):
     bitshift = 2 * ((mip % 4) + 1) # integer truncation every 4 mip levels
-    oimg = render_image_uint8(accumview, bitshift, ovoxels)
+    oimg = np.zeros( (ovoxels,), dtype=np.uint8, order='F')
+    oimgview = oimg
+    render_image[uint16_t, uint8_t](&accumview[0], &oimgview[0], bitshift, ovoxels)
+
     results.append(
       oimg.reshape( (osx, osy, sz, sw), order='F' )
     )
 
     if mip == num_mips - 1:
       break
+
+    if bitshift == 8:
+      shift_eight[uint16_t](accum, ovoxels)
 
     sx = osx 
     sy = osy 
@@ -124,10 +131,6 @@ def _average_pooling_2x2_uint8(np.ndarray[uint8_t, ndim=4] channel, uint32_t num
     osy = (sy + 1) // 2
     osxy = osx * osy
     ovoxels = osxy * sz * sw
-
-    if bitshift == 8:
-      for i in range(sx * sy * sz * sw):
-        accum[i] >>= 8
 
     tmp = accum 
     accum = accumulate_2x2[uint16_t, uint16_t](accum, sx, sy, sz, sw)

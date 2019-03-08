@@ -116,6 +116,22 @@ U* accumulate_2x2(
   return accum;
 }
 
+template <typename T, typename U>
+inline void render_image(T* accum, U* oimg, const uint32_t bitshift, const size_t ovoxels) {
+  for (size_t i = 0; i < ovoxels; i++) {
+    oimg[i] = (T)(accum[i] >> bitshift);
+  }
+}
+
+template <typename T>
+inline void shift_eight(T* accum, const size_t ovoxels) {
+  for (size_t i = 0; i < ovoxels; i++) {
+    accum[i] >>= 8;
+  }
+}
+
+
+
 };
 
 #endif
