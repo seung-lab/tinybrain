@@ -124,6 +124,13 @@ inline void render_image(T* accum, U* oimg, const uint32_t bitshift, const size_
 }
 
 template <typename T>
+inline void render_image_floating(T* accum, T* oimg, const T divisor, const size_t ovoxels) {
+  for (size_t i = 0; i < ovoxels; i++) {
+    oimg[i] = accum[i] / divisor;
+  }
+}
+
+template <typename T>
 inline void shift_eight(T* accum, const size_t ovoxels) {
   for (size_t i = 0; i < ovoxels; i++) {
     accum[i] >>= 8;

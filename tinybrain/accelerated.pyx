@@ -24,7 +24,8 @@ np.import_array()
 
 cdef extern from "accelerated.hpp" namespace "accelerated":
   cdef U* accumulate_2x2[T, U](T* arr, size_t sx, size_t sy, size_t sz)
-  cdef U* render_image[T, U](T* arr, U* oimg, uint32_t bitshift, size_t ovoxels)
+  cdef void render_image[T, U](T* arr, U* oimg, uint32_t bitshift, size_t ovoxels)
+  cdef void render_image_floating[T](T* arr, T* oimg, T divisor, size_t ovoxels)
   cdef T* shift_eight[T](T* arr, size_t ovoxels)
 
 def expand_dims(img, ndim):
@@ -65,27 +66,6 @@ def average_pooling_2x2(channel, uint32_t num_mips=1):
     results[i] = squeeze_dims(img, ndim)
 
   return results
-
-def render_image_uint16(uint32_t[:] accum, uint32_t bitshift, size_t ovoxels):
-  cdef np.ndarray[uint16_t, ndim=1] oimg = np.zeros( (ovoxels,), dtype=np.uint16 )
-  cdef size_t i = 0
-  for i in range(ovoxels):
-    oimg[i] = <uint16_t>(accum[i] >> bitshift)
-  return oimg
-
-def render_image_flt32(float[:] accum, float divisor, size_t ovoxels):
-  cdef np.ndarray[float, ndim=1] oimg = np.zeros( (ovoxels,), dtype=np.float32 )
-  cdef size_t i = 0
-  for i in range(ovoxels):
-    oimg[i] = <float>(accum[i] / divisor)
-  return oimg
-
-def render_image_flt64(double[:] accum, double divisor, size_t ovoxels):
-  cdef np.ndarray[double, ndim=1] oimg = np.zeros( (ovoxels,), dtype=np.float64 )
-  cdef size_t i = 0
-  for i in range(ovoxels):
-    oimg[i] = <double>(accum[i] / divisor)
-  return oimg
 
 def _average_pooling_2x2_uint8(np.ndarray[uint8_t, ndim=4] channel, uint32_t num_mips):
   cdef size_t sx = channel.shape[0]
@@ -159,16 +139,24 @@ def _average_pooling_2x2_uint16(np.ndarray[uint16_t, ndim=4] channel, uint32_t n
   cdef uint32_t* tmp
   cdef uint32_t mip, bitshift
 
+  cdef uint16_t[:] oimgview
+
   results = []
   for mip in range(num_mips):
     bitshift = 2 * ((mip % 4) + 1) # integer truncation every 4 mip levels
-    oimg = render_image_uint16(accumview, bitshift, ovoxels)
+    oimg = np.zeros( (ovoxels,), dtype=np.uint16, order='F')
+    oimgview = oimg
+    render_image[uint32_t, uint16_t](&accumview[0], &oimgview[0], bitshift, ovoxels)
+
     results.append(
       oimg.reshape( (osx, osy, sz, sw), order='F' )
     )
 
     if mip == num_mips - 1:
       break
+
+    if bitshift == 8:
+      shift_eight[uint32_t](accum, ovoxels)
 
     sx = osx 
     sy = osy 
@@ -177,10 +165,6 @@ def _average_pooling_2x2_uint16(np.ndarray[uint16_t, ndim=4] channel, uint32_t n
     osy = (sy + 1) // 2
     osxy = osx * osy
     ovoxels = osxy * sz * sw
-
-    if bitshift == 8:
-      for i in range(sx * sy * sz * sw):
-        accum[i] >>= 8
 
     tmp = accum 
     accum = accumulate_2x2[uint32_t, uint32_t](accum, sx, sy, sz, sw)
@@ -210,11 +194,15 @@ def _average_pooling_2x2_float(np.ndarray[float, ndim=4] channel, uint32_t num_m
   cdef uint32_t mip
 
   cdef float divisor = 1.0
+  cdef float[:] oimgview
 
   results = []
   for mip in range(num_mips):
     divisor = 4.0 ** (mip+1)
-    oimg = render_image_flt32(accumview, divisor, ovoxels)
+    oimg = np.zeros( (ovoxels,), dtype=np.float32, order='F')
+    oimgview = oimg
+    render_image_floating[float](&accumview[0], &oimgview[0], divisor, ovoxels)
+
     results.append(
       oimg.reshape( (osx, osy, sz, sw), order='F' )
     )
@@ -258,11 +246,15 @@ def _average_pooling_2x2_double(np.ndarray[double, ndim=4] channel, uint32_t num
   cdef uint32_t mip
 
   cdef double divisor = 1.0
+  cdef double[:] oimgview
 
   results = []
   for mip in range(num_mips):
     divisor = 4.0 ** (mip+1)
-    oimg = render_image_flt64(accumview, divisor, ovoxels)
+    oimg = np.zeros( (ovoxels,), dtype=np.float64, order='F')
+    oimgview = oimg
+    render_image_floating[double](&accumview[0], &oimgview[0], divisor, ovoxels)
+
     results.append(
       oimg.reshape( (osx, osy, sz, sw), order='F' )
     )
