@@ -1,6 +1,19 @@
 CHANGES
 =======
 
+0.1.0
+-----
+
+* chore: bump version to 0.1.0
+* fix: compiler integer comparison warning
+* docs: updated performance measures for averaging
+* perf: enhancements to uint16, float32, and float64 downsample\_with\_averaging
+* perf: ~25% faster downsample with averaging
+* docs: add link to article on sparse downsampling
+* docs: make sure PyPI License is GPL v3+ (currently None)
+* fix: downsample\_with\_striding should support num\_mips
+* docs: add installation instructions
+
 0.0.1
 -----
 
