@@ -2159,7 +2159,7 @@ static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_dsdsds
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value);
 
 /* None.proto */
-static CYTHON_INLINE long __Pyx_pow_long(long, long);
+static CYTHON_INLINE size_t __Pyx_pow_size_t(size_t, size_t);
 
 /* CIntToPy.proto */
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_uint32_t(uint32_t value);
@@ -2282,10 +2282,10 @@ struct __pyx_typeinfo_string {
 static struct __pyx_typeinfo_string __Pyx_TypeInfoToFormat(__Pyx_TypeInfo *type);
 
 /* CIntFromPy.proto */
-static CYTHON_INLINE uint32_t __Pyx_PyInt_As_uint32_t(PyObject *);
+static CYTHON_INLINE size_t __Pyx_PyInt_As_size_t(PyObject *);
 
 /* CIntFromPy.proto */
-static CYTHON_INLINE size_t __Pyx_PyInt_As_size_t(PyObject *);
+static CYTHON_INLINE uint32_t __Pyx_PyInt_As_uint32_t(PyObject *);
 
 /* BytesContains.proto */
 static CYTHON_INLINE int __Pyx_BytesContains(PyObject* bytes, char character);
@@ -2883,7 +2883,7 @@ static PyObject *__pyx_n_s_z;
 static PyObject *__pyx_n_s_zeros;
 static PyObject *__pyx_pf_9tinybrain_11accelerated_expand_dims(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, PyObject *__pyx_v_ndim); /* proto */
 static PyObject *__pyx_pf_9tinybrain_11accelerated_2squeeze_dims(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_img, PyObject *__pyx_v_ndim); /* proto */
-static PyObject *__pyx_pf_9tinybrain_11accelerated_4average_pooling_2x2(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_channel, uint32_t __pyx_v_num_mips); /* proto */
+static PyObject *__pyx_pf_9tinybrain_11accelerated_4average_pooling_2x2(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_channel, size_t __pyx_v_num_mips); /* proto */
 static PyObject *__pyx_pf_9tinybrain_11accelerated_6_average_pooling_2x2_uint8(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_channel, uint32_t __pyx_v_num_mips); /* proto */
 static PyObject *__pyx_pf_9tinybrain_11accelerated_8_average_pooling_2x2_uint16(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_channel, uint32_t __pyx_v_num_mips); /* proto */
 static PyObject *__pyx_pf_9tinybrain_11accelerated_10_average_pooling_2x2_float(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_channel, uint32_t __pyx_v_num_mips); /* proto */
@@ -3308,7 +3308,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_2squeeze_dims(CYTHON_UNUSED P
 /* "tinybrain/accelerated.pyx":43
  * ### AVERAGE POOLING ####
  * 
- * def average_pooling_2x2(channel, uint32_t num_mips=1):             # <<<<<<<<<<<<<<
+ * def average_pooling_2x2(channel, size_t num_mips=1):             # <<<<<<<<<<<<<<
  *   ndim = channel.ndim
  *   channel = expand_dims(channel, 4)
  */
@@ -3318,7 +3318,7 @@ static PyObject *__pyx_pw_9tinybrain_11accelerated_5average_pooling_2x2(PyObject
 static PyMethodDef __pyx_mdef_9tinybrain_11accelerated_5average_pooling_2x2 = {"average_pooling_2x2", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_9tinybrain_11accelerated_5average_pooling_2x2, METH_VARARGS|METH_KEYWORDS, 0};
 static PyObject *__pyx_pw_9tinybrain_11accelerated_5average_pooling_2x2(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_channel = 0;
-  uint32_t __pyx_v_num_mips;
+  size_t __pyx_v_num_mips;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("average_pooling_2x2 (wrapper)", 0);
@@ -3362,9 +3362,9 @@ static PyObject *__pyx_pw_9tinybrain_11accelerated_5average_pooling_2x2(PyObject
     }
     __pyx_v_channel = values[0];
     if (values[1]) {
-      __pyx_v_num_mips = __Pyx_PyInt_As_uint32_t(values[1]); if (unlikely((__pyx_v_num_mips == ((uint32_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 43, __pyx_L3_error)
+      __pyx_v_num_mips = __Pyx_PyInt_As_size_t(values[1]); if (unlikely((__pyx_v_num_mips == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 43, __pyx_L3_error)
     } else {
-      __pyx_v_num_mips = ((uint32_t)1);
+      __pyx_v_num_mips = ((size_t)1);
     }
   }
   goto __pyx_L4_argument_unpacking_done;
@@ -3382,7 +3382,7 @@ static PyObject *__pyx_pw_9tinybrain_11accelerated_5average_pooling_2x2(PyObject
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9tinybrain_11accelerated_4average_pooling_2x2(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_channel, uint32_t __pyx_v_num_mips) {
+static PyObject *__pyx_pf_9tinybrain_11accelerated_4average_pooling_2x2(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_channel, size_t __pyx_v_num_mips) {
   PyObject *__pyx_v_ndim = NULL;
   size_t __pyx_v_sx;
   size_t __pyx_v_sy;
@@ -3409,7 +3409,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_4average_pooling_2x2(CYTHON_U
 
   /* "tinybrain/accelerated.pyx":44
  * 
- * def average_pooling_2x2(channel, uint32_t num_mips=1):
+ * def average_pooling_2x2(channel, size_t num_mips=1):
  *   ndim = channel.ndim             # <<<<<<<<<<<<<<
  *   channel = expand_dims(channel, 4)
  * 
@@ -3420,7 +3420,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_4average_pooling_2x2(CYTHON_U
   __pyx_t_1 = 0;
 
   /* "tinybrain/accelerated.pyx":45
- * def average_pooling_2x2(channel, uint32_t num_mips=1):
+ * def average_pooling_2x2(channel, size_t num_mips=1):
  *   ndim = channel.ndim
  *   channel = expand_dims(channel, 4)             # <<<<<<<<<<<<<<
  * 
@@ -3497,7 +3497,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_4average_pooling_2x2(CYTHON_U
  *   cdef size_t sx = channel.shape[0]
  *   cdef size_t sy = channel.shape[1]             # <<<<<<<<<<<<<<
  * 
- *   if min(sx, sy) <= 2 ** num_mips:
+ *   if min(sx, sy) <= <size_t>(2 ** num_mips):
  */
   __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_channel, __pyx_n_s_shape); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 48, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
@@ -3511,7 +3511,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_4average_pooling_2x2(CYTHON_U
   /* "tinybrain/accelerated.pyx":50
  *   cdef size_t sy = channel.shape[1]
  * 
- *   if min(sx, sy) <= 2 ** num_mips:             # <<<<<<<<<<<<<<
+ *   if min(sx, sy) <= <size_t>(2 ** num_mips):             # <<<<<<<<<<<<<<
  *     raise ValueError("Can't downsample smaller than the smallest XY plane dimension.")
  * 
  */
@@ -3522,12 +3522,12 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_4average_pooling_2x2(CYTHON_U
   } else {
     __pyx_t_8 = __pyx_t_7;
   }
-  __pyx_t_9 = ((__pyx_t_8 <= __Pyx_pow_long(2, ((long)__pyx_v_num_mips))) != 0);
+  __pyx_t_9 = ((__pyx_t_8 <= ((size_t)__Pyx_pow_size_t(2, __pyx_v_num_mips))) != 0);
   if (unlikely(__pyx_t_9)) {
 
     /* "tinybrain/accelerated.pyx":51
  * 
- *   if min(sx, sy) <= 2 ** num_mips:
+ *   if min(sx, sy) <= <size_t>(2 ** num_mips):
  *     raise ValueError("Can't downsample smaller than the smallest XY plane dimension.")             # <<<<<<<<<<<<<<
  * 
  *   results = []
@@ -3541,7 +3541,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_4average_pooling_2x2(CYTHON_U
     /* "tinybrain/accelerated.pyx":50
  *   cdef size_t sy = channel.shape[1]
  * 
- *   if min(sx, sy) <= 2 ** num_mips:             # <<<<<<<<<<<<<<
+ *   if min(sx, sy) <= <size_t>(2 ** num_mips):             # <<<<<<<<<<<<<<
  *     raise ValueError("Can't downsample smaller than the smallest XY plane dimension.")
  * 
  */
@@ -3589,7 +3589,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_4average_pooling_2x2(CYTHON_U
  */
     __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_average_pooling_2x2_uint8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 55, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_1 = __Pyx_PyInt_From_uint32_t(__pyx_v_num_mips); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 55, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_num_mips); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 55, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __pyx_t_3 = NULL;
     __pyx_t_4 = 0;
@@ -3681,7 +3681,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_4average_pooling_2x2(CYTHON_U
  */
     __Pyx_GetModuleGlobalName(__pyx_t_10, __pyx_n_s_average_pooling_2x2_uint16); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 57, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_10);
-    __pyx_t_2 = __Pyx_PyInt_From_uint32_t(__pyx_v_num_mips); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 57, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyInt_FromSize_t(__pyx_v_num_mips); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 57, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_t_1 = NULL;
     __pyx_t_4 = 0;
@@ -3773,7 +3773,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_4average_pooling_2x2(CYTHON_U
  */
     __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_average_pooling_2x2_float); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 59, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_5 = __Pyx_PyInt_From_uint32_t(__pyx_v_num_mips); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 59, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyInt_FromSize_t(__pyx_v_num_mips); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 59, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __pyx_t_2 = NULL;
     __pyx_t_4 = 0;
@@ -3865,7 +3865,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_4average_pooling_2x2(CYTHON_U
  */
     __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_average_pooling_2x2_double); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 61, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_10 = __Pyx_PyInt_From_uint32_t(__pyx_v_num_mips); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 61, __pyx_L1_error)
+    __pyx_t_10 = __Pyx_PyInt_FromSize_t(__pyx_v_num_mips); if (unlikely(!__pyx_t_10)) __PYX_ERR(0, 61, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_10);
     __pyx_t_5 = NULL;
     __pyx_t_4 = 0;
@@ -4095,7 +4095,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_4average_pooling_2x2(CYTHON_U
   /* "tinybrain/accelerated.pyx":43
  * ### AVERAGE POOLING ####
  * 
- * def average_pooling_2x2(channel, uint32_t num_mips=1):             # <<<<<<<<<<<<<<
+ * def average_pooling_2x2(channel, size_t num_mips=1):             # <<<<<<<<<<<<<<
  *   ndim = channel.ndim
  *   channel = expand_dims(channel, 4)
  */
@@ -33666,7 +33666,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
 
   /* "tinybrain/accelerated.pyx":51
  * 
- *   if min(sx, sy) <= 2 ** num_mips:
+ *   if min(sx, sy) <= <size_t>(2 ** num_mips):
  *     raise ValueError("Can't downsample smaller than the smallest XY plane dimension.")             # <<<<<<<<<<<<<<
  * 
  *   results = []
@@ -33985,7 +33985,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   /* "tinybrain/accelerated.pyx":43
  * ### AVERAGE POOLING ####
  * 
- * def average_pooling_2x2(channel, uint32_t num_mips=1):             # <<<<<<<<<<<<<<
+ * def average_pooling_2x2(channel, size_t num_mips=1):             # <<<<<<<<<<<<<<
  *   ndim = channel.ndim
  *   channel = expand_dims(channel, 4)
  */
@@ -34565,7 +34565,7 @@ if (!__Pyx_RefNanny) {
   /* "tinybrain/accelerated.pyx":43
  * ### AVERAGE POOLING ####
  * 
- * def average_pooling_2x2(channel, uint32_t num_mips=1):             # <<<<<<<<<<<<<<
+ * def average_pooling_2x2(channel, size_t num_mips=1):             # <<<<<<<<<<<<<<
  *   ndim = channel.ndim
  *   channel = expand_dims(channel, 4)
  */
@@ -39708,8 +39708,8 @@ __pyx_fail:
 }
 
 /* None */
-  static CYTHON_INLINE long __Pyx_pow_long(long b, long e) {
-    long t = b;
+  static CYTHON_INLINE size_t __Pyx_pow_size_t(size_t b, size_t e) {
+    size_t t = b;
     switch (e) {
         case 3:
             t *= b;
@@ -39722,7 +39722,7 @@ __pyx_fail:
         case 0:
             return 1;
     }
-    #if 1
+    #if 0
     if (unlikely(e<0)) return 0;
     #endif
     t = 1;
@@ -40249,195 +40249,6 @@ no_fail:
 }
 
 /* CIntFromPy */
-  static CYTHON_INLINE uint32_t __Pyx_PyInt_As_uint32_t(PyObject *x) {
-    const uint32_t neg_one = (uint32_t) ((uint32_t) 0 - (uint32_t) 1), const_zero = (uint32_t) 0;
-    const int is_unsigned = neg_one > const_zero;
-#if PY_MAJOR_VERSION < 3
-    if (likely(PyInt_Check(x))) {
-        if (sizeof(uint32_t) < sizeof(long)) {
-            __PYX_VERIFY_RETURN_INT(uint32_t, long, PyInt_AS_LONG(x))
-        } else {
-            long val = PyInt_AS_LONG(x);
-            if (is_unsigned && unlikely(val < 0)) {
-                goto raise_neg_overflow;
-            }
-            return (uint32_t) val;
-        }
-    } else
-#endif
-    if (likely(PyLong_Check(x))) {
-        if (is_unsigned) {
-#if CYTHON_USE_PYLONG_INTERNALS
-            const digit* digits = ((PyLongObject*)x)->ob_digit;
-            switch (Py_SIZE(x)) {
-                case  0: return (uint32_t) 0;
-                case  1: __PYX_VERIFY_RETURN_INT(uint32_t, digit, digits[0])
-                case 2:
-                    if (8 * sizeof(uint32_t) > 1 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(uint32_t, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
-                        } else if (8 * sizeof(uint32_t) >= 2 * PyLong_SHIFT) {
-                            return (uint32_t) (((((uint32_t)digits[1]) << PyLong_SHIFT) | (uint32_t)digits[0]));
-                        }
-                    }
-                    break;
-                case 3:
-                    if (8 * sizeof(uint32_t) > 2 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(uint32_t, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
-                        } else if (8 * sizeof(uint32_t) >= 3 * PyLong_SHIFT) {
-                            return (uint32_t) (((((((uint32_t)digits[2]) << PyLong_SHIFT) | (uint32_t)digits[1]) << PyLong_SHIFT) | (uint32_t)digits[0]));
-                        }
-                    }
-                    break;
-                case 4:
-                    if (8 * sizeof(uint32_t) > 3 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(uint32_t, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
-                        } else if (8 * sizeof(uint32_t) >= 4 * PyLong_SHIFT) {
-                            return (uint32_t) (((((((((uint32_t)digits[3]) << PyLong_SHIFT) | (uint32_t)digits[2]) << PyLong_SHIFT) | (uint32_t)digits[1]) << PyLong_SHIFT) | (uint32_t)digits[0]));
-                        }
-                    }
-                    break;
-            }
-#endif
-#if CYTHON_COMPILING_IN_CPYTHON
-            if (unlikely(Py_SIZE(x) < 0)) {
-                goto raise_neg_overflow;
-            }
-#else
-            {
-                int result = PyObject_RichCompareBool(x, Py_False, Py_LT);
-                if (unlikely(result < 0))
-                    return (uint32_t) -1;
-                if (unlikely(result == 1))
-                    goto raise_neg_overflow;
-            }
-#endif
-            if (sizeof(uint32_t) <= sizeof(unsigned long)) {
-                __PYX_VERIFY_RETURN_INT_EXC(uint32_t, unsigned long, PyLong_AsUnsignedLong(x))
-#ifdef HAVE_LONG_LONG
-            } else if (sizeof(uint32_t) <= sizeof(unsigned PY_LONG_LONG)) {
-                __PYX_VERIFY_RETURN_INT_EXC(uint32_t, unsigned PY_LONG_LONG, PyLong_AsUnsignedLongLong(x))
-#endif
-            }
-        } else {
-#if CYTHON_USE_PYLONG_INTERNALS
-            const digit* digits = ((PyLongObject*)x)->ob_digit;
-            switch (Py_SIZE(x)) {
-                case  0: return (uint32_t) 0;
-                case -1: __PYX_VERIFY_RETURN_INT(uint32_t, sdigit, (sdigit) (-(sdigit)digits[0]))
-                case  1: __PYX_VERIFY_RETURN_INT(uint32_t,  digit, +digits[0])
-                case -2:
-                    if (8 * sizeof(uint32_t) - 1 > 1 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(uint32_t, long, -(long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
-                        } else if (8 * sizeof(uint32_t) - 1 > 2 * PyLong_SHIFT) {
-                            return (uint32_t) (((uint32_t)-1)*(((((uint32_t)digits[1]) << PyLong_SHIFT) | (uint32_t)digits[0])));
-                        }
-                    }
-                    break;
-                case 2:
-                    if (8 * sizeof(uint32_t) > 1 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(uint32_t, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
-                        } else if (8 * sizeof(uint32_t) - 1 > 2 * PyLong_SHIFT) {
-                            return (uint32_t) ((((((uint32_t)digits[1]) << PyLong_SHIFT) | (uint32_t)digits[0])));
-                        }
-                    }
-                    break;
-                case -3:
-                    if (8 * sizeof(uint32_t) - 1 > 2 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(uint32_t, long, -(long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
-                        } else if (8 * sizeof(uint32_t) - 1 > 3 * PyLong_SHIFT) {
-                            return (uint32_t) (((uint32_t)-1)*(((((((uint32_t)digits[2]) << PyLong_SHIFT) | (uint32_t)digits[1]) << PyLong_SHIFT) | (uint32_t)digits[0])));
-                        }
-                    }
-                    break;
-                case 3:
-                    if (8 * sizeof(uint32_t) > 2 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(uint32_t, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
-                        } else if (8 * sizeof(uint32_t) - 1 > 3 * PyLong_SHIFT) {
-                            return (uint32_t) ((((((((uint32_t)digits[2]) << PyLong_SHIFT) | (uint32_t)digits[1]) << PyLong_SHIFT) | (uint32_t)digits[0])));
-                        }
-                    }
-                    break;
-                case -4:
-                    if (8 * sizeof(uint32_t) - 1 > 3 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(uint32_t, long, -(long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
-                        } else if (8 * sizeof(uint32_t) - 1 > 4 * PyLong_SHIFT) {
-                            return (uint32_t) (((uint32_t)-1)*(((((((((uint32_t)digits[3]) << PyLong_SHIFT) | (uint32_t)digits[2]) << PyLong_SHIFT) | (uint32_t)digits[1]) << PyLong_SHIFT) | (uint32_t)digits[0])));
-                        }
-                    }
-                    break;
-                case 4:
-                    if (8 * sizeof(uint32_t) > 3 * PyLong_SHIFT) {
-                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
-                            __PYX_VERIFY_RETURN_INT(uint32_t, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
-                        } else if (8 * sizeof(uint32_t) - 1 > 4 * PyLong_SHIFT) {
-                            return (uint32_t) ((((((((((uint32_t)digits[3]) << PyLong_SHIFT) | (uint32_t)digits[2]) << PyLong_SHIFT) | (uint32_t)digits[1]) << PyLong_SHIFT) | (uint32_t)digits[0])));
-                        }
-                    }
-                    break;
-            }
-#endif
-            if (sizeof(uint32_t) <= sizeof(long)) {
-                __PYX_VERIFY_RETURN_INT_EXC(uint32_t, long, PyLong_AsLong(x))
-#ifdef HAVE_LONG_LONG
-            } else if (sizeof(uint32_t) <= sizeof(PY_LONG_LONG)) {
-                __PYX_VERIFY_RETURN_INT_EXC(uint32_t, PY_LONG_LONG, PyLong_AsLongLong(x))
-#endif
-            }
-        }
-        {
-#if CYTHON_COMPILING_IN_PYPY && !defined(_PyLong_AsByteArray)
-            PyErr_SetString(PyExc_RuntimeError,
-                            "_PyLong_AsByteArray() not available in PyPy, cannot convert large numbers");
-#else
-            uint32_t val;
-            PyObject *v = __Pyx_PyNumber_IntOrLong(x);
- #if PY_MAJOR_VERSION < 3
-            if (likely(v) && !PyLong_Check(v)) {
-                PyObject *tmp = v;
-                v = PyNumber_Long(tmp);
-                Py_DECREF(tmp);
-            }
- #endif
-            if (likely(v)) {
-                int one = 1; int is_little = (int)*(unsigned char *)&one;
-                unsigned char *bytes = (unsigned char *)&val;
-                int ret = _PyLong_AsByteArray((PyLongObject *)v,
-                                              bytes, sizeof(val),
-                                              is_little, !is_unsigned);
-                Py_DECREF(v);
-                if (likely(!ret))
-                    return val;
-            }
-#endif
-            return (uint32_t) -1;
-        }
-    } else {
-        uint32_t val;
-        PyObject *tmp = __Pyx_PyNumber_IntOrLong(x);
-        if (!tmp) return (uint32_t) -1;
-        val = __Pyx_PyInt_As_uint32_t(tmp);
-        Py_DECREF(tmp);
-        return val;
-    }
-raise_overflow:
-    PyErr_SetString(PyExc_OverflowError,
-        "value too large to convert to uint32_t");
-    return (uint32_t) -1;
-raise_neg_overflow:
-    PyErr_SetString(PyExc_OverflowError,
-        "can't convert negative value to uint32_t");
-    return (uint32_t) -1;
-}
-
-/* CIntFromPy */
   static CYTHON_INLINE size_t __Pyx_PyInt_As_size_t(PyObject *x) {
     const size_t neg_one = (size_t) ((size_t) 0 - (size_t) 1), const_zero = (size_t) 0;
     const int is_unsigned = neg_one > const_zero;
@@ -40624,6 +40435,195 @@ raise_neg_overflow:
     PyErr_SetString(PyExc_OverflowError,
         "can't convert negative value to size_t");
     return (size_t) -1;
+}
+
+/* CIntFromPy */
+  static CYTHON_INLINE uint32_t __Pyx_PyInt_As_uint32_t(PyObject *x) {
+    const uint32_t neg_one = (uint32_t) ((uint32_t) 0 - (uint32_t) 1), const_zero = (uint32_t) 0;
+    const int is_unsigned = neg_one > const_zero;
+#if PY_MAJOR_VERSION < 3
+    if (likely(PyInt_Check(x))) {
+        if (sizeof(uint32_t) < sizeof(long)) {
+            __PYX_VERIFY_RETURN_INT(uint32_t, long, PyInt_AS_LONG(x))
+        } else {
+            long val = PyInt_AS_LONG(x);
+            if (is_unsigned && unlikely(val < 0)) {
+                goto raise_neg_overflow;
+            }
+            return (uint32_t) val;
+        }
+    } else
+#endif
+    if (likely(PyLong_Check(x))) {
+        if (is_unsigned) {
+#if CYTHON_USE_PYLONG_INTERNALS
+            const digit* digits = ((PyLongObject*)x)->ob_digit;
+            switch (Py_SIZE(x)) {
+                case  0: return (uint32_t) 0;
+                case  1: __PYX_VERIFY_RETURN_INT(uint32_t, digit, digits[0])
+                case 2:
+                    if (8 * sizeof(uint32_t) > 1 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(uint32_t, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(uint32_t) >= 2 * PyLong_SHIFT) {
+                            return (uint32_t) (((((uint32_t)digits[1]) << PyLong_SHIFT) | (uint32_t)digits[0]));
+                        }
+                    }
+                    break;
+                case 3:
+                    if (8 * sizeof(uint32_t) > 2 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(uint32_t, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(uint32_t) >= 3 * PyLong_SHIFT) {
+                            return (uint32_t) (((((((uint32_t)digits[2]) << PyLong_SHIFT) | (uint32_t)digits[1]) << PyLong_SHIFT) | (uint32_t)digits[0]));
+                        }
+                    }
+                    break;
+                case 4:
+                    if (8 * sizeof(uint32_t) > 3 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(uint32_t, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(uint32_t) >= 4 * PyLong_SHIFT) {
+                            return (uint32_t) (((((((((uint32_t)digits[3]) << PyLong_SHIFT) | (uint32_t)digits[2]) << PyLong_SHIFT) | (uint32_t)digits[1]) << PyLong_SHIFT) | (uint32_t)digits[0]));
+                        }
+                    }
+                    break;
+            }
+#endif
+#if CYTHON_COMPILING_IN_CPYTHON
+            if (unlikely(Py_SIZE(x) < 0)) {
+                goto raise_neg_overflow;
+            }
+#else
+            {
+                int result = PyObject_RichCompareBool(x, Py_False, Py_LT);
+                if (unlikely(result < 0))
+                    return (uint32_t) -1;
+                if (unlikely(result == 1))
+                    goto raise_neg_overflow;
+            }
+#endif
+            if (sizeof(uint32_t) <= sizeof(unsigned long)) {
+                __PYX_VERIFY_RETURN_INT_EXC(uint32_t, unsigned long, PyLong_AsUnsignedLong(x))
+#ifdef HAVE_LONG_LONG
+            } else if (sizeof(uint32_t) <= sizeof(unsigned PY_LONG_LONG)) {
+                __PYX_VERIFY_RETURN_INT_EXC(uint32_t, unsigned PY_LONG_LONG, PyLong_AsUnsignedLongLong(x))
+#endif
+            }
+        } else {
+#if CYTHON_USE_PYLONG_INTERNALS
+            const digit* digits = ((PyLongObject*)x)->ob_digit;
+            switch (Py_SIZE(x)) {
+                case  0: return (uint32_t) 0;
+                case -1: __PYX_VERIFY_RETURN_INT(uint32_t, sdigit, (sdigit) (-(sdigit)digits[0]))
+                case  1: __PYX_VERIFY_RETURN_INT(uint32_t,  digit, +digits[0])
+                case -2:
+                    if (8 * sizeof(uint32_t) - 1 > 1 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(uint32_t, long, -(long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(uint32_t) - 1 > 2 * PyLong_SHIFT) {
+                            return (uint32_t) (((uint32_t)-1)*(((((uint32_t)digits[1]) << PyLong_SHIFT) | (uint32_t)digits[0])));
+                        }
+                    }
+                    break;
+                case 2:
+                    if (8 * sizeof(uint32_t) > 1 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(uint32_t, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(uint32_t) - 1 > 2 * PyLong_SHIFT) {
+                            return (uint32_t) ((((((uint32_t)digits[1]) << PyLong_SHIFT) | (uint32_t)digits[0])));
+                        }
+                    }
+                    break;
+                case -3:
+                    if (8 * sizeof(uint32_t) - 1 > 2 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(uint32_t, long, -(long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(uint32_t) - 1 > 3 * PyLong_SHIFT) {
+                            return (uint32_t) (((uint32_t)-1)*(((((((uint32_t)digits[2]) << PyLong_SHIFT) | (uint32_t)digits[1]) << PyLong_SHIFT) | (uint32_t)digits[0])));
+                        }
+                    }
+                    break;
+                case 3:
+                    if (8 * sizeof(uint32_t) > 2 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(uint32_t, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(uint32_t) - 1 > 3 * PyLong_SHIFT) {
+                            return (uint32_t) ((((((((uint32_t)digits[2]) << PyLong_SHIFT) | (uint32_t)digits[1]) << PyLong_SHIFT) | (uint32_t)digits[0])));
+                        }
+                    }
+                    break;
+                case -4:
+                    if (8 * sizeof(uint32_t) - 1 > 3 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(uint32_t, long, -(long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(uint32_t) - 1 > 4 * PyLong_SHIFT) {
+                            return (uint32_t) (((uint32_t)-1)*(((((((((uint32_t)digits[3]) << PyLong_SHIFT) | (uint32_t)digits[2]) << PyLong_SHIFT) | (uint32_t)digits[1]) << PyLong_SHIFT) | (uint32_t)digits[0])));
+                        }
+                    }
+                    break;
+                case 4:
+                    if (8 * sizeof(uint32_t) > 3 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(uint32_t, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(uint32_t) - 1 > 4 * PyLong_SHIFT) {
+                            return (uint32_t) ((((((((((uint32_t)digits[3]) << PyLong_SHIFT) | (uint32_t)digits[2]) << PyLong_SHIFT) | (uint32_t)digits[1]) << PyLong_SHIFT) | (uint32_t)digits[0])));
+                        }
+                    }
+                    break;
+            }
+#endif
+            if (sizeof(uint32_t) <= sizeof(long)) {
+                __PYX_VERIFY_RETURN_INT_EXC(uint32_t, long, PyLong_AsLong(x))
+#ifdef HAVE_LONG_LONG
+            } else if (sizeof(uint32_t) <= sizeof(PY_LONG_LONG)) {
+                __PYX_VERIFY_RETURN_INT_EXC(uint32_t, PY_LONG_LONG, PyLong_AsLongLong(x))
+#endif
+            }
+        }
+        {
+#if CYTHON_COMPILING_IN_PYPY && !defined(_PyLong_AsByteArray)
+            PyErr_SetString(PyExc_RuntimeError,
+                            "_PyLong_AsByteArray() not available in PyPy, cannot convert large numbers");
+#else
+            uint32_t val;
+            PyObject *v = __Pyx_PyNumber_IntOrLong(x);
+ #if PY_MAJOR_VERSION < 3
+            if (likely(v) && !PyLong_Check(v)) {
+                PyObject *tmp = v;
+                v = PyNumber_Long(tmp);
+                Py_DECREF(tmp);
+            }
+ #endif
+            if (likely(v)) {
+                int one = 1; int is_little = (int)*(unsigned char *)&one;
+                unsigned char *bytes = (unsigned char *)&val;
+                int ret = _PyLong_AsByteArray((PyLongObject *)v,
+                                              bytes, sizeof(val),
+                                              is_little, !is_unsigned);
+                Py_DECREF(v);
+                if (likely(!ret))
+                    return val;
+            }
+#endif
+            return (uint32_t) -1;
+        }
+    } else {
+        uint32_t val;
+        PyObject *tmp = __Pyx_PyNumber_IntOrLong(x);
+        if (!tmp) return (uint32_t) -1;
+        val = __Pyx_PyInt_As_uint32_t(tmp);
+        Py_DECREF(tmp);
+        return val;
+    }
+raise_overflow:
+    PyErr_SetString(PyExc_OverflowError,
+        "value too large to convert to uint32_t");
+    return (uint32_t) -1;
+raise_neg_overflow:
+    PyErr_SetString(PyExc_OverflowError,
+        "can't convert negative value to uint32_t");
+    return (uint32_t) -1;
 }
 
 /* BytesContains */

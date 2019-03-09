@@ -40,14 +40,14 @@ def squeeze_dims(img, ndim):
 
 ### AVERAGE POOLING ####
 
-def average_pooling_2x2(channel, uint32_t num_mips=1):
+def average_pooling_2x2(channel, size_t num_mips=1):
   ndim = channel.ndim
   channel = expand_dims(channel, 4)
 
   cdef size_t sx = channel.shape[0]
   cdef size_t sy = channel.shape[1]
 
-  if min(sx, sy) <= 2 ** num_mips:
+  if min(sx, sy) <= <size_t>(2 ** num_mips):
     raise ValueError("Can't downsample smaller than the smallest XY plane dimension.")
 
   results = []
