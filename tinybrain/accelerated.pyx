@@ -23,7 +23,8 @@ import numpy as np
 np.import_array()
 
 cdef extern from "accelerated.hpp" namespace "accelerated":
-  cdef U* accumulate_2x2[T, U](T* arr, size_t sx, size_t sy, size_t sz)
+  cdef U* accumulate_2x2[T, U](T* arr, size_t sx, size_t sy, size_t sz, size_t sw)
+  cdef float* accumulate_2x2f(float* arr, size_t sx, size_t sy, size_t sz, size_t sw)
   cdef void render_image[T, U](T* arr, U* oimg, uint32_t bitshift, size_t ovoxels)
   cdef void render_image_floating[T](T* arr, T* oimg, T divisor, size_t ovoxels)
   cdef T* shift_eight[T](T* arr, size_t ovoxels)
@@ -188,7 +189,7 @@ def _average_pooling_2x2_float(np.ndarray[float, ndim=4] channel, uint32_t num_m
   cdef size_t ovoxels = osxy * sz * sw
 
   cdef float[:,:,:,:] channelview = channel
-  cdef float* accum = accumulate_2x2[float, float](&channelview[0,0,0,0], sx, sy, sz, sw)
+  cdef float* accum = accumulate_2x2f(&channelview[0,0,0,0], sx, sy, sz, sw)
   cdef float[:] accumview = <float[:ovoxels]>accum
   cdef float* tmp
   cdef uint32_t mip
@@ -219,7 +220,7 @@ def _average_pooling_2x2_float(np.ndarray[float, ndim=4] channel, uint32_t num_m
     ovoxels = osxy * sz * sw
 
     tmp = accum 
-    accum = accumulate_2x2[float, float](accum, sx, sy, sz, sw)
+    accum = accumulate_2x2f(accum, sx, sy, sz, sw)
     accumview = <float[:ovoxels]>accum
     PyMem_Free(tmp)
 
