@@ -81,11 +81,11 @@ for z in range(img.shape[2]):
   out[:,:,z] = pilimg.resize( (512, 512) )
 print("Pillow ", time.time() - s)
 
-# Method     Run Time    Rel. Perf.
-# Original   1.85 sec     1.0x
-# tinybrain  0.09 sec    20.6x 
-# OpenCV     0.47 sec     3.9x
-# Pillow     0.90 sec     2.1x
+# Method     Run Time             Rel. Perf.
+# Original   1820 ms +/- 3.73 ms    1.0x
+# tinybrain    67 ms +/- 0.40 ms   27.2x 
+# OpenCV      469 ms +/- 1.12 ms    3.9x
+# Pillow      937 ms +/- 7.63 ms    1.9x
 ```
 
 ## Considerations: downsample_segmentation 
