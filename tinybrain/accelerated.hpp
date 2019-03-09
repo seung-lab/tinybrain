@@ -74,7 +74,7 @@ inline void accumulate_2x2_dual_pass(
     row2 = _mm_loadu_ps(channel + yoff + (x+4) + sx);
     res2 = _mm_add_ps(row1, row2);
 
-    _mm_store_ps(accum + oyoff + ox, _mm_hadd_ps(res1, res2));
+    _mm_storeu_ps(accum + oyoff + ox, _mm_hadd_ps(res1, res2));
   }
 
   size_t i_idx, o_idx;
