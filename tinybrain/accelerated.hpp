@@ -52,7 +52,6 @@ inline void accumulate_2x2_x_pass(
   }
 }
 
-
 inline void accumulate_2x2_dual_pass(
   float* channel, float* accum,
   const size_t sx, const size_t sy, 
@@ -62,12 +61,11 @@ inline void accumulate_2x2_dual_pass(
 
   const bool odd_x = (sx & 0x01);
 
-  size_t i_idx, o_idx;
-
+  size_t x, ox;
   const size_t sxv = (sx >> 3) << 3; // minimum 8 elements
 
   __m128 row1, row2, res1, res2;
-  for (size_t x = 0, ox = 0; x < sxv; x += 8, ox += 4) {
+  for (x = 0, ox = 0; x < sxv; x += 8, ox += 4) {
     row1 = _mm_loadu_ps(channel + yoff + x);
     row2 = _mm_loadu_ps(channel + yoff + x + sx);
     res1 = _mm_add_ps(row1, row2);
@@ -79,21 +77,22 @@ inline void accumulate_2x2_dual_pass(
     _mm_store_ps(accum + oyoff + ox, _mm_hadd_ps(res1, res2));
   }
 
-  // for (size_t x = 0, ox = 0; x < sx - (size_t)odd_x; x += 2, ox++) {
-  //   i_idx = x + yoff;
-  //   o_idx = ox + oyoff;
-  //   accum[o_idx] += channel[i_idx];
-  //   accum[o_idx] += channel[i_idx + 1];
-  //   accum[o_idx] += channel[i_idx + sx];
-  //   accum[o_idx] += channel[i_idx + sx + 1];
-  // }
+  size_t i_idx, o_idx;
+  for (; x < sx - (size_t)odd_x; x += 2, ox++) {
+    i_idx = x + yoff;
+    o_idx = ox + oyoff;
+    accum[o_idx] += channel[i_idx];
+    accum[o_idx] += channel[i_idx + 1];
+    accum[o_idx] += channel[i_idx + sx];
+    accum[o_idx] += channel[i_idx + sx + 1];
+  }
 
-  // if (odd_x) {
-  //   // << 1 bc we need to multiply by two on the edge 
-  //   // to avoid darkening during render
-  //   accum[(osx - 1) + oyoff] += (U)(channel[(sx - 1) + yoff]) * 2;
-  //   accum[(osx - 1) + oyoff] += (U)(channel[(sx - 1) + yoff]) * 2;
-  // }
+  if (odd_x) {
+    // << 1 bc we need to multiply by two on the edge 
+    // to avoid darkening during render
+    accum[(osx - 1) + oyoff] += (channel[(sx - 1) + yoff]) * 2;
+    accum[(osx - 1) + oyoff] += (channel[(sx - 1) + yoff + sx]) * 2;
+  }
 }
 
 template <typename T, typename U>
