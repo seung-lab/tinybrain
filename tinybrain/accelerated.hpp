@@ -123,8 +123,8 @@ inline void accumulate_2x2_dual_pass(
     row2 = _mm_loadu_pd(channel + yoff + x + sx);
     res1 = _mm_add_pd(row1, row2);
 
-    row1 = _mm_loadu_pd(channel + yoff + (x+4));
-    row2 = _mm_loadu_pd(channel + yoff + (x+4) + sx);
+    row1 = _mm_loadu_pd(channel + yoff + (x+2));
+    row2 = _mm_loadu_pd(channel + yoff + (x+2) + sx);
     res2 = _mm_add_pd(row1, row2);
 
     _mm_storeu_pd(accum + oyoff + ox, _mm_hadd_pd(res1, res2));
