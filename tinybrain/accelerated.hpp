@@ -119,7 +119,7 @@ U* accumulate_2x2(
 template <typename T, typename U>
 inline void render_image(T* accum, U* oimg, const uint32_t bitshift, const size_t ovoxels) {
   for (size_t i = 0; i < ovoxels; i++) {
-    oimg[i] = (T)(accum[i] >> bitshift);
+    oimg[i] = (U)(accum[i] >> bitshift);
   }
 }
 
