@@ -16,13 +16,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 
+#ifndef ACCELERATED_HPP
+#define ACCELERATED_HPP
+
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
 #include <cstdint>
-
-#ifndef ACCELERATED_HPP
-#define ACCELERATED_HPP
 
 namespace accelerated {
 
