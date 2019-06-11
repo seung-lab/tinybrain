@@ -19,7 +19,7 @@ setuptools.setup(
       language='c++',
       include_dirs=[ np.get_include() ],
       extra_compile_args=[
-        '-std=c++11', '-O3', '-ffast-math',
+        '-std=c++11', '-O3', '-ffast-math', '-msse3',
         # '-DCYTHON_TRACE=1'
       ]
     )
