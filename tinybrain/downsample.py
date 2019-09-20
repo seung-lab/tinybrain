@@ -263,16 +263,16 @@ def downsample_segmentation_2d(data, factor, sparse):
     shape3d = np.array(data.shape[:3])
 
   output = np.zeros(
-    shape=( int(data.shape[0] / 2), int(data.shape[1] / 2), data.shape[2], data.shape[3]), 
+    shape=( int(data.shape[0] / 2), int(data.shape[1] / 2), *data.shape[2:] ),
     dtype=data.dtype
   )
 
   if sparse:
     for z in range(data.shape[2]):
-      output[:,:,z,:] = stippled_countless2d(data[:,:,z,:])
+      output[:,:,z,...] = stippled_countless2d(data[:,:,z,...])
   else:
     for z in range(data.shape[2]):
-      output[:,:,z,:] = countless2d(data[:,:,z,:])
+      output[:,:,z,...] = countless2d(data[:,:,z,...])
 
   factor = np.array((factor / 2), dtype=np.int32)
   factor[preserved_axis] = 1
