@@ -1,3 +1,5 @@
+import pytest
+
 from six.moves import range
 from copy import deepcopy
 import numpy as np
@@ -124,26 +126,50 @@ def test_even_odd2d():
   assert np.array_equal(oddimg, ans3x3x3)
   assert np.array_equal(oddimgf, ans3x3x3)
 
-def test_accelerated_vs_numpy_avg_pooling():
-  for dtype in (np.uint8, np.uint16, np.float32, np.float64):
-    image = np.random.randint(0,255, size=(512, 512, 6), dtype=np.uint8).astype(dtype)
-    imagef = np.asfortranarray(image)
+@pytest.mark.parametrize("dtype", (np.uint8, np.uint16, np.float32, np.float64))
+def test_accelerated_vs_numpy_avg_pooling_2x2(dtype):
+  image = np.random.randint(0,255, size=(512, 512, 6), dtype=np.uint8).astype(dtype)
+  imagef = np.asfortranarray(image)
 
-    accimg = tinybrain.accelerated.average_pooling_2x2(imagef) 
-    npimg = tinybrain.downsample.downsample_with_averaging_numpy(imagef, (2,2,1))
-    assert np.all(accimg == npimg)
+  accimg = tinybrain.accelerated.average_pooling_2x2(imagef) 
+  npimg = tinybrain.downsample.downsample_with_averaging_numpy(imagef, (2,2,1))
+  assert np.all(accimg == npimg)
 
-    # There are slight differences in how the accelerated version and 
-    # the numpy version handle the edge so we only compare a nice 
-    # even power of two where there's no edge. We also can't do iterated
-    # downsamples of the (naked) numpy version because it will result in
-    # integer truncation. We can't compare above mip 4 because the accelerated
-    # version will exhibit integer truncation.
+  # There are slight differences in how the accelerated version and 
+  # the numpy version handle the edge so we only compare a nice 
+  # even power of two where there's no edge. We also can't do iterated
+  # downsamples of the (naked) numpy version because it will result in
+  # integer truncation. We can't compare above mip 4 because the accelerated
+  # version will exhibit integer truncation.
 
-    mips = tinybrain.downsample_with_averaging(imagef, (2,2,1), num_mips=4)
-    npimg = tinybrain.downsample.downsample_with_averaging_numpy(imagef, (16,16,1))
-    
-    assert np.all(mips[-1] == npimg)
+  mips = tinybrain.downsample_with_averaging(imagef, (2,2,1), num_mips=4)
+  npimg = tinybrain.downsample.downsample_with_averaging_numpy(imagef, (16,16,1))
+  
+  assert np.all(mips[-1] == npimg)
+
+@pytest.mark.parametrize("dtype", (np.uint8, np.uint16))
+@pytest.mark.parametrize("depth", (32,33))
+def test_accelerated_vs_numpy_avg_pooling_2x2x2(dtype, depth):
+  # image = np.random.randint(0,255, size=(512, 512, 6), dtype=np.uint8).astype(dtype)
+  image = np.ones((1024, 1024, depth), dtype=dtype) * 127
+  image[::5,:,:] = 255
+  imagef = np.asfortranarray(image)
+
+  accimg = tinybrain.accelerated.average_pooling_2x2x2(imagef) 
+  npimg = tinybrain.downsample.downsample_with_averaging_numpy(imagef, (2,2,2))
+  assert np.all(accimg == npimg)
+
+  # There are slight differences in how the accelerated version and 
+  # the numpy version handle the edge so we only compare a nice 
+  # even power of two where there's no edge. We also can't do iterated
+  # downsamples of the (naked) numpy version because it will result in
+  # integer truncation. We can't compare above mip 4 because the accelerated
+  # version will exhibit integer truncation.
+
+  mips = tinybrain.downsample_with_averaging(imagef, (2,2,2), num_mips=2)
+  npimg = tinybrain.downsample.downsample_with_averaging_numpy(imagef, (4,4,4))
+  
+  assert np.all(mips[-1] == npimg)
 
 def test_accelerated_vs_numpy_mode_pooling():
   image = np.random.randint(0,255, size=(512, 512, 6, 1), dtype=np.uint8)

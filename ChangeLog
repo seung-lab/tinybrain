@@ -1,6 +1,10 @@
 CHANGES
 =======
 
+0.1.1
+-----
+
+* release(0.1.1): manual SIMD on floating point 2x2x1 averaging
 * perf: manual SIMD for floating point operations (#2)
 * chore: update setup.py to comply with new PyPI rules
 * fix: incorrect cast in render\_image
