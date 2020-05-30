@@ -30,6 +30,10 @@ cdef extern from "accelerated.hpp" namespace "accelerated":
   cdef void render_image_floating[T](T* arr, T* oimg, T divisor, size_t ovoxels)
   cdef T* shift_right[T](T* arr, size_t ovoxels, size_t bits)
 
+ctypedef fused FLOATING:
+  float
+  double
+
 def expand_dims(img, ndim):
   while img.ndim < ndim:
     img = img[..., np.newaxis]
@@ -299,10 +303,10 @@ def average_pooling_2x2x2(channel, size_t num_mips=1):
     results = _average_pooling_2x2x2_uint8(channel, num_mips)
   elif channel.dtype == np.uint16:
     results = _average_pooling_2x2x2_uint16(channel, num_mips)
-  # elif channel.dtype == np.float32:
-  #   results = _average_pooling_2x2x2_float(channel, num_mips)
-  # elif channel.dtype == np.float64:
-  #   results = _average_pooling_2x2x2_double(channel, num_mips)
+  elif channel.dtype == np.float32:
+    results = _average_pooling_2x2x2_float(channel, num_mips)
+  elif channel.dtype == np.float64:
+    results = _average_pooling_2x2x2_double(channel, num_mips)
   else:
     raise TypeError("Unsupported data type: ", channel.dtype)
 
@@ -423,6 +427,116 @@ def _average_pooling_2x2x2_uint16(np.ndarray[uint16_t, ndim=4] channel, uint32_t
     tmp = accum 
     accum = accumulate_2x2x2[uint32_t, uint32_t](accum, sx, sy, sz, sw)
     accumview = <uint32_t[:ovoxels]>accum
+    PyMem_Free(tmp)
+
+  PyMem_Free(accum)
+
+  return results
+
+def _average_pooling_2x2x2_float(np.ndarray[float, ndim=4] channel, uint32_t num_mips):
+  cdef size_t sx = channel.shape[0]
+  cdef size_t sy = channel.shape[1]
+  cdef size_t sz = channel.shape[2]
+  cdef size_t sw = channel.shape[3]
+  cdef size_t sxy = sx * sy
+
+  cdef size_t osx = (sx + 1) // 2
+  cdef size_t osy = (sy + 1) // 2
+  cdef size_t osz = (sz + 1) // 2
+  cdef size_t osxy = osx * osy
+  cdef size_t ovoxels = osxy * osz * sw
+  
+  cdef float[:,:,:,:] channelview = channel
+  cdef float* accum = accumulate_2x2x2[float,float](&channelview[0,0,0,0], sx, sy, sz, sw)
+  cdef float[:] accumview = <float[:ovoxels]>accum
+  cdef float* tmp
+  cdef uint32_t mip
+
+  cdef float divisor = 1.0
+  cdef float[:] oimgview
+
+  results = []
+  for mip in range(num_mips):
+    divisor = 8.0 ** (mip+1)
+    oimg = np.zeros( (ovoxels,), dtype=channel.dtype, order='F')
+    oimgview = oimg
+    render_image_floating[float](&accumview[0], &oimgview[0], divisor, ovoxels)
+
+    results.append(
+      oimg.reshape( (osx, osy, osz, sw), order='F' )
+    )
+
+    if mip == num_mips - 1:
+      break
+
+    sx = osx 
+    sy = osy 
+    sz = osz
+    sxy = sx * sy
+    osx = (sx + 1) // 2
+    osy = (sy + 1) // 2
+    osz = (sz + 1) // 2
+    osxy = osx * osy
+    ovoxels = osxy * osz * sw
+
+    tmp = accum 
+    accum = accumulate_2x2x2[float,float](accum, sx, sy, sz, sw)
+    accumview = <float[:ovoxels]>accum
+    PyMem_Free(tmp)
+
+  PyMem_Free(accum)
+
+  return results
+
+def _average_pooling_2x2x2_double(np.ndarray[double, ndim=4] channel, uint32_t num_mips):
+  cdef size_t sx = channel.shape[0]
+  cdef size_t sy = channel.shape[1]
+  cdef size_t sz = channel.shape[2]
+  cdef size_t sw = channel.shape[3]
+  cdef size_t sxy = sx * sy
+
+  cdef size_t osx = (sx + 1) // 2
+  cdef size_t osy = (sy + 1) // 2
+  cdef size_t osz = (sz + 1) // 2
+  cdef size_t osxy = osx * osy
+  cdef size_t ovoxels = osxy * osz * sw
+  
+  cdef double[:,:,:,:] channelview = channel
+  cdef double* accum = accumulate_2x2x2[double,double](&channelview[0,0,0,0], sx, sy, sz, sw)
+  cdef double[:] accumview = <double[:ovoxels]>accum
+  cdef double* tmp
+  cdef uint32_t mip
+
+  cdef double divisor = 1.0
+  cdef double[:] oimgview
+
+  results = []
+  for mip in range(num_mips):
+    divisor = 8.0 ** (mip+1)
+    oimg = np.zeros( (ovoxels,), dtype=channel.dtype, order='F')
+    oimgview = oimg
+    render_image_floating[double](&accumview[0], &oimgview[0], divisor, ovoxels)
+
+    results.append(
+      oimg.reshape( (osx, osy, osz, sw), order='F' )
+    )
+
+    if mip == num_mips - 1:
+      break
+
+    sx = osx 
+    sy = osy 
+    sz = osz
+    sxy = sx * sy
+    osx = (sx + 1) // 2
+    osy = (sy + 1) // 2
+    osz = (sz + 1) // 2
+    osxy = osx * osy
+    ovoxels = osxy * osz * sw
+
+    tmp = accum 
+    accum = accumulate_2x2x2[double,double](accum, sx, sy, sz, sw)
+    accumview = <double[:ovoxels]>accum
     PyMem_Free(tmp)
 
   PyMem_Free(accum)

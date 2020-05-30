@@ -147,11 +147,13 @@ def test_accelerated_vs_numpy_avg_pooling_2x2(dtype):
   
   assert np.all(mips[-1] == npimg)
 
-@pytest.mark.parametrize("dtype", (np.uint8, np.uint16))
-@pytest.mark.parametrize("depth", (32,33))
-def test_accelerated_vs_numpy_avg_pooling_2x2x2(dtype, depth):
+@pytest.mark.parametrize("dtype", (np.uint8, np.uint16, np.float32, np.float64))
+@pytest.mark.parametrize("sx", (1024,1025))
+@pytest.mark.parametrize("sy", (1024,1025))
+@pytest.mark.parametrize("sz", (32,33))
+def test_accelerated_vs_numpy_avg_pooling_2x2x2(dtype, sx, sy, sz):
   # image = np.random.randint(0,255, size=(512, 512, 6), dtype=np.uint8).astype(dtype)
-  image = np.ones((1024, 1024, depth), dtype=dtype) * 127
+  image = np.ones((sx, sy, sz), dtype=dtype) * 127
   image[::5,:,:] = 255
   imagef = np.asfortranarray(image)
 
