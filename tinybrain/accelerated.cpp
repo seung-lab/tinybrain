@@ -7104,7 +7104,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_14average_pooling_2x2x2(CYTHO
  *   cdef size_t sy = channel.shape[1]
  *   cdef size_t sz = channel.shape[2]             # <<<<<<<<<<<<<<
  * 
- *   if min(sx, sy, sz) <= <size_t>(2 ** num_mips):
+ *   if min(sx, sy, sz) < <size_t>(2 ** num_mips):
  */
   __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_channel, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 296, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -7118,7 +7118,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_14average_pooling_2x2x2(CYTHO
   /* "tinybrain/accelerated.pyx":298
  *   cdef size_t sz = channel.shape[2]
  * 
- *   if min(sx, sy, sz) <= <size_t>(2 ** num_mips):             # <<<<<<<<<<<<<<
+ *   if min(sx, sy, sz) < <size_t>(2 ** num_mips):             # <<<<<<<<<<<<<<
  *     raise ValueError("Can't downsample using a patch larger than the smallest plane dimension: <{},{},{}> {}".format(sx,sy,sz, 2**num_mips))
  * 
  */
@@ -7136,12 +7136,12 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_14average_pooling_2x2x2(CYTHO
   } else {
     __pyx_t_9 = __pyx_t_8;
   }
-  __pyx_t_10 = ((__pyx_t_9 <= ((size_t)__Pyx_pow_size_t(2, __pyx_v_num_mips))) != 0);
+  __pyx_t_10 = ((__pyx_t_9 < ((size_t)__Pyx_pow_size_t(2, __pyx_v_num_mips))) != 0);
   if (unlikely(__pyx_t_10)) {
 
     /* "tinybrain/accelerated.pyx":299
  * 
- *   if min(sx, sy, sz) <= <size_t>(2 ** num_mips):
+ *   if min(sx, sy, sz) < <size_t>(2 ** num_mips):
  *     raise ValueError("Can't downsample using a patch larger than the smallest plane dimension: <{},{},{}> {}".format(sx,sy,sz, 2**num_mips))             # <<<<<<<<<<<<<<
  * 
  *   results = []
@@ -7225,7 +7225,7 @@ static PyObject *__pyx_pf_9tinybrain_11accelerated_14average_pooling_2x2x2(CYTHO
     /* "tinybrain/accelerated.pyx":298
  *   cdef size_t sz = channel.shape[2]
  * 
- *   if min(sx, sy, sz) <= <size_t>(2 ** num_mips):             # <<<<<<<<<<<<<<
+ *   if min(sx, sy, sz) < <size_t>(2 ** num_mips):             # <<<<<<<<<<<<<<
  *     raise ValueError("Can't downsample using a patch larger than the smallest plane dimension: <{},{},{}> {}".format(sx,sy,sz, 2**num_mips))
  * 
  */

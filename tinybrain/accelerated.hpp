@@ -328,11 +328,16 @@ U* accumulate_2x2x2(
             sx, osx,
             (sx * y + zoff), oyoff
           );
-          
-          // double values to prevent darkening 
-          for (size_t x = 0; x < osx; x++) {
-            accum[x + oyoff] *= 2;
-          }
+        }
+      }
+
+      if (odd_y) {
+        y = sy - 1;
+        oy = osy - 1;
+        oyoff = (osx * oy + ozoff);
+        // double values to prevent darkening 
+        for (size_t x = 0; x < osx; x++) {
+          accum[x + oyoff] *= 2;
         }
       }
     }

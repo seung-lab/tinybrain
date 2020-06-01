@@ -295,7 +295,7 @@ def average_pooling_2x2x2(channel, size_t num_mips=1):
   cdef size_t sy = channel.shape[1]
   cdef size_t sz = channel.shape[2]
 
-  if min(sx, sy, sz) <= <size_t>(2 ** num_mips):
+  if min(sx, sy, sz) < <size_t>(2 ** num_mips):
     raise ValueError("Can't downsample using a patch larger than the smallest plane dimension: <{},{},{}> {}".format(sx,sy,sz, 2**num_mips))
 
   results = []

@@ -148,13 +148,11 @@ def test_accelerated_vs_numpy_avg_pooling_2x2(dtype):
   assert np.all(mips[-1] == npimg)
 
 @pytest.mark.parametrize("dtype", (np.uint8, np.uint16, np.float32, np.float64))
-@pytest.mark.parametrize("sx", (1024,1025))
-@pytest.mark.parametrize("sy", (1024,1025))
-@pytest.mark.parametrize("sz", (32,33))
+@pytest.mark.parametrize("sx", (6,7,1024,1025))
+@pytest.mark.parametrize("sy", (6,7,1024,1025))
+@pytest.mark.parametrize("sz", (4,5,32,33))
 def test_accelerated_vs_numpy_avg_pooling_2x2x2(dtype, sx, sy, sz):
-  # image = np.random.randint(0,255, size=(512, 512, 6), dtype=np.uint8).astype(dtype)
-  image = np.ones((sx, sy, sz), dtype=dtype) * 127
-  image[::5,:,:] = 255
+  image = np.random.randint(0,255, size=(sx, sy, sz), dtype=np.uint8).astype(dtype)
   imagef = np.asfortranarray(image)
 
   accimg = tinybrain.accelerated.average_pooling_2x2x2(imagef) 
@@ -168,10 +166,10 @@ def test_accelerated_vs_numpy_avg_pooling_2x2x2(dtype, sx, sy, sz):
   # integer truncation. We can't compare above mip 4 because the accelerated
   # version will exhibit integer truncation.
 
-  mips = tinybrain.downsample_with_averaging(imagef, (2,2,2), num_mips=2)
-  npimg = tinybrain.downsample.downsample_with_averaging_numpy(imagef, (4,4,4))
-  
-  assert np.all(mips[-1] == npimg)
+  if ( x % 2 for x in (sx,sy,sz)) == (0,0,0):
+    mips = tinybrain.downsample_with_averaging(imagef, (2,2,2), num_mips=2)
+    npimg = tinybrain.downsample.downsample_with_averaging_numpy(imagef, (4,4,4))
+    assert np.all(mips[-1] == npimg)
 
 def test_accelerated_vs_numpy_mode_pooling():
   image = np.random.randint(0,255, size=(512, 512, 6, 1), dtype=np.uint8)
