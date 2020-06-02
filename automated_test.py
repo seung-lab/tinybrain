@@ -409,7 +409,7 @@ def test_countless3d():
       ]
     ]
 
-    assert fn(np.array(alldifferent)) == [[[8]]]
+    assert fn(np.array(alldifferent))[0,0,0] in list(range(1,9))
     assert fn(np.array(allsame)) == [[[1]]]
 
     twosame = deepcopy(alldifferent)

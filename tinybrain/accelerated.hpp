@@ -411,6 +411,66 @@ inline void shift_right(T* accum, const size_t ovoxels, const size_t bits) {
   }
 }
 
+// MODE POOLING 2x2x2
+// based on code by Chris Jordan, 2017
+
+template <typename T>
+inline void _mode_pooling_2x2x2(
+  T* img, T* oimg,
+  const size_t sx, const size_t sy, 
+  const size_t sz, const size_t sw = 1
+) {
+
+  const size_t sxy = sx * sy;
+
+  const size_t osx = (sx + 1) >> 1;
+  const size_t osy = (sy + 1) >> 1;
+  const size_t osxy = osx * osy;
+
+  T vals[8];
+  T cur_val, max_val;
+  size_t max_ct, cur_ct;
+
+  for (size_t z = 0; z < sz; z += 2) {
+    for (size_t y = 0; y < sy; y += 2) {
+      for (size_t x = 0; x < sx; x += 2) {
+        size_t offset = x + sx * y + sxy * z;
+        
+        size_t plus_x = (x < sx - 1);
+        size_t plus_y = (y < sy - 1) * sx;
+        size_t plus_z = (z < sz - 1) * sxy;
+
+        vals[0] = img[ offset ];
+        vals[1] = img[ offset + plus_x ];
+        vals[2] = img[ offset + plus_y ];
+        vals[3] = img[ offset + plus_x + plus_y ];
+        vals[4] = img[ offset + plus_z ];
+        vals[5] = img[ offset + plus_x + plus_z ];
+        vals[6] = img[ offset + plus_y + plus_z ];
+        vals[7] = img[ offset + plus_x + plus_y + plus_z ];
+        
+        max_ct = 0;
+        for (short int t = 0; t < 8; t++) {
+          cur_val = vals[t];
+          cur_ct = 0;
+          for (short int p = 0; p < 8; p++) {
+            cur_ct += (cur_val == vals[p]);
+          }
+
+          if (cur_ct > max_ct) {
+              max_ct = cur_ct;
+              max_val = cur_val;
+          }
+        }
+
+        size_t o_loc = (x >> 1) + osx * (y >> 1) + osxy * (z >> 1);
+        oimg[o_loc] = max_val;
+      }
+    }
+  }
+}
+
+
 };
 
 #endif

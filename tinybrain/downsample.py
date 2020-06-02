@@ -199,15 +199,18 @@ def downsample_segmentation(img, factor, sparse=False, num_mips=1):
 
   Returns: a downsampled numpy array
   """
-  ndim = img.ndim
-  img = expand_dims(img, 4)
-
   factor = np.array(factor)
   if np.all(np.array(factor, int) == 1):
       return [ img ] * num_mips
 
-  if not sparse and tuple(factor) in ( (2,2), (2,2,1), (2,2,1,1) ):
-    return tinybrain.accelerated.mode_pooling_2x2(img, num_mips=num_mips)
+  if not sparse:
+    if tuple(factor) in ( (2,2), (2,2,1), (2,2,1,1) ):
+      return tinybrain.accelerated.mode_pooling_2x2(img, num_mips=num_mips)
+    elif tuple(factor) in ( (2,2,2), (2,2,2,1) ):
+      return tinybrain.accelerated.mode_pooling_2x2x2(img, num_mips=num_mips)
+
+  ndim = img.ndim
+  img = expand_dims(img, 4)
 
   results = []
   for mip in range(num_mips):
