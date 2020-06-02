@@ -1,6 +1,11 @@
 CHANGES
 =======
 
+* feat: fast 2x2x2 support for downsample\_with\_averaging (#7)
+* chore: add python3.8 to tinybrain docker build
+* docs: fix spelling error
+* install: add stdlib and min os version for compiling on mac
+
 0.1.1
 -----
 
