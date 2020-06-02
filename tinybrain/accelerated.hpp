@@ -449,6 +449,18 @@ inline void _mode_pooling_2x2x2(
         vals[6] = img[ offset + plus_y + plus_z ];
         vals[7] = img[ offset + plus_x + plus_y + plus_z ];
         
+        size_t o_loc = (x >> 1) + osx * (y >> 1) + osxy * (z >> 1);
+        // These two if statements could be removed, but they add a very small
+        // cost on random data (< 10%) and can speed up connectomics data by ~4x
+        if (vals[0] == vals[1] && vals[0] == vals[2] && vals[0] == vals[3]) {
+          oimg[o_loc] = vals[0];
+          continue;
+        }
+        else if (vals[4] == vals[5] && vals[4] == vals[6] && vals[4] == vals[7]) {
+          oimg[o_loc] = vals[4];
+          continue;
+        }
+
         max_ct = 0;
         for (short int t = 0; t < 8; t++) {
           cur_val = vals[t];
@@ -463,7 +475,6 @@ inline void _mode_pooling_2x2x2(
           }
         }
 
-        size_t o_loc = (x >> 1) + osx * (y >> 1) + osxy * (z >> 1);
         oimg[o_loc] = max_val;
       }
     }
