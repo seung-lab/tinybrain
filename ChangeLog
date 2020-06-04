@@ -1,6 +1,11 @@
 CHANGES
 =======
 
+1.0.0
+-----
+
+* chore: add instrumentation for creating binaries
+* perf: accelerated 2x2x2 segmentation downsample (#8)
 * feat: fast 2x2x2 support for downsample\_with\_averaging (#7)
 * chore: add python3.8 to tinybrain docker build
 * docs: fix spelling error
