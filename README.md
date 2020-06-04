@@ -9,7 +9,8 @@ import tinybrain
 
 img = load_3d_em_stack()
 
-# factors (2,2), (2,2,1), and (2,2,1,1) are on a fast path
+# 2x2 and 2x2x2 downsamples are on a fast path.
+# e.g. (2,2), (2,2,1), (2,2,1,1), (2,2,2), (2,2,2,1)
 img_pyramid = tinybrain.downsample_with_averaging(img, factor=(2,2,1), num_mips=5)
 
 labels = load_3d_labels()
