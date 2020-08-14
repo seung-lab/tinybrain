@@ -418,7 +418,8 @@ template <typename T>
 inline void _mode_pooling_2x2x2(
   T* img, T* oimg,
   const size_t sx, const size_t sy, 
-  const size_t sz, const size_t sw = 1
+  const size_t sz, const size_t sw = 1,
+  const bool sparse = false
 ) {
 
   const size_t sxy = sx * sy;
@@ -462,16 +463,27 @@ inline void _mode_pooling_2x2x2(
         }
 
         max_ct = 0;
+        max_val = 0;
         for (short int t = 0; t < 8; t++) {
           cur_val = vals[t];
           cur_ct = 0;
+
           for (short int p = 0; p < 8; p++) {
             cur_ct += (cur_val == vals[p]);
           }
 
-          if (cur_ct > max_ct) {
-              max_ct = cur_ct;
-              max_val = cur_val;
+          // important to put sparse here 
+          // to avoid messing with vectorization
+          if (sparse && cur_val == 0) {
+            continue;
+          }
+          else if (cur_ct >= 4) {
+            max_val = cur_ct;
+            break;
+          }
+          else if (cur_ct > max_ct) {
+            max_ct = cur_ct;
+            max_val = cur_val;
           }
         }
 
