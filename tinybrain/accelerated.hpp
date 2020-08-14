@@ -432,6 +432,8 @@ inline void _mode_pooling_2x2x2(
   T cur_val, max_val;
   size_t max_ct, cur_ct;
 
+  short int sums[8];
+
   for (size_t z = 0; z < sz; z += 2) {
     for (size_t y = 0; y < sy; y += 2) {
       for (size_t x = 0; x < sx; x += 2) {
@@ -462,14 +464,19 @@ inline void _mode_pooling_2x2x2(
           continue;
         }
 
+        for (short int t = 0; t < 8; t++) {
+          sums[t] = 0;
+        }
+
         max_ct = 0;
         max_val = 0;
         for (short int t = 0; t < 8; t++) {
           cur_val = vals[t];
-          cur_ct = 0;
+          cur_ct = sums[t];
 
-          for (short int p = 0; p < 8; p++) {
+          for (short int p = t; p < 8; p++) {
             cur_ct += (cur_val == vals[p]);
+            sums[t] += (cur_ct * (cur_val == vals[p]));
           }
 
           // important to put sparse here 
