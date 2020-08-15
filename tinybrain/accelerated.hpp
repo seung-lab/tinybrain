@@ -466,18 +466,16 @@ inline void _mode_pooling_2x2x2(
         max_val = 0;
         for (short int t = 0; t < 8; t++) {
           cur_val = vals[t];
-          cur_ct = 1;
+          if (sparse && cur_val == 0) {
+            continue;
+          }
 
+          cur_ct = 1;
           for (short int p = 1; p < 8; p++) {
             cur_ct += (cur_val == vals[p]);
           }
 
-          // important to put sparse here 
-          // to avoid messing with vectorization
-          if (sparse && cur_val == 0) {
-            continue;
-          }
-          else if (cur_ct >= 4) {
+          if (cur_ct >= 4) {
             max_val = cur_val;
             break;
           }
