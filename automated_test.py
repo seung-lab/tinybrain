@@ -190,61 +190,61 @@ def test_accelerated_vs_numpy_mode_pooling():
   
   assert np.all(mips[-1] == npimg)
 
-def test_downsample_segmentation_4x_z():
-  for order in ('C', 'F'):
-    case1 = np.array([ [ 0, 1 ], [ 2, 3 ] ]).reshape((2,2,1,1), order=order) # all different
-    case2 = np.array([ [ 0, 0 ], [ 2, 3 ] ]).reshape((2,2,1,1), order=order) # two are same
-    case3 = np.array([ [ 1, 1 ], [ 2, 2 ] ]).reshape((2,2,1,1), order=order) # two groups are same
-    case4 = np.array([ [ 1, 2 ], [ 2, 2 ] ]).reshape((2,2,1,1), order=order) # 3 are the same
-    case5 = np.array([ [ 5, 5 ], [ 5, 5 ] ]).reshape((2,2,1,1), order=order) # all are the same
+@pytest.mark.parametrize('order', ('C', 'F'))
+def test_downsample_segmentation_4x_z(order):
+  case1 = np.array([ [ 0, 1 ], [ 2, 3 ] ]).reshape((2,2,1,1), order=order) # all different
+  case2 = np.array([ [ 0, 0 ], [ 2, 3 ] ]).reshape((2,2,1,1), order=order) # two are same
+  case3 = np.array([ [ 1, 1 ], [ 2, 2 ] ]).reshape((2,2,1,1), order=order) # two groups are same
+  case4 = np.array([ [ 1, 2 ], [ 2, 2 ] ]).reshape((2,2,1,1), order=order) # 3 are the same
+  case5 = np.array([ [ 5, 5 ], [ 5, 5 ] ]).reshape((2,2,1,1), order=order) # all are the same
 
-    is_255_handled = np.array([ [ 255, 255 ], [ 1, 2 ] ], dtype=np.uint8).reshape((2,2,1,1))
+  is_255_handled = np.array([ [ 255, 255 ], [ 1, 2 ] ], dtype=np.uint8).reshape((2,2,1,1))
 
-    test = lambda case: tinybrain.downsample.countless2d(case)[0][0][0][0]
+  test = lambda case: tinybrain.downsample.countless2d(case)[0][0][0][0]
 
-    assert test(case1) == 3 # d
-    assert test(case2) == 0 # a==b
-    assert test(case3) == 1 # a==b
-    assert test(case4) == 2 # b==c
-    assert test(case5) == 5 # a==b
+  assert test(case1) == 3 # d
+  assert test(case2) == 0 # a==b
+  assert test(case3) == 1 # a==b
+  assert test(case4) == 2 # b==c
+  assert test(case5) == 5 # a==b
 
-    assert test(is_255_handled) == 255 
+  assert test(is_255_handled) == 255 
 
-    assert tinybrain.downsample.countless2d(case1).dtype == case1.dtype
+  assert tinybrain.downsample.countless2d(case1).dtype == case1.dtype
 
-    #  0 0 1 3 
-    #  1 1 6 3  => 1 3
+  #  0 0 1 3 
+  #  1 1 6 3  => 1 3
 
-    case_odd = np.array([ 
-      [
-        [ [1] ], 
-        [ [0] ] 
-      ],
-      [
-        [ [1] ],
-        [ [6] ],
-      ],
-      [
-        [ [3] ],
-        [ [3] ],
-      ],
-    ]) # all are the same
+  case_odd = np.array([ 
+    [
+      [ [1] ], 
+      [ [0] ] 
+    ],
+    [
+      [ [1] ],
+      [ [6] ],
+    ],
+    [
+      [ [3] ],
+      [ [3] ],
+    ],
+  ]) # all are the same
 
-    downsamplefn = tinybrain.downsample.downsample_segmentation
+  downsamplefn = tinybrain.downsample.downsample_segmentation
 
-    result, = downsamplefn(case_odd, (2,2,1))
-    assert np.array_equal(result, np.array([
-      [
-        [ [1] ]
-      ],
-      [
-        [ [3] ]
-      ]
-    ]))
+  result, = downsamplefn(case_odd, (2,2,1))
+  assert np.array_equal(result, np.array([
+    [
+      [ [1] ]
+    ],
+    [
+      [ [3] ]
+    ]
+  ]))
 
-    data = np.ones(shape=(1024, 511, 62, 1), dtype=int)
-    result, = downsamplefn(data, (2,2,1))
-    assert result.shape == (512, 256, 62, 1)
+  data = np.ones(shape=(1024, 511, 62, 1), dtype=int)
+  result, = downsamplefn(data, (2,2,1))
+  assert result.shape == (512, 256, 62, 1)
 
 def test_downsample_segmentation_4x_x():
   case1 = np.array([ [ 0, 1 ], [ 2, 3 ] ]).reshape((1,2,2,1)) # all different
@@ -492,6 +492,102 @@ def test_countless3d():
   res, = tinybrain.downsample.downsample_segmentation(odddimension, (2,2,2))
   assert res.dtype == np.float32
   assert res.shape == (1, 1, 1)
+
+def test_sparse_2x2x2_mode_downsampling():
+  ones = np.array([
+    [
+      [1,1],
+      [1,1],
+    ],
+    [
+      [1,1],
+      [1,1],
+    ],
+  ], dtype=np.uint16, order='F')
+
+  res = tinybrain.accelerated.mode_pooling_2x2x2(ones, sparse=True)[0]
+  assert res[0][0][0] == 1
+  assert res.shape == (1,1,1)
+
+  test2 = np.array([
+    [
+      [1,1],
+      [2,1],
+    ],
+    [
+      [1,1],
+      [1,1],
+    ],
+  ], dtype=np.uint16, order='F')
+
+  res = tinybrain.accelerated.mode_pooling_2x2x2(test2, sparse=True)[0]
+  assert res[0][0][0] == 1
+  assert res.shape == (1,1,1)
+
+  test3 = np.array([
+    [
+      [1,1],
+      [2,2],
+    ],
+    [
+      [2,2],
+      [1,1],
+    ],
+  ], dtype=np.uint16, order='F')
+
+  res = tinybrain.accelerated.mode_pooling_2x2x2(test3, sparse=True)[0]
+  print(res)
+  assert res[0][0][0] == 1
+  assert res.shape == (1,1,1)
+
+
+  test4 = np.array([
+    [
+      [1,1],
+      [2,2],
+    ],
+    [
+      [2,2],
+      [1,0],
+    ],
+  ], dtype=np.uint16, order='F')
+
+  res = tinybrain.accelerated.mode_pooling_2x2x2(test4, sparse=True)[0]
+  print(res)
+  assert res[0][0][0] == 2
+  assert res.shape == (1,1,1)
+
+  test5 = np.array([
+    [
+      [0,0],
+      [2,0],
+    ],
+    [
+      [0,0],
+      [0,0],
+    ],
+  ], dtype=np.uint16, order='F')
+
+  res = tinybrain.accelerated.mode_pooling_2x2x2(test5, sparse=True)[0]
+  print(res)
+  assert res[0][0][0] == 2
+  assert res.shape == (1,1,1)
+
+  test6 = np.array([
+    [
+      [0,0],
+      [0,0],
+    ],
+    [
+      [0,0],
+      [0,0],
+    ],
+  ], dtype=np.uint16, order='F')
+
+  res = tinybrain.accelerated.mode_pooling_2x2x2(test6, sparse=True)[0]
+  assert res[0][0][0] == 0
+  assert res.shape == (1,1,1)
+
 
 def test_stippled_countless2d():
   a = np.array([ [ 1, 2 ], [ 3, 4 ] ]).reshape((2,2,1,1)) 

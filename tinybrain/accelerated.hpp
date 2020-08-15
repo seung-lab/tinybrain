@@ -418,7 +418,8 @@ template <typename T>
 inline void _mode_pooling_2x2x2(
   T* img, T* oimg,
   const size_t sx, const size_t sy, 
-  const size_t sz, const size_t sw = 1
+  const size_t sz, const size_t sw = 1,
+  const bool sparse = false
 ) {
 
   const size_t sxy = sx * sy;
@@ -452,26 +453,38 @@ inline void _mode_pooling_2x2x2(
         size_t o_loc = (x >> 1) + osx * (y >> 1) + osxy * (z >> 1);
         // These two if statements could be removed, but they add a very small
         // cost on random data (< 10%) and can speed up connectomics data by ~4x
-        if (vals[0] == vals[1] && vals[0] == vals[2] && vals[0] == vals[3]) {
+        if (vals[0] == vals[1] && vals[0] == vals[2] && vals[0] == vals[3] && (!sparse || vals[0] != 0)) {
           oimg[o_loc] = vals[0];
           continue;
         }
-        else if (vals[4] == vals[5] && vals[4] == vals[6] && vals[4] == vals[7]) {
+        else if (vals[4] == vals[5] && vals[4] == vals[6] && vals[4] == vals[7] && (!sparse || vals[0] != 0)) {
           oimg[o_loc] = vals[4];
           continue;
         }
 
         max_ct = 0;
+        max_val = 0;
         for (short int t = 0; t < 8; t++) {
           cur_val = vals[t];
-          cur_ct = 0;
-          for (short int p = 0; p < 8; p++) {
+          if (sparse && cur_val == 0) {
+            continue;
+          }
+
+          cur_ct = 1;
+          for (short int p = 0; p < t; p++) {
+            cur_ct += (cur_val == vals[p]);
+          }
+          for (short int p = t + 1; p < 8; p++) {
             cur_ct += (cur_val == vals[p]);
           }
 
-          if (cur_ct > max_ct) {
-              max_ct = cur_ct;
-              max_val = cur_val;
+          if (cur_ct >= 4) {
+            max_val = cur_val;
+            break;
+          }
+          else if (cur_ct > max_ct) {
+            max_ct = cur_ct;
+            max_val = cur_val;
           }
         }
 

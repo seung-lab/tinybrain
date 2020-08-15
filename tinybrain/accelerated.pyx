@@ -32,7 +32,8 @@ cdef extern from "accelerated.hpp" namespace "accelerated":
   cdef void _mode_pooling_2x2x2[T](
     T* img, T* oimg, 
     size_t sx, size_t sy, 
-    size_t sz, size_t sw
+    size_t sz, size_t sw,
+    uint8_t sparse
   )
 
 def expand_dims(img, ndim):
@@ -629,13 +630,13 @@ def _mode_pooling_2x2(np.ndarray[NUMBER, ndim=4] img):
 
   return oimg.reshape( (osx, osy, sz, sw) )
 
-def mode_pooling_2x2x2(img, uint32_t num_mips=1):
+def mode_pooling_2x2x2(img, uint32_t num_mips=1, sparse=False):
   ndim = img.ndim
   img = expand_dims(img, 4)
 
   results = []
   for mip in range(num_mips):
-    img = _mode_pooling_2x2x2_helper(img)
+    img = _mode_pooling_2x2x2_helper(img, sparse)
     results.append(img)
 
   for i, img in enumerate(results):
@@ -643,7 +644,7 @@ def mode_pooling_2x2x2(img, uint32_t num_mips=1):
 
   return results  
 
-def _mode_pooling_2x2x2_helper(np.ndarray[NUMBER, ndim=4] img):
+def _mode_pooling_2x2x2_helper(np.ndarray[NUMBER, ndim=4] img, sparse):
   sx = img.shape[0]
   sy = img.shape[1]
   sz = img.shape[2]
@@ -668,28 +669,32 @@ def _mode_pooling_2x2x2_helper(np.ndarray[NUMBER, ndim=4] img):
     arr_memview8u_o = oimg.view(np.uint8)
     _mode_pooling_2x2x2[uint8_t](
       &arr_memview8u_i[0,0,0,0], &arr_memview8u_o[0,0,0,0], 
-      sx, sy, sz, sw
+      sx, sy, sz, sw, 
+      bool(sparse)
     )
   elif img.dtype in (np.uint16, np.int16):
     arr_memview16u_i = img.view(np.uint16)
     arr_memview16u_o = oimg.view(np.uint16)
     _mode_pooling_2x2x2[uint16_t](
       &arr_memview16u_i[0,0,0,0], &arr_memview16u_o[0,0,0,0], 
-      sx, sy, sz, sw
+      sx, sy, sz, sw,
+      bool(sparse)
     )
   elif img.dtype in (np.uint32, np.int32, np.float32):
     arr_memview32u_i = img.view(np.uint32)
     arr_memview32u_o = oimg.view(np.uint32)
     _mode_pooling_2x2x2[uint32_t](
       &arr_memview32u_i[0,0,0,0], &arr_memview32u_o[0,0,0,0], 
-      sx, sy, sz, sw
+      sx, sy, sz, sw,
+      bool(sparse)
     )
   elif img.dtype in (np.uint64, np.int64, np.float64, np.csingle):
     arr_memview64u_i = img.view(np.uint64)
     arr_memview64u_o = oimg.view(np.uint64)
     _mode_pooling_2x2x2[uint64_t](
       &arr_memview64u_i[0,0,0,0], &arr_memview64u_o[0,0,0,0], 
-      sx, sy, sz, sw
+      sx, sy, sz, sw,
+      bool(sparse)
     )
   else:
     raise ValueError("{} not supported.".format(img.dtype))
