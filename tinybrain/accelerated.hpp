@@ -471,7 +471,10 @@ inline void _mode_pooling_2x2x2(
           }
 
           cur_ct = 1;
-          for (short int p = 1; p < 8; p++) {
+          for (short int p = 0; p < t; p++) {
+            cur_ct += (cur_val == vals[p]);
+          }
+          for (short int p = t + 1; p < 8; p++) {
             cur_ct += (cur_val == vals[p]);
           }
 
