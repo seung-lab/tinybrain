@@ -5,7 +5,6 @@ Author: William Silversmith
 Affiliation: Seung Lab, Princeton Neuroscience Institute
 Date: March 2019
 """
-
 cimport cython
 from cython cimport floating
 from cpython cimport PyObject, Py_INCREF
@@ -339,6 +338,7 @@ def _average_pooling_2x2x2_uint8_sparse(np.ndarray[uint8_t, ndim=4] channel, uin
   cdef uint32_t* accum = accumulate_2x2x2[uint8_t, uint32_t](
     &channelview[0,0,0,0], sx, sy, sz, sw
   )
+  # "denominator"
   cdef uint32_t* denom = denominator_2x2x2[uint8_t, uint32_t](
     &channelview[0,0,0,0], sx, sy, sz, sw
   )
@@ -385,7 +385,7 @@ def _average_pooling_2x2x2_uint8_sparse(np.ndarray[uint8_t, ndim=4] channel, uin
 
     tmp = denom
     denom = accumulate_2x2x2[uint32_t, uint32_t](denom, sx, sy, sz, sw)
-    denomview = <uint32_t[:ovoxels]>accum
+    denomview = <uint32_t[:ovoxels]>denom
     PyMem_Free(tmp)
 
   PyMem_Free(accum)
