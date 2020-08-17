@@ -1,6 +1,15 @@
 CHANGES
 =======
 
+1.1.0
+-----
+
+* release(1.1.0): sparse modes for 2x2x2 downsampling
+* feat: 2x2x2 sparse average pooling for uint8, uint16 (#10)
+* feat+perf: 2x2x2 mode downsample sparse mode (#9)
+* docs: describe new 2x2x2 downsamples
+* docs: mention that 2x2x2 downsamples are fast now
+
 1.0.0
 -----
 
