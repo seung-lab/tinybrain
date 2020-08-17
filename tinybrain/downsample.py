@@ -49,8 +49,8 @@ def downsample_with_averaging(img, factor, num_mips=1, sparse=False):
   """
   if (
     img.dtype in (np.uint8, np.uint16, np.float32, np.float64)
-    and img.flags['F_CONTIGUOUS']
   ):
+    img = np.asfortranarray(img)
     if (tuple(factor) in ( (2,2), (2,2,1), (2,2,1,1) )):
       return tinybrain.accelerated.average_pooling_2x2(img, num_mips)
     elif (tuple(factor) in ( (2,2,2), (2,2,2,1) )):
