@@ -11,10 +11,10 @@ img = load_3d_em_stack()
 
 # 2x2 and 2x2x2 downsamples are on a fast path.
 # e.g. (2,2), (2,2,1), (2,2,1,1), (2,2,2), (2,2,2,1)
-img_pyramid = tinybrain.downsample_with_averaging(img, factor=(2,2,1), num_mips=5)
+img_pyramid = tinybrain.downsample_with_averaging(img, factor=(2,2,1), num_mips=5, sparse=False)
 
 labels = load_3d_labels()
-label_pyramid = tinybrain.downsample_segmentation(labels, factor=(2,2,1), num_mips=5)
+label_pyramid = tinybrain.downsample_segmentation(labels, factor=(2,2,1), num_mips=5, sparse=False))
 ```
 
 ## Installation 
