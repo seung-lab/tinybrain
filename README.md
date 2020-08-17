@@ -26,14 +26,10 @@ pip install tinybrain
 
 ## Motivation
 
-Image heirarchy generation in connectomics uses a few different techniques for
-visualizing data, but predominantly we create image pyramids of uint8 grayscale 
-images using 2x2 average pooling and of uint8 to uint64 segmentation labels using 
-2x2 mode pooling.  
+Image hierarchy generation in connectomics uses a few different techniques for
+visualizing data, but predominantly we create image pyramids of uint8 grayscale images using 2x2 average pooling and of uint8 to uint64 segmentation labels using 2x2 mode pooling. When images become very large and people wish to visualze upper mip levels using three axes at once, it becomes desirable to perform 2x2x2 downsamples to maintain isotropy.
 
-It's possible to compute both of these using numpy, however as multiple packages found 
-it useful to copy the downsample functions, it makes sense to formalize these functions 
-into a seperate library located on PyPI.
+It's possible to compute both of these using numpy, however as multiple packages found it useful to copy the downsample functions, it makes sense to formalize these functions into a seperate library located on PyPI.
 
 Given the disparate circumstances that they will be used in, these functions should work 
 fast as possible with low memory usage and avoid numerical issues such as integer truncation
@@ -53,6 +49,7 @@ the type before downsampling. 2x2x2x1 downsamples truncate every 8 mip levels.
 A C++ high performance path is triggered for 2x2x1x1 and 2x2x2x1 downsample factors on uint8, uint16, float32, 
 and float64 data types in Fortran order. Other factors, data types, and orderings are computed using a numpy pathway that is much slower and more memory intensive.
 
+We also include a sparse mode for downsampling 2x2x2 patches, which prevents "ghosting" where one z-slice overlaps a black region on the next slice and becomes semi-transparent after downsampling. We deal with this by neglecting the background pixels from the averaging operation. 
 
 ### Example Benchmark 
 

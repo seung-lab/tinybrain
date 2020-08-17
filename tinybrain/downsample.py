@@ -34,6 +34,19 @@ class DimensionError(Exception):
   pass
 
 def downsample_with_averaging(img, factor, num_mips=1, sparse=False):
+  """
+  Downsample by average pooling patches of size factor. If sparse,
+  omit background pixels from the denominator when averaging.
+
+  Sparse mode is only supported for uint8 and uint16 type inputs.
+
+  img: up to a 4D numpy image
+  factor: e.g. (2,2,1) or (2,2,2)
+  num_mips: generate this number of mip levels at once
+  sparse: boolean, if True, don't consider background pixels
+
+  Returns: [ mip0, mip1, mip2, ..., num_mip ]
+  """
   if (
     img.dtype in (np.uint8, np.uint16, np.float32, np.float64)
     and img.flags['F_CONTIGUOUS']
