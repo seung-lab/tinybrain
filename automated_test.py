@@ -537,7 +537,6 @@ def test_sparse_2x2x2_mode_downsampling(dtype):
   ], dtype=dtype, order='F')
 
   res = tinybrain.accelerated.mode_pooling_2x2x2(test3, sparse=True)[0]
-  print(res)
   assert res[0][0][0] == 1
   assert res.shape == (1,1,1)
 
@@ -554,7 +553,6 @@ def test_sparse_2x2x2_mode_downsampling(dtype):
   ], dtype=dtype, order='F')
 
   res = tinybrain.accelerated.mode_pooling_2x2x2(test4, sparse=True)[0]
-  print(res)
   assert res[0][0][0] == 2
   assert res.shape == (1,1,1)
 
@@ -570,7 +568,6 @@ def test_sparse_2x2x2_mode_downsampling(dtype):
   ], dtype=dtype, order='F')
 
   res = tinybrain.accelerated.mode_pooling_2x2x2(test5, sparse=True)[0]
-  print(res)
   assert res[0][0][0] == 2
   assert res.shape == (1,1,1)
 
@@ -589,6 +586,114 @@ def test_sparse_2x2x2_mode_downsampling(dtype):
   assert res[0][0][0] == 0
   assert res.shape == (1,1,1)
 
+  # test7 = np.array([
+  #   [
+  #     [1,0,1],
+  #     [0,0,1],
+  #   ],
+  #   [
+  #     [0,0,1],
+  #     [0,0,1],
+  #   ],
+  # ], dtype=dtype, order='F')
+
+  # res = tinybrain.accelerated.mode_pooling_2x2x2(test7, sparse=True)[0]
+  # assert np.all(res == [[[1,1]]])
+  # assert res.shape == (1,1,2)
+
+@pytest.mark.parametrize('dtype', (np.uint8, np.uint16))
+def test_sparse_2x2x2_avg_downsampling(dtype):
+  ones = np.array([
+    [
+      [1,1],
+      [1,1],
+    ],
+    [
+      [1,1],
+      [1,1],
+    ],
+  ], dtype=dtype, order='F')
+
+  res = tinybrain.accelerated.average_pooling_2x2x2(ones, sparse=True)[0]
+  assert res[0][0][0] == 1
+  assert res.shape == (1,1,1)
+
+  test2 = np.array([
+    [
+      [1,1],
+      [2,1],
+    ],
+    [
+      [1,1],
+      [1,1],
+    ],
+  ], dtype=dtype, order='F')
+
+  res = tinybrain.accelerated.average_pooling_2x2x2(test2, sparse=True)[0]
+  assert res[0][0][0] == 1
+  assert res.shape == (1,1,1)
+
+  test3 = np.array([
+    [
+      [7,1],
+      [2,2],
+    ],
+    [
+      [2,2],
+      [1,1],
+    ],
+  ], dtype=dtype, order='F')
+
+  res = tinybrain.accelerated.average_pooling_2x2x2(test3, sparse=True)[0]
+  assert res[0][0][0] == 2 # 18 / 8
+  assert res.shape == (1,1,1)
+
+
+  test4 = np.array([
+    [
+      [1,1],
+      [2,2],
+    ],
+    [
+      [2,2],
+      [1,0],
+    ],
+  ], dtype=dtype, order='F')
+
+  res = tinybrain.accelerated.average_pooling_2x2x2(test4, sparse=True)[0]
+  assert res[0][0][0] == 1 # 11/7
+  assert res.shape == (1,1,1)
+
+  test5 = np.array([
+    [
+      [0,0],
+      [2,0],
+    ],
+    [
+      [0,0],
+      [0,0],
+    ],
+  ], dtype=dtype, order='F')
+
+  res = tinybrain.accelerated.average_pooling_2x2x2(test5, sparse=True)[0]
+  assert res[0][0][0] == 2
+  assert res.shape == (1,1,1)
+
+  test6 = np.array([
+    [
+      [0,0],
+      [0,0],
+    ],
+    [
+      [0,0],
+      [0,0],
+    ],
+  ], dtype=dtype, order='F')
+
+  res = tinybrain.accelerated.average_pooling_2x2x2(test6, sparse=True)[0]
+  assert res[0][0][0] == 0
+  assert res.shape == (1,1,1)
+
   test7 = np.array([
     [
       [1,0,1],
@@ -600,8 +705,7 @@ def test_sparse_2x2x2_mode_downsampling(dtype):
     ],
   ], dtype=dtype, order='F')
 
-  res = tinybrain.accelerated.mode_pooling_2x2x2(test7, sparse=True)[0]
-  print(res)
+  res = tinybrain.accelerated.average_pooling_2x2x2(test7, sparse=True)[0]
   assert np.all(res == [[[1,1]]])
   assert res.shape == (1,1,2)
 
