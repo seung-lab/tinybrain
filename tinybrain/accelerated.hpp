@@ -391,9 +391,166 @@ U* accumulate_2x2x2(
 }
 
 template <typename T, typename U>
+inline void denominator_x_pass(
+  T* channel, U* denom,
+  const size_t sx, const size_t osx, 
+  const size_t offset, const size_t o_offset
+) {
+
+  const bool odd_x = (sx & 0x01);
+
+  size_t i_idx, o_idx;
+
+  for (size_t x = 0, ox = 0; x < sx - (size_t)odd_x; x += 2, ox++) {
+    i_idx = x + offset;
+    o_idx = ox + o_offset;
+    denom[o_idx] += static_cast<U>(channel[i_idx] != 0);
+    denom[o_idx] += static_cast<U>(channel[i_idx + 1] != 0);
+  }
+
+  if (odd_x) {
+    // << 1 bc we need to multiply by two on the edge 
+    // to avoid darkening during render
+    denom[(osx - 1) + o_offset] += static_cast<U>(channel[(sx - 1) + offset] != 0);
+  }
+}
+
+// used for sparse=True only
+template <typename T, typename U>
+U* denominator_2x2x2(
+    T* channel, 
+    const size_t sx, const size_t sy, 
+    const size_t sz, const size_t sw = 1
+  ) {
+
+  const size_t sxy = sx * sy;
+
+  const size_t osx = (sx + 1) >> 1;
+  const size_t osy = (sy + 1) >> 1;
+  const size_t osz = (sz + 1) >> 1;
+  const size_t osxy = osx * osy;
+  const size_t ovoxels = osxy * osz * sw;
+
+  const bool odd_y = (sy & 0x01);
+  const bool odd_z = (sz & 0x01);
+
+  U* denom = new U[ovoxels]();
+
+  size_t y, oy;
+  size_t z, oz;
+  size_t zoff, ozoff, oyoff;
+
+  for (size_t w = 0; w < sw; w++) {
+    for (z = 0, oz = 0; z < sz - (size_t)odd_z; oz++) {
+      ozoff = osxy * (oz + osz * w);
+      
+      for (size_t zz = 0; zz < 2 && z < sz - (size_t)odd_z; zz++, z++) {
+        zoff = sxy * (z + sz * w);
+
+        for (y = 0, oy = 0; y < sy - (size_t)odd_y; y++, oy++) {
+          denominator_x_pass<T, U>(
+            channel, denom, 
+            sx, osx,
+            (sx * y + zoff), (osx * oy + ozoff)
+          );
+
+          y++;
+
+          denominator_x_pass<T, U>(
+            channel, denom, 
+            sx, osx,
+            (sx * y + zoff), (osx * oy + ozoff)
+          );
+        }
+
+        if (odd_y) {
+          y = sy - 1;
+          oy = osy - 1;
+          oyoff = (osx * oy + ozoff);
+          denominator_x_pass<T, U>(
+            channel, denom, 
+            sx, osx,
+            (sx * y + zoff), oyoff
+          );
+        }
+      }
+
+      if (odd_y) {
+        y = sy - 1;
+        oy = osy - 1;
+        oyoff = (osx * oy + ozoff);
+        // double values to prevent darkening 
+        for (size_t x = 0; x < osx; x++) {
+          denom[x + oyoff] *= 2;
+        }
+      }
+    }
+
+    if (odd_z) {
+      z = sz - 1;
+      oz = osz - 1;
+      ozoff = osxy * (oz + osz * w);
+      zoff = sxy * (z + sz * w);
+
+      for (y = 0, oy = 0; y < sy - (size_t)odd_y; y++, oy++) {
+        denominator_x_pass<T, U>(
+          channel, denom, 
+          sx, osx,
+          (sx * y + zoff), (osx * oy + ozoff)
+        );
+
+        y++;
+
+        denominator_x_pass<T, U>(
+          channel, denom, 
+          sx, osx,
+          (sx * y + zoff), (osx * oy + ozoff)
+        );
+      }
+
+      if (odd_y) {
+        y = sy - 1;
+        oy = osy - 1;
+        oyoff = (osx * oy + ozoff);
+        denominator_x_pass<T, U>(
+          channel, denom, 
+          sx, osx,
+          (sx * y + zoff), oyoff
+        );
+
+        // double values to prevent darkening 
+        for (size_t x = 0; x < osx; x++) {
+          denom[x + oyoff] *= 2;
+        }
+      }
+
+      // double values to prevent darkening 
+      for (size_t i = 0; i < osxy; i++) {
+        denom[i + ozoff] *= 2;
+      }
+    }
+  }
+
+  return denom;
+}
+
+
+template <typename T, typename U>
 inline void render_image(T* accum, U* oimg, const uint32_t bitshift, const size_t ovoxels) {
   for (size_t i = 0; i < ovoxels; i++) {
     oimg[i] = static_cast<U>(accum[i] >> bitshift);
+  }
+}
+
+template <typename T, typename U>
+inline void render_image_sparse(T* numerator, T* denominator, U* oimg, const size_t ovoxels) {
+  for (size_t i = 0; i < ovoxels; i++) {
+    if (denominator[i] == 0) {
+      oimg[i] = 0;
+    }
+    else {
+      oimg[i] = static_cast<U>(numerator[i] / denominator[i]);
+    }
   }
 }
 

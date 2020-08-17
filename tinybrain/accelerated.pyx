@@ -5,7 +5,6 @@ Author: William Silversmith
 Affiliation: Seung Lab, Princeton Neuroscience Institute
 Date: March 2019
 """
-
 cimport cython
 from cython cimport floating
 from cpython cimport PyObject, Py_INCREF
@@ -26,7 +25,9 @@ cdef extern from "accelerated.hpp" namespace "accelerated":
   cdef U* accumulate_2x2[T, U](T* arr, size_t sx, size_t sy, size_t sz, size_t sw)
   cdef T* accumulate_2x2f[T](T* arr, size_t sx, size_t sy, size_t sz, size_t sw)
   cdef U* accumulate_2x2x2[T, U](T* arr, size_t sx, size_t sy, size_t sz, size_t sw)
+  cdef U* denominator_2x2x2[T, U](T* arr, size_t sx, size_t sy, size_t sz, size_t sw)
   cdef void render_image[T, U](T* arr, U* oimg, uint32_t bitshift, size_t ovoxels)
+  cdef void render_image_sparse[T, U](T* numerator, T* denominator, U* oimg, size_t ovoxels)
   cdef void render_image_floating[T](T* arr, T* oimg, T divisor, size_t ovoxels)
   cdef T* shift_right[T](T* arr, size_t ovoxels, size_t bits)
   cdef void _mode_pooling_2x2x2[T](
@@ -289,7 +290,7 @@ def _average_pooling_2x2_double(np.ndarray[double, ndim=4] channel, uint32_t num
 
 ### AVERAGE POOLING 2x2x2 ###
 
-def average_pooling_2x2x2(channel, size_t num_mips=1):
+def average_pooling_2x2x2(channel, size_t num_mips=1, sparse=False):
   ndim = channel.ndim
   channel = expand_dims(channel, 4)
 
@@ -300,11 +301,14 @@ def average_pooling_2x2x2(channel, size_t num_mips=1):
   if min(sx, sy, sz) < <size_t>(2 ** num_mips):
     raise ValueError("Can't downsample using a patch larger than the smallest plane dimension: <{},{},{}> {}".format(sx,sy,sz, 2**num_mips))
 
+  if sparse and channel.dtype not in (np.uint8, np.uint16):
+    raise ValueError("Sparse mode is only supported for uint8 and uint16 inputs. Got: " + str(channel.dtype))
+
   results = []
   if channel.dtype == np.uint8:
-    results = _average_pooling_2x2x2_uint8(channel, num_mips)
+    results = _average_pooling_2x2x2_uint8(channel, num_mips, sparse)
   elif channel.dtype == np.uint16:
-    results = _average_pooling_2x2x2_uint16(channel, num_mips)
+    results = _average_pooling_2x2x2_uint16(channel, num_mips, sparse)
   elif channel.dtype == np.float32:
     results = _average_pooling_2x2x2_float(channel, num_mips)
   elif channel.dtype == np.float64:
@@ -317,7 +321,7 @@ def average_pooling_2x2x2(channel, size_t num_mips=1):
 
   return results
 
-def _average_pooling_2x2x2_uint8(np.ndarray[uint8_t, ndim=4] channel, uint32_t num_mips):
+def _average_pooling_2x2x2_uint8(np.ndarray[uint8_t, ndim=4] channel, uint32_t num_mips, sparse=False):
   cdef size_t sx = channel.shape[0]
   cdef size_t sy = channel.shape[1]
   cdef size_t sz = channel.shape[2]
@@ -335,6 +339,16 @@ def _average_pooling_2x2x2_uint8(np.ndarray[uint8_t, ndim=4] channel, uint32_t n
     &channelview[0,0,0,0], sx, sy, sz, sw
   )
   cdef uint32_t[:] accumview = <uint32_t[:ovoxels]>accum
+
+  # "denominator"
+  cdef uint32_t* denom
+  cdef uint32_t[:] denomview
+  if sparse:
+    denom = denominator_2x2x2[uint8_t, uint32_t](
+      &channelview[0,0,0,0], sx, sy, sz, sw
+    )
+    denomview = <uint32_t[:ovoxels]>denom
+
   cdef uint32_t* tmp
   cdef uint32_t mip, bitshift
 
@@ -345,7 +359,11 @@ def _average_pooling_2x2x2_uint8(np.ndarray[uint8_t, ndim=4] channel, uint32_t n
     bitshift = 3 * ((mip % 8) + 1) # integer truncation every 8 mip levels
     oimg = np.zeros( (ovoxels,), dtype=np.uint8, order='F')
     oimgview = oimg
-    render_image[uint32_t, uint8_t](&accumview[0], &oimgview[0], bitshift, ovoxels)
+
+    if sparse:
+      render_image_sparse[uint32_t, uint8_t](&accumview[0], &denomview[0], &oimgview[0], ovoxels)
+    else:
+      render_image[uint32_t, uint8_t](&accumview[0], &oimgview[0], bitshift, ovoxels)
 
     results.append(
       oimg.reshape( (osx, osy, osz, sw), order='F' )
@@ -356,6 +374,8 @@ def _average_pooling_2x2x2_uint8(np.ndarray[uint8_t, ndim=4] channel, uint32_t n
 
     if bitshift == 24:
       shift_right[uint32_t](accum, ovoxels, bitshift)
+      if sparse:
+        shift_right[uint32_t](denom, ovoxels, bitshift)
 
     sx = osx 
     sy = osy 
@@ -372,11 +392,19 @@ def _average_pooling_2x2x2_uint8(np.ndarray[uint8_t, ndim=4] channel, uint32_t n
     accumview = <uint32_t[:ovoxels]>accum
     PyMem_Free(tmp)
 
+    if sparse:
+      tmp = denom
+      denom = accumulate_2x2x2[uint32_t, uint32_t](denom, sx, sy, sz, sw)
+      denomview = <uint32_t[:ovoxels]>denom
+      PyMem_Free(tmp)
+
   PyMem_Free(accum)
+  if sparse:
+    PyMem_Free(denom)
 
   return results
 
-def _average_pooling_2x2x2_uint16(np.ndarray[uint16_t, ndim=4] channel, uint32_t num_mips):
+def _average_pooling_2x2x2_uint16(np.ndarray[uint16_t, ndim=4] channel, uint32_t num_mips, sparse):
   cdef size_t sx = channel.shape[0]
   cdef size_t sy = channel.shape[1]
   cdef size_t sz = channel.shape[2]
@@ -394,6 +422,16 @@ def _average_pooling_2x2x2_uint16(np.ndarray[uint16_t, ndim=4] channel, uint32_t
     &channelview[0,0,0,0], sx, sy, sz, sw
   )
   cdef uint32_t[:] accumview = <uint32_t[:ovoxels]>accum
+
+  # "denominator"
+  cdef uint32_t* denom
+  cdef uint32_t[:] denomview
+  if sparse:
+    denom = denominator_2x2x2[uint16_t, uint32_t](
+      &channelview[0,0,0,0], sx, sy, sz, sw
+    )
+    denomview = <uint32_t[:ovoxels]>denom
+
   cdef uint32_t* tmp
   cdef uint32_t mip, bitshift
 
@@ -404,7 +442,10 @@ def _average_pooling_2x2x2_uint16(np.ndarray[uint16_t, ndim=4] channel, uint32_t
     bitshift = 3 * ((mip % 5) + 1) # integer truncation every 5 mip levels
     oimg = np.zeros( (ovoxels,), dtype=np.uint16, order='F')
     oimgview = oimg
-    render_image[uint32_t, uint16_t](&accumview[0], &oimgview[0], bitshift, ovoxels)
+    if sparse:
+      render_image_sparse[uint32_t, uint16_t](&accumview[0], &denomview[0], &oimgview[0], ovoxels)
+    else:
+      render_image[uint32_t, uint16_t](&accumview[0], &oimgview[0], bitshift, ovoxels)
 
     results.append(
       oimg.reshape( (osx, osy, osz, sw), order='F' )
@@ -415,6 +456,8 @@ def _average_pooling_2x2x2_uint16(np.ndarray[uint16_t, ndim=4] channel, uint32_t
 
     if bitshift == 15:
       shift_right[uint32_t](accum, ovoxels, bitshift)
+      if sparse:
+        shift_right[uint32_t](denom, ovoxels, bitshift)
 
     sx = osx 
     sy = osy 
@@ -431,7 +474,15 @@ def _average_pooling_2x2x2_uint16(np.ndarray[uint16_t, ndim=4] channel, uint32_t
     accumview = <uint32_t[:ovoxels]>accum
     PyMem_Free(tmp)
 
+    if sparse:
+      tmp = denom
+      denom = accumulate_2x2x2[uint32_t, uint32_t](denom, sx, sy, sz, sw)
+      denomview = <uint32_t[:ovoxels]>denom
+      PyMem_Free(tmp)
+
   PyMem_Free(accum)
+  if sparse:
+    PyMem_Free(denom)
 
   return results
 
