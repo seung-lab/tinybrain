@@ -26,6 +26,18 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "immintrin.h"
 
 namespace accelerated {
+                                                                                                                                                                                                                                                                                                                                    
+template<typename> struct PromotedType;
+template<> struct PromotedType<uint8_t> { using type = uint16_t; };
+template<> struct PromotedType<uint16_t> { using type = uint32_t; };
+template<> struct PromotedType<uint32_t> { using type = uint64_t; };
+template<> struct PromotedType<uint64_t> { using type = uint64_t; };
+template<> struct PromotedType<int8_t> { using type = int16_t; };
+template<> struct PromotedType<int16_t> { using type = int32_t; };
+template<> struct PromotedType<int32_t> { using type = int64_t; };
+template<> struct PromotedType<int64_t> { using type = int64_t; };
+template<> struct PromotedType<float> { using type = double; };
+template<> struct PromotedType<double> { using type = double; };
 
 // 2x2 below
 
@@ -268,6 +280,85 @@ T* accumulate_2x2f(
   }
 
   return accum;
+}
+
+// lower memory version for a single mip level
+
+template <typename T>
+T* _average_pooling_2x2_single_mip(
+  const T* channel, 
+  const size_t sx, const size_t sy, 
+  const size_t sz, const size_t sw = 1,
+  T* out = NULL
+) {
+  using T2 = typename PromotedType<T>::type; // e.g. uint8_t -> uint16_t
+
+  const size_t sxy = sx * sy;
+
+  const size_t osx = (sx + 1) >> 1;
+  const size_t osy = (sy + 1) >> 1;
+  const size_t osxy = osx * osy;
+  const size_t ovoxels = osxy * sz * sw;
+
+  const size_t odd_x = static_cast<size_t>(sx & 0x01);
+  const size_t odd_y = static_cast<size_t>(sy & 0x01);
+
+  if (out == NULL) {
+    out = new T[ovoxels]();
+  }
+
+  size_t x, ox, y, oy;
+  size_t zoff, ozoff, oyoff;
+
+  for (size_t w = 0; w < sw; w++) {
+    for (size_t z = 0; z < sz; z++) {
+      zoff = sxy * (z + sz * w);
+      ozoff = osxy * (z + sz * w);
+
+      for (y = 0, oy = 0; y < sy - odd_y; y += 2, oy++) {
+        for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox++) {
+          out[ox + osx * oy + ozoff] = static_cast<T>(
+            (
+                static_cast<T2>(channel[x + sx * y + zoff]) 
+              + static_cast<T2>(channel[(x+1) + sx * y + zoff])
+              + static_cast<T2>(channel[x + sx * (y+1) + zoff]) 
+              + static_cast<T2>(channel[(x+1) + sx * (y+1) + zoff])
+            ) / 4
+          );
+        }
+
+        if (odd_x) {
+          out[(ox - 1) + osx * oy + ozoff] = static_cast<T>(
+            (
+                static_cast<T2>(channel[x + sx * y + zoff])
+              + static_cast<T2>(channel[x + sx * (y+1) + zoff])
+            ) / 2
+          );
+        }
+      }
+
+      if (odd_y) {
+        y = sy - 1;
+        oy = osy - 1;
+        oyoff = (osx * oy + ozoff);
+
+        for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox++) {
+          out[ox + osx * oy + ozoff] = static_cast<T>(
+            (
+                static_cast<T2>(channel[x + sx * y + zoff]) 
+              + static_cast<T2>(channel[(x+1) + sx * y + zoff])
+            ) / 2
+          );
+        }
+
+        if (odd_x) {
+          out[(ox - 1) + osx * oy + ozoff] = channel[x + sx * y + zoff]; // corner
+        }
+      }
+    }
+  }
+
+  return out;
 }
 
 // 2x2x2 below

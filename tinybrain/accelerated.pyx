@@ -22,6 +22,7 @@ import numpy as np
 np.import_array()
 
 cdef extern from "accelerated.hpp" namespace "accelerated":
+  cdef T* _average_pooling_2x2_single_mip[T](T* arr, size_t sx, size_t sy, size_t sz, size_t sw, T* out)
   cdef U* accumulate_2x2[T, U](T* arr, size_t sx, size_t sy, size_t sz, size_t sw)
   cdef T* accumulate_2x2f[T](T* arr, size_t sx, size_t sy, size_t sz, size_t sw)
   cdef U* accumulate_2x2x2[T, U](T* arr, size_t sx, size_t sy, size_t sz, size_t sw)
@@ -47,6 +48,24 @@ def squeeze_dims(img, ndim):
     img = img[..., 0]
   return img
 
+ctypedef fused UINT:
+  uint8_t
+  uint16_t
+  uint32_t
+  uint64_t
+
+ctypedef fused INTEGER:
+  UINT
+  int8_t
+  int16_t
+  int32_t
+  int64_t
+
+ctypedef fused NUMBER:
+  INTEGER
+  float
+  double
+
 ### AVERAGE POOLING 2x2 ####
 
 def average_pooling_2x2(channel, size_t num_mips=1):
@@ -60,7 +79,9 @@ def average_pooling_2x2(channel, size_t num_mips=1):
     raise ValueError("Can't downsample smaller than the smallest XY plane dimension.")
 
   results = []
-  if channel.dtype == np.uint8:
+  if num_mips == 1:
+    results = _average_pooling_2x2_single_mip_py(channel)
+  elif channel.dtype == np.uint8:
     results = _average_pooling_2x2_uint8(channel, num_mips)
   elif channel.dtype == np.uint16:
     results = _average_pooling_2x2_uint16(channel, num_mips)
@@ -75,6 +96,59 @@ def average_pooling_2x2(channel, size_t num_mips=1):
     results[i] = squeeze_dims(img, ndim)
 
   return results
+
+def _average_pooling_2x2_single_mip_py(np.ndarray[NUMBER, ndim=4] channel):
+  cdef uint8_t[:,:,:,:] arr_memview8u
+  cdef uint16_t[:,:,:,:] arr_memview16u
+  cdef uint32_t[:,:,:,:] arr_memview32u
+  cdef uint64_t[:,:,:,:] arr_memview64u
+  cdef float[:,:,:,:] arr_memviewf
+  cdef double[:,:,:,:] arr_memviewd
+
+  cdef uint8_t[:,:,:,:] out_memview8u
+  cdef uint16_t[:,:,:,:] out_memview16u
+  cdef uint32_t[:,:,:,:] out_memview32u
+  cdef uint64_t[:,:,:,:] out_memview64u
+  cdef float[:,:,:,:] out_memviewf
+  cdef double[:,:,:,:] out_memviewd
+
+  cdef size_t sx = channel.shape[0]
+  cdef size_t sy = channel.shape[1]
+  cdef size_t sz = channel.shape[2]
+  cdef size_t sw = channel.shape[3]
+
+  shape = ( (sx+1)//2, (sy+1)//2, sz, sw )
+
+  cdef np.ndarray[NUMBER, ndim=4] out = np.zeros(shape, dtype=channel.dtype, order="F")
+
+  if channel.dtype == np.uint8:
+    arr_memview8u = channel
+    out_memview8u = out
+    _average_pooling_2x2_single_mip[uint8_t](&arr_memview8u[0,0,0,0], sx, sy, sz, sw, &out_memview8u[0,0,0,0])
+  elif channel.dtype == np.uint16:
+    arr_memview16u = channel
+    out_memview16u = out
+    _average_pooling_2x2_single_mip[uint16_t](&arr_memview16u[0,0,0,0], sx, sy, sz, sw, &out_memview16u[0,0,0,0])
+  elif channel.dtype == np.uint32:
+    arr_memview32u = channel
+    out_memview32u = out
+    _average_pooling_2x2_single_mip[uint32_t](&arr_memview32u[0,0,0,0], sx, sy, sz, sw, &out_memview32u[0,0,0,0])
+  elif channel.dtype == np.uint64:
+    arr_memview64u = channel
+    out_memview64u = out
+    _average_pooling_2x2_single_mip[uint64_t](&arr_memview64u[0,0,0,0], sx, sy, sz, sw, &out_memview64u[0,0,0,0])
+  elif channel.dtype == np.float32:
+    arr_memviewf = channel
+    out_memviewf = out
+    _average_pooling_2x2_single_mip[float](&arr_memviewf[0,0,0,0], sx, sy, sz, sw, &out_memviewf[0,0,0,0])
+  elif channel.dtype == np.float64:
+    arr_memviewd = channel
+    out_memviewd = out
+    _average_pooling_2x2_single_mip[double](&arr_memviewd[0,0,0,0], sx, sy, sz, sw, &out_memviewd[0,0,0,0])
+  else:
+    raise TypeError("Unsupported data type. " + str(channel.dtype))
+
+  return [ out ]
 
 def _average_pooling_2x2_uint8(np.ndarray[uint8_t, ndim=4] channel, uint32_t num_mips):
   cdef size_t sx = channel.shape[0]
@@ -597,18 +671,6 @@ def _average_pooling_2x2x2_double(np.ndarray[double, ndim=4] channel, uint32_t n
   return results
 
 ### MODE POOLING ####
-
-ctypedef fused NUMBER:
-  uint8_t
-  uint16_t
-  uint32_t
-  uint64_t
-  int8_t
-  int16_t
-  int32_t
-  int64_t
-  float
-  double
 
 def mode_pooling_2x2(img, uint32_t num_mips=1):
   ndim = img.ndim
