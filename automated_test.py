@@ -1,6 +1,5 @@
 import pytest
 
-from six.moves import range
 from copy import deepcopy
 import numpy as np
 
