@@ -23,7 +23,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include <cmath>
 #include <cstdio>
 #include <cstdint>
-#include "immintrin.h"
+
+#ifdef __x86_64
+  #include "immintrin.h"
+#endif
 
 namespace accelerated {
                                                                                                                                                                                                                                                                                                                                     
@@ -72,7 +75,26 @@ void accumulate_2x2_dual_pass(
   const size_t sx, const size_t sy, 
   const size_t osx, const size_t osy,
   const size_t yoff, const size_t oyoff
-);
+) {
+  const bool odd_x = (sx & 0x01);
+
+  size_t x, ox;
+  for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox += 1) {
+    accum[ox + oyoff] = (
+        channel[x + yoff] + channel[x + 1 + yoff]
+      + channel[x + sx + yoff] + channel[x + 1 + sx + yoff]
+    );
+  }
+
+  if (odd_x) {
+    // << 1 bc we need to multiply by two on the edge 
+    // to avoid darkening during render
+    accum[(osx - 1) + oyoff] += (channel[(sx - 1) + yoff]) * 2;
+    accum[(osx - 1) + oyoff] += (channel[(sx - 1) + yoff + sx]) * 2;
+  }
+}
+
+#ifdef __x86_64
 
 template <>
 inline void accumulate_2x2_dual_pass(
@@ -162,6 +184,7 @@ inline void accumulate_2x2_dual_pass(
   }
 }
 
+#endif
 
 template <typename T, typename U>
 U* accumulate_2x2(
