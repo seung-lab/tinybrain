@@ -18,6 +18,7 @@ if sys.platform == 'darwin':
 setuptools.setup(
   setup_requires=['pbr', 'numpy'],
   install_requires=['numpy'],
+  python_requires="~=3.6",
   ext_modules=[
     setuptools.Extension(
       'tinybrain.accelerated',
