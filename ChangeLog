@@ -1,6 +1,21 @@
 CHANGES
 =======
 
+* fix: numpy deprecated np.int in favor of int
+* chore: updated build system
+
+1.2.0
+-----
+
+* chore: drop py27, py35
+* refactor(arm64): provide non-intrinsics for non x86 code
+* perf: reduce memory usage for single mip for 2x2 averaging (#12)
+* perf(avg2x2x2): faster and lower memory for single mips
+* chore: drop py27 and py35
+* fix: remove dependency on six
+* perf: reduce memory usage for single mip for 2x2 averaging
+* chore: update trove identifiers
+
 1.1.0
 -----
 
