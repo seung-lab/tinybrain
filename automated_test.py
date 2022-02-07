@@ -767,4 +767,40 @@ def test_stippled_countless2d():
   assert test(ab) == [[[[1]]]]
   assert test(ac) == [[[[1]]]]
   assert test(ad) == [[[[1]]]]
-    
+
+def test_minimum_size():
+  labels = np.zeros((100,2,100), order="F")
+  out_mips = tinybrain.downsample_with_averaging(labels, factor=(2,2,1), num_mips=1)
+  assert out_mips[0].shape == (50,1,100)
+
+  try:
+    labels = np.zeros((100,1,100), order="F")
+    out_mips = tinybrain.downsample_with_averaging(labels, factor=(2,2,1), num_mips=1)
+    assert False
+  except ValueError:
+    pass
+
+  labels = np.zeros((2,100,100), order="F")
+  out_mips = tinybrain.downsample_with_averaging(labels, factor=(2,2,1), num_mips=1)
+  assert out_mips[0].shape == (1,50,100)
+
+  try:
+    labels = np.zeros((1,100,100), order="F")
+    out_mips = tinybrain.downsample_with_averaging(labels, factor=(2,2,1), num_mips=1)
+    assert False
+  except ValueError:
+    pass
+
+  labels = np.zeros((100,2,100), order="F")
+  out_mips = tinybrain.downsample_segmentation(labels, factor=(2,2,1), num_mips=1)
+  assert out_mips[0].shape == (50,1,100)
+
+  labels = np.zeros((100,1,100), order="F")
+  out_mips = tinybrain.downsample_segmentation(labels, factor=(2,2,1), num_mips=1)
+  assert out_mips[0].shape == (50,1,100)  
+
+
+
+
+
+
