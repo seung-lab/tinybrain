@@ -1,6 +1,19 @@
 CHANGES
 =======
 
+1.2.2
+-----
+
+* release(1.2.2): fixes off-by-one error in minimum average pooling size
+* build: add GHA
+* fix: off-by-one error in minimum size inequality (#17)
+* chore: add windows py39 to appveyor
+* chore: make sure BigSur can run build script
+
+1.2.1
+-----
+
+* release(1.2.1): accomodate numpy deprecations
 * fix: numpy deprecated np.int in favor of int
 * chore: updated build system
 
