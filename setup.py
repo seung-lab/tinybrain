@@ -6,11 +6,17 @@ import sys
 
 import numpy as np
 
-
-extra_compile_args = [
-  '-std=c++11', '-O3', '-msse3',
-  # '-DCYTHON_TRACE=1'
-]
+extra_compile_args = []
+if sys.platform == 'win32':
+  extra_compile_args += [
+    '/std:c++11', '/O2'
+  ]
+else:
+  extra_compile_args += [
+    '-std=c++11', '-O3',
+    # '-msse3' # may help accelerate x86_64 chips
+    # '-DCYTHON_TRACE=1'
+  ]
 
 if sys.platform == 'darwin':
   extra_compile_args += [ '-stdlib=libc++', '-mmacosx-version-min=10.9' ]
