@@ -1,5 +1,6 @@
 import setuptools
 import sys 
+import platform
 
 # NOTE: If accelerated.cpp does not exist:
 # cython -3 --fast-fail -v --cplus tinybrain/accelerated.pyx
@@ -11,12 +12,14 @@ if sys.platform == 'win32':
   extra_compile_args += [
     '/std:c++11', '/O2'
   ]
+  if platform.machine() == "x86_64":
+    extra_compile_args += [ "/arch:SSE3" ]
 else:
   extra_compile_args += [
-    '-std=c++11', '-O3',
-    # '-msse3' # may help accelerate x86_64 chips
-    # '-DCYTHON_TRACE=1'
+    '-std=c++11', '-O3' # '-DCYTHON_TRACE=1'
   ]
+  if platform.machine() == "x86_64":
+    extra_compile_args += [ '-msse3' ]
 
 if sys.platform == 'darwin':
   extra_compile_args += [ '-stdlib=libc++', '-mmacosx-version-min=10.9' ]
