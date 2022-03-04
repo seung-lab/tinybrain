@@ -225,9 +225,9 @@ def downsample_segmentation(img, factor, sparse=False, num_mips=1):
   results = []
   for mip in range(num_mips):
     img = _downsample_segmentation(img, factor, sparse)
-    img = squeeze_dims(img, ndim)
     results.append(img)
 
+  results = [ squeeze_dims(img, ndim) for img in results ]
   return results
 
 def _downsample_segmentation(data, factor, sparse=False):
