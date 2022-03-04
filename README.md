@@ -88,7 +88,7 @@ print("Pillow ", time.time() - s)
 
 Here's the output from `perf.py` on an Apple Silicon 2021 Macbook Pro M1.
 Note that the image used was a random 2048x2048x64 array that was a uint8
-for average pooling and a uint64 for mode pooling to represent real use cases more fairly. In the table, read it as 2D or 3D downsamples, generating a single or multiple mip levels, with sparse mode enabled or disabled.
+for average pooling and a uint64 for mode pooling to represent real use cases more fairly. In the table, read it as 2D or 3D downsamples, generating a single or multiple mip levels, with sparse mode enabled or disabled. The speed values are in megavoxels per a second and are the mean of ten runs.
 
 
 | dwnsmpl  |   mips  |   sparse  |   AVG (MVx/sec)  |   MODE (MVx/sec)  |
