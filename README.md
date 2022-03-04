@@ -86,6 +86,23 @@ print("Pillow ", time.time() - s)
 # Pillow      937 ms +/- 7.63 ms    1.9x
 ```
 
+Here's the output from `perf.py` on an Apple Silicon 2021 Macbook Pro M1.
+Note that the image used was a random 2048x2048x64 array that was a uint8
+for average pooling and a uint64 for mode pooling to represent real use cases more fairly. In the table, read it as 2D or 3D downsamples, generating a single or multiple mip levels, with sparse mode enabled or disabled.
+
+
+| dwnsmpl  |   mips  |   sparse  |   AVG (MVx/sec)  |   MODE (MVx/sec)  |
+|----------|---------|-----------|------------------|-------------------|
+|   2x2    |   1     |   N       |   3868.58        |   272.63          |
+|   2x2    |   2     |   N       |   2691.03        |   164.68          |
+|   2x2    |   1     |   Y       |   N/A            |   138.22          |
+|   2x2    |   2     |   Y       |   N/A            |   82.20           |
+|   2x2x2  |   1     |   N       |   4466.7         |   337.74          |
+|   2x2x2  |   2     |   N       |   2855.5         |   299.42          |
+|   2x2x2  |   1     |   Y       |   1400.17        |   4.44            |
+|   2x2x2  |   2     |   Y       |   1270.18        |   4.04            |
+
+
 ## Considerations: downsample_segmentation 
 
 The `downsample_segmentation` function performs mode pooling operations provided the downsample factor is a power of two, including in three dimensions. If the factor is a non-power of two, striding is used. The mode pooling, which is usually what you want, is computed recursively. Mode pooling is superior to striding, but the recursive calculation can introduce defects at mip levels higher than 1. This may be improved in the future.  
