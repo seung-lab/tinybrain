@@ -1,9 +1,27 @@
 CHANGES
 =======
 
+* docs: elaborate on why 2x2x2 is so much faster on real data
+* docs: update perf numbers with fix + use connectomics.npy for seg
+* perf: increase performance of mode pooling 2x2
+
+1.2.3
+-----
+
+* release(1.2.3): fix ds segmentation crash and perf for additional dtypes
+* docs: clarify mean of 10 runs
+* docs: add benchmark data to README
+* perf: accelerate 2x2 and 2x2x2 downsampling for num\_mips=1 for all types
+* docs: add results of a perf run
+* fix: loss of fourth index during recursive mode pooling
+* feat(perf.py): add benchmark script
+
 1.2.2
 -----
 
+* build: make sure sse3 is specified on x86\_64 platforms
+* fix: make tinybrain build on more platforms
+* build: skip py36 in CI build wheel
 * release(1.2.2): fixes off-by-one error in minimum average pooling size
 * build: add GHA
 * fix: off-by-one error in minimum size inequality (#17)
