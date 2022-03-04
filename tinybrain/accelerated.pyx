@@ -757,7 +757,7 @@ def _mode_pooling_2x2(np.ndarray[NUMBER, ndim=4] img):
   cdef size_t x, y, z, w
   cdef NUMBER a, b, c, d 
 
-  cdef np.ndarray[NUMBER, ndim=4] oimg = np.zeros( (osx, osy, sz, sw), dtype=img.dtype )
+  cdef np.ndarray[NUMBER, ndim=4] oimg = np.zeros((osx, osy, sz, sw), dtype=img.dtype, order="F")
 
   cdef size_t ox, oy
 
