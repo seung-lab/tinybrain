@@ -102,7 +102,7 @@ for average pooling and a uint64 for mode pooling to represent real use cases mo
 |   2x2x2  |   1     |   Y       |   1400.17        |   4.76            |
 |   2x2x2  |   2     |   Y       |   1270.18        |   4.32            |
 
-As the downsampling code's performance is data dependent, I also used [`connectomics.npy`](https://github.com/seung-lab/connected-components-3d/blob/master/benchmarks/connectomics.npy.gz) (512<sup>3</sup> uint32 extended to uint64) to see how that affected performance. This data comes from mouse visual cortex and has many equal adjacent voxels.
+As the downsampling code's performance is data dependent due to branching, I also used [`connectomics.npy`](https://github.com/seung-lab/connected-components-3d/blob/master/benchmarks/connectomics.npy.gz) (512<sup>3</sup> uint32 extended to uint64) to see how that affected performance. This data comes from mouse visual cortex and has many equal adjacent voxels. In this volume, the 2x2x2 non-sparse mode is much faster as the "instant" majority detection can skip examining half the voxels in many cases.
 
 | dwnsmpl  |   mips  |   sparse  |   MODE (MVx/sec)  |
 |----------|---------|-----------|-------------------|

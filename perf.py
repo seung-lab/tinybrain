@@ -6,15 +6,26 @@
 # 2x2x2 2 mip: 0.939s, 2855.51 MVx/sec, N=10
 # 2x2x2 1 mip sparse: 1.914s, 1400.17 MVx/sec, N=10
 # 2x2x2 2 mip sparse: 2.110s, 1270.18 MVx/sec, N=10
+
 # MODE POOLING ((2048, 2048, 64), uint64)
-# 2x2 1 mip: 9.830s, 272.63 MVx/sec, N=10
-# 2x2 2 mip: 16.274s, 164.68 MVx/sec, N=10
-# 2x2 1 mip sparse: 19.389s, 138.22 MVx/sec, N=10
-# 2x2 2 mip sparse: 32.603s, 82.20 MVx/sec, N=10
-# 2x2x2 1 mip: 7.935s, 337.74 MVx/sec, N=10
-# 2x2x2 2 mip: 8.951s, 299.42 MVx/sec, N=10
-# 2x2x2 1 mip sparse: 603.875s, 4.44 MVx/sec, N=10
-# 2x2x2 2 mip sparse: 663.919s, 4.04 MVx/sec, N=10
+# 2x2 1 mip: 4.781s, 560.54 MVx/sec, N=10
+# 2x2 2 mip: 5.556s, 482.34 MVx/sec, N=10
+# 2x2 1 mip sparse: 19.580s, 136.87 MVx/sec, N=10
+# 2x2 2 mip sparse: 33.501s, 80.00 MVx/sec, N=10
+# 2x2x2 1 mip: 7.951s, 337.08 MVx/sec, N=10
+# 2x2x2 2 mip: 8.973s, 298.66 MVx/sec, N=10
+# 2x2x2 1 mip sparse: 562.670s, 4.76 MVx/sec, N=10
+# 2x2x2 2 mip sparse: 620.148s, 4.32 MVx/sec, N=10
+
+# MODE POOLING CONNECTOMICS ((512,512,512), uint64)
+# 2x2 1 mip: 2.665s, 502.77 MVx/sec, N=10
+# 2x2 2 mip: 3.116s, 430.00 MVx/sec, N=10
+# 2x2 1 mip sparse: 9.280s, 144.40 MVx/sec, N=10
+# 2x2 2 mip sparse: 19.599s, 68.37 MVx/sec, N=10
+# 2x2x2 1 mip: 0.680s, 1969.19 MVx/sec, N=10
+# 2x2x2 2 mip: 0.751s, 1783.39 MVx/sec, N=10
+# 2x2x2 1 mip sparse: 186.203s, 7.20 MVx/sec, N=10
+# 2x2x2 2 mip sparse: 204.116s, 6.56 MVx/sec, N=10
 
 import numpy as np
 import tinybrain
