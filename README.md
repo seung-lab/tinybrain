@@ -93,14 +93,27 @@ for average pooling and a uint64 for mode pooling to represent real use cases mo
 
 | dwnsmpl  |   mips  |   sparse  |   AVG (MVx/sec)  |   MODE (MVx/sec)  |
 |----------|---------|-----------|------------------|-------------------|
-|   2x2    |   1     |   N       |   3868.58        |   272.63          |
-|   2x2    |   2     |   N       |   2691.03        |   164.68          |
-|   2x2    |   1     |   Y       |   N/A            |   138.22          |
-|   2x2    |   2     |   Y       |   N/A            |   82.20           |
-|   2x2x2  |   1     |   N       |   4466.7         |   337.74          |
-|   2x2x2  |   2     |   N       |   2855.5         |   299.42          |
-|   2x2x2  |   1     |   Y       |   1400.17        |   4.44            |
-|   2x2x2  |   2     |   Y       |   1270.18        |   4.04            |
+|   2x2    |   1     |   N       |   3868.58        |   560.54          |
+|   2x2    |   2     |   N       |   2691.03        |   482.34          |
+|   2x2    |   1     |   Y       |   N/A            |   136.87          |
+|   2x2    |   2     |   Y       |   N/A            |   80.00           |
+|   2x2x2  |   1     |   N       |   4466.7         |   337.08          |
+|   2x2x2  |   2     |   N       |   2855.5         |   298.66          |
+|   2x2x2  |   1     |   Y       |   1400.17        |   4.76            |
+|   2x2x2  |   2     |   Y       |   1270.18        |   4.32            |
+
+As the downsampling code's performance is data dependent, I also used [`connectomics.npy`](https://github.com/seung-lab/connected-components-3d/blob/master/benchmarks/connectomics.npy.gz) (512<sup>3</sup> uint32 extended to uint64) to see how that affected performance. This data comes from mouse visual cortex and has many equal adjacent voxels.
+
+| dwnsmpl  |   mips  |   sparse  |   MODE (MVx/sec)  |
+|----------|---------|-----------|-------------------|
+|   2x2    |   1     |   N       |   502.77          |
+|   2x2    |   2     |   N       |   430.00          |
+|   2x2    |   1     |   Y       |   144.40          |
+|   2x2    |   2     |   Y       |   68.37           |
+|   2x2x2  |   1     |   N       |   1969.19         |
+|   2x2x2  |   2     |   N       |   1783.39         |
+|   2x2x2  |   1     |   Y       |   7.20            |
+|   2x2x2  |   2     |   Y       |   6.56            |
 
 
 ## Considerations: downsample_segmentation 
