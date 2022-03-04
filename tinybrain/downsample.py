@@ -46,6 +46,7 @@ def downsample_with_averaging(img, factor, num_mips=1, sparse=False):
   """
   if (
     img.dtype in (np.uint8, np.uint16, np.float32, np.float64)
+    or num_mips == 1 # _average_pooling_2x2_single_mip_py supports all primative types
   ):
     img = np.asfortranarray(img)
     if (tuple(factor) in ( (2,2), (2,2,1), (2,2,1,1) )):
