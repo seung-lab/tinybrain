@@ -1,31 +1,31 @@
 # Results on a 2021 Macbook Pro M1
 # AVG POOLING ((2048, 2048, 64), uint8)
-# 2x2 1 mip: 0.693s, 3868.58 MVx/sec, N=10
-# 2x2 2 mip: 0.996s, 2691.03 MVx/sec, N=10
-# 2x2x2 1 mip: 0.600s, 4466.76 MVx/sec, N=10
-# 2x2x2 2 mip: 0.939s, 2855.51 MVx/sec, N=10
-# 2x2x2 1 mip sparse: 1.914s, 1400.17 MVx/sec, N=10
-# 2x2x2 2 mip sparse: 2.110s, 1270.18 MVx/sec, N=10
+# 2x2 1 mip: 0.695s, 3856.07 MVx/sec, N=10
+# 2x2 2 mip: 0.998s, 2685.80 MVx/sec, N=10
+# 2x2x2 1 mip: 0.600s, 4468.55 MVx/sec, N=10
+# 2x2x2 2 mip: 0.935s, 2867.80 MVx/sec, N=10
+# 2x2x2 1 mip sparse: 1.929s, 1389.47 MVx/sec, N=10
+# 2x2x2 2 mip sparse: 2.128s, 1259.58 MVx/sec, N=10
 
-# MODE POOLING ((2048, 2048, 64), uint64)
-# 2x2 1 mip: 4.781s, 560.54 MVx/sec, N=10
-# 2x2 2 mip: 5.556s, 482.34 MVx/sec, N=10
-# 2x2 1 mip sparse: 19.580s, 136.87 MVx/sec, N=10
-# 2x2 2 mip sparse: 33.501s, 80.00 MVx/sec, N=10
-# 2x2x2 1 mip: 7.951s, 337.08 MVx/sec, N=10
-# 2x2x2 2 mip: 8.973s, 298.66 MVx/sec, N=10
-# 2x2x2 1 mip sparse: 562.670s, 4.76 MVx/sec, N=10
-# 2x2x2 2 mip sparse: 620.148s, 4.32 MVx/sec, N=10
+# MODE POOLING RANDOM ((2048, 2048, 64), uint64)
+# 2x2 1 mip: 2.533s, 1057.87 MVx/sec, N=10
+# 2x2 2 mip: 2.522s, 1062.69 MVx/sec, N=10
+# 2x2 1 mip sparse: 20.673s, 129.64 MVx/sec, N=10
+# 2x2 2 mip sparse: 32.836s, 81.62 MVx/sec, N=10
+# 2x2x2 1 mip: 7.956s, 336.85 MVx/sec, N=10
+# 2x2x2 2 mip: 8.980s, 298.45 MVx/sec, N=10
+# 2x2x2 1 mip sparse: 7.932s, 337.87 MVx/sec, N=10
+# 2x2x2 2 mip sparse: 9.121s, 293.84 MVx/sec, N=10
 
 # MODE POOLING CONNECTOMICS ((512,512,512), uint64)
-# 2x2 1 mip: 2.665s, 502.77 MVx/sec, N=10
-# 2x2 2 mip: 3.116s, 430.00 MVx/sec, N=10
-# 2x2 1 mip sparse: 9.280s, 144.40 MVx/sec, N=10
-# 2x2 2 mip sparse: 19.599s, 68.37 MVx/sec, N=10
-# 2x2x2 1 mip: 0.680s, 1969.19 MVx/sec, N=10
-# 2x2x2 2 mip: 0.751s, 1783.39 MVx/sec, N=10
-# 2x2x2 1 mip sparse: 186.203s, 7.20 MVx/sec, N=10
-# 2x2x2 2 mip sparse: 204.116s, 6.56 MVx/sec, N=10
+# 2x2 1 mip: 1.243s, 1078.09 MVx/sec, N=10
+# 2x2 2 mip: 1.300s, 1030.90 MVx/sec, N=10
+# 2x2 1 mip sparse: 9.168s, 146.15 MVx/sec, N=10
+# 2x2 2 mip sparse: 19.350s, 69.25 MVx/sec, N=10
+# 2x2x2 1 mip: 0.681s, 1966.74 MVx/sec, N=10
+# 2x2x2 2 mip: 0.748s, 1790.60 MVx/sec, N=10
+# 2x2x2 1 mip sparse: 0.656s, 2041.96 MVx/sec, N=10
+# 2x2x2 2 mip sparse: 0.762s, 1758.42 MVx/sec, N=10
 
 import numpy as np
 import tinybrain
