@@ -103,20 +103,16 @@ def odd_to_even2d(image):
   oddshape = np.append(oddshape, shape[2:])
   oddshape = oddshape.astype(int)
 
-  newimg = np.empty(shape=oddshape, dtype=image.dtype)
+  newimg = np.zeros(shape=oddshape, dtype=image.dtype)
 
   ox,oy = offset
   sx,sy,sz,ch = oddshape
 
-  newimg[0,0,0,:] = image[0,0,0,:] # corner
-  newimg[ox:sx,0,0,:] = image[:,0,0,:] # x axis line
-  newimg[0,oy:sy,0,:] = image[0,:,0,:] # y axis line 
-  newimg[0,0,:,:] = image[0,0,:,:] # vertical line
-
-  newimg[ox:,oy:,:,:] = image[:,:,:,:]
-  newimg[ox:sx,0,:,:] = image[:,0,:,:]
-  newimg[0,oy:sy,:,:] = image[0,:,:,:]
-
+  newimg[-1,-1,:] = image[-1,-1,:]
+  newimg[:sx-ox,-1,:] = image[:,-1,:]
+  newimg[-1,:sy-oy,:] = image[-1,:,:]
+  newimg[:sx-ox,:sy-oy] = image
+  
   return newimg
 
 def downsample_with_averaging_numpy(array, factor):

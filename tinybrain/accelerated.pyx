@@ -32,6 +32,13 @@ cdef extern from "accelerated.hpp" namespace "accelerated":
   cdef void render_image_sparse[T, U](T* numerator, T* denominator, U* oimg, size_t ovoxels)
   cdef void render_image_floating[T](T* arr, T* oimg, T divisor, size_t ovoxels)
   cdef T* shift_right[T](T* arr, size_t ovoxels, size_t bits)
+  cdef void _mode_pooling_2x2[T](
+    T* img, T* oimg, 
+    size_t sx, size_t sy, 
+    size_t sz, size_t sw,
+    size_t stride_x, size_t stride_y,
+    size_t stride_z, size_t stride_w
+  )
   cdef void _mode_pooling_2x2x2[T](
     T* img, T* oimg, 
     size_t sx, size_t sy, 
@@ -734,7 +741,7 @@ def mode_pooling_2x2(img, uint32_t num_mips=1):
 
   results = []
   for mip in range(num_mips):
-    img = _mode_pooling_2x2(img)
+    img = _mode_pooling_2x2_cpp(img)
     results.append(img)
 
   for i, img in enumerate(results):
@@ -742,62 +749,70 @@ def mode_pooling_2x2(img, uint32_t num_mips=1):
 
   return results
 
-def _mode_pooling_2x2(np.ndarray[NUMBER, ndim=4] img):
-  cdef size_t sx = img.shape[0]
-  cdef size_t sy = img.shape[1]
-  cdef size_t sz = img.shape[2]
-  cdef size_t sw = img.shape[3]
-  cdef size_t sxy = sx * sy
+def _mode_pooling_2x2_cpp(np.ndarray[NUMBER, ndim=4] img):
+  sx = img.shape[0]
+  sy = img.shape[1]
+  sz = img.shape[2]
+  sw = img.shape[3]
 
-  cdef size_t osx = (sx + 1) // 2
-  cdef size_t osy = (sy + 1) // 2
-  cdef size_t osxy = osx * osy
-  cdef size_t ovoxels = osxy * sz * sw
+  size = ( (sx+1) // 2, (sy+1) // 2, sz, sw )
 
-  cdef size_t x, y, z, w
-  cdef NUMBER a, b, c, d 
+  cdef np.ndarray[NUMBER, ndim=4] oimg = np.zeros(size, dtype=img.dtype, order='F')
 
-  cdef np.ndarray[NUMBER, ndim=4] oimg = np.zeros((osx, osy, sz, sw), dtype=img.dtype, order="F")
+  cdef uint8_t[:,:,:,:] arr_memview8u_i
+  cdef uint16_t[:,:,:,:] arr_memview16u_i
+  cdef uint32_t[:,:,:,:] arr_memview32u_i
+  cdef uint64_t[:,:,:,:] arr_memview64u_i
 
-  cdef size_t ox, oy
+  cdef uint8_t[:,:,:,:] arr_memview8u_o
+  cdef uint16_t[:,:,:,:] arr_memview16u_o
+  cdef uint32_t[:,:,:,:] arr_memview32u_o
+  cdef uint64_t[:,:,:,:] arr_memview64u_o
 
-  cdef size_t xodd = (sx & 0x01)
-  cdef size_t yodd = (sy & 0x01)
+  strides = np.array([
+    img.strides[0],
+    img.strides[1],
+    img.strides[2],
+    img.strides[3],
+  ]) 
+  strides //= sizeof(NUMBER)
 
-  for w in range(sw):
-    for z in range(sz):
-      oy = 0
-      y = 0
-      for y in range(0, sy - yodd, 2):
-        ox = 0
-        for x in range(0, sx - xodd, 2):
-          a = img[x  ,y  , z, w]
-          b = img[x+1,y  , z, w]
-          c = img[x  ,y+1, z, w]
-          d = img[x+1,y+1, z, w]
+  if img.dtype in (np.uint8, np.int8):
+    arr_memview8u_i = img.view(np.uint8)
+    arr_memview8u_o = oimg.view(np.uint8)
+    _mode_pooling_2x2[uint8_t](
+      &arr_memview8u_i[0,0,0,0], &arr_memview8u_o[0,0,0,0], 
+      sx, sy, sz, sw,
+      strides[0], strides[1], strides[2], strides[3]
+    )
+  elif img.dtype in (np.uint16, np.int16):
+    arr_memview16u_i = img.view(np.uint16)
+    arr_memview16u_o = oimg.view(np.uint16)
+    _mode_pooling_2x2[uint16_t](
+      &arr_memview16u_i[0,0,0,0], &arr_memview16u_o[0,0,0,0], 
+      sx, sy, sz, sw,
+      strides[0], strides[1], strides[2], strides[3]
+    )
+  elif img.dtype in (np.uint32, np.int32, np.float32):
+    arr_memview32u_i = img.view(np.uint32)
+    arr_memview32u_o = oimg.view(np.uint32)
+    _mode_pooling_2x2[uint32_t](
+      &arr_memview32u_i[0,0,0,0], &arr_memview32u_o[0,0,0,0], 
+      sx, sy, sz, sw,
+      strides[0], strides[1], strides[2], strides[3]
+    )
+  elif img.dtype in (np.uint64, np.int64, np.float64, np.csingle):
+    arr_memview64u_i = img.view(np.uint64)
+    arr_memview64u_o = oimg.view(np.uint64)
+    _mode_pooling_2x2[uint64_t](
+      &arr_memview64u_i[0,0,0,0], &arr_memview64u_o[0,0,0,0], 
+      sx, sy, sz, sw,
+      strides[0], strides[1], strides[2], strides[3]
+    )
+  else:
+    raise ValueError("{} not supported.".format(img.dtype))
 
-          if a == b:
-            oimg[ox, oy, z, w] = a
-          elif a == c:
-            oimg[ox, oy, z, w] = a
-          elif b == c:
-            oimg[ox, oy, z, w] = b
-          else:
-            oimg[ox, oy, z, w] = d
-
-          ox += 1
-        if xodd:
-          oimg[ox, oy, z, w] = img[ sx - 1, y, z, w ]
-          ox += 1
-        oy += 1
-
-      if yodd:
-        for x in range(osx - xodd):
-          oimg[x, oy, z, w] = img[ x*2, y, z, w ]
-        if xodd:
-          oimg[osx - 1, oy, z, w] = img[ sx - 1, y, z, w]
-
-  return oimg.reshape( (osx, osy, sz, sw) )
+  return oimg
 
 def mode_pooling_2x2x2(img, uint32_t num_mips=1, sparse=False):
   ndim = img.ndim
