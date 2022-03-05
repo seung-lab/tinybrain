@@ -170,11 +170,25 @@ def test_accelerated_vs_numpy_avg_pooling_2x2x2(dtype, sx, sy, sz):
     npimg = tinybrain.downsample.downsample_with_averaging_numpy(imagef, (4,4,4))
     assert np.all(mips[-1] == npimg)
 
-def test_accelerated_vs_numpy_mode_pooling():
-  image = np.random.randint(0,255, size=(512, 512, 6, 1), dtype=np.uint8)
+@pytest.mark.parametrize('order', ('F','C'))
+@pytest.mark.parametrize("dtype", (
+  np.int8, np.int16, np.int32, np.int64, 
+  np.uint8, np.uint16, np.uint32, np.uint64
+))
+@pytest.mark.parametrize('xodd', (0,1))
+@pytest.mark.parametrize('yodd', (0,1))
+def test_accelerated_vs_numpy_mode_pooling(order, dtype, xodd, yodd):
+  image = np.random.randint(
+    0, np.iinfo(dtype).max, 
+    size=(4+xodd, 4+yodd, 1, 1), 
+    dtype=dtype
+  )
 
-  accimg = tinybrain.accelerated.mode_pooling_2x2(image) 
-  npimg = tinybrain.downsample.countless2d(image)
+  if order == "F":
+    image = np.asfortranarray(image)
+
+  accimg = tinybrain.accelerated.mode_pooling_2x2(image)
+  npimg = tinybrain.downsample.downsample_segmentation_2d(image, (2,2,1), sparse=False)
   assert np.all(accimg == npimg)
 
   # There are slight differences in how the accelerated version and 
@@ -185,9 +199,16 @@ def test_accelerated_vs_numpy_mode_pooling():
   # version will exhibit integer truncation.
 
   mips = tinybrain.downsample_segmentation(image, (2,2,1), num_mips=4)
-  npimg = tinybrain.downsample.downsample_segmentation_2d(image, (16,16,1), sparse=False)
-  
-  assert np.all(mips[-1] == npimg)
+
+  npmips = [
+    tinybrain.downsample.downsample_segmentation_2d(image, (2,2,1), sparse=False),
+    tinybrain.downsample.downsample_segmentation_2d(image, (4,4,1), sparse=False),
+    tinybrain.downsample.downsample_segmentation_2d(image, (8,8,1), sparse=False),
+    tinybrain.downsample.downsample_segmentation_2d(image, (16,16,1), sparse=False)
+  ]
+
+  for i in range(len(npmips)):
+    assert np.all(mips[i] == npmips[i])  
 
 @pytest.mark.parametrize('order', ('C', 'F'))
 def test_downsample_segmentation_4x_z(order):

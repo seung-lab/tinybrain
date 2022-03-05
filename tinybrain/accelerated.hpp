@@ -821,6 +821,73 @@ inline void shift_right(T* accum, const size_t ovoxels, const size_t bits) {
   }
 }
 
+template <typename T>
+inline void _mode_pooling_2x2(
+  T* img, T* oimg,
+  const size_t sx, const size_t sy, 
+  const size_t sz, const size_t sw,
+) {
+  const size_t osx = (sx + 1) >> 1;
+  const size_t osy = (sy + 1) >> 1;
+
+  size_t x, y, z, w;
+  T a, b, c, d;
+
+  size_t ox, oy, out;
+
+  const size_t xodd = (sx & 0x01);
+  const size_t yodd = (sy & 0x01);
+
+  for (w = 0; w < sw; w++) {
+    for (z = 0; z < sz; z++) {
+      oy = 0;
+
+      for (y = 0; y < sy - yodd; y += 2) {
+        ox = 0;
+
+        for (x = 0; x < sx - xodd; x += 2) {
+          a = img[x + sx * (y + sy * (z + sz * w))];
+          b = img[(x+1) + sx * (y + sy * (z + sz * w))];
+          c = img[x + sx * ((y+1) + sy * (z + sz * w))];
+          d = img[(x+1) + sx * ((y+1) + sy * (z + sz * w))];
+
+          out = ox + osx * (oy + osy * (z + sz * w));
+
+          if (a == b) {
+            oimg[out] = a;
+          }
+          else if (a == c) {
+            oimg[out] = a;
+          }
+          else if (b == c) {
+            oimg[out] = b;
+          }
+          else {
+            oimg[out] = d;
+          }
+
+          ox++;
+        }
+        if (xodd) {
+          out = (osx - 1) + osx * (oy + osy * (z + sz * w));
+          oimg[out] = img[(sx - 1) + sx * (y + sy * (z + sz * w))];
+        }
+        oy++;
+      }
+      if (yodd) {
+        for (x = 0; x < osx - xodd; x++) {
+          out = x + osx * ((osy - 1) + osy * (z + sz * w));
+          oimg[out] = img[(2*x) + sx * ((sy - 1) + sy * (z + sz * w))];
+        }
+        if (xodd) {
+          out = (osx - 1) + osx * ((osy - 1) + osy * (z + sz * w));
+          oimg[out] = img[(sx - 1) + sx * ((sy - 1) + sy * (z + sz * w))];
+        }
+      }
+    }
+  }
+}
+
 // MODE POOLING 2x2x2
 // based on code by Chris Jordan, 2017
 

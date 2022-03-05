@@ -32,6 +32,11 @@ cdef extern from "accelerated.hpp" namespace "accelerated":
   cdef void render_image_sparse[T, U](T* numerator, T* denominator, U* oimg, size_t ovoxels)
   cdef void render_image_floating[T](T* arr, T* oimg, T divisor, size_t ovoxels)
   cdef T* shift_right[T](T* arr, size_t ovoxels, size_t bits)
+  cdef void _mode_pooling_2x2[T](
+    T* img, T* oimg, 
+    size_t sx, size_t sy, 
+    size_t sz, size_t sw
+  )
   cdef void _mode_pooling_2x2x2[T](
     T* img, T* oimg, 
     size_t sx, size_t sy, 
@@ -731,10 +736,11 @@ def _average_pooling_2x2x2_double(np.ndarray[double, ndim=4] channel, uint32_t n
 def mode_pooling_2x2(img, uint32_t num_mips=1):
   ndim = img.ndim
   img = expand_dims(img, 4)
+  img = np.asfortranarray(img)
 
   results = []
   for mip in range(num_mips):
-    img = _mode_pooling_2x2(img)
+    img = _mode_pooling_2x2_cpp(img)
     results.append(img)
 
   for i, img in enumerate(results):
@@ -742,7 +748,60 @@ def mode_pooling_2x2(img, uint32_t num_mips=1):
 
   return results
 
-def _mode_pooling_2x2(np.ndarray[NUMBER, ndim=4] img):
+def _mode_pooling_2x2_cpp(np.ndarray[NUMBER, ndim=4] img):
+  sx = img.shape[0]
+  sy = img.shape[1]
+  sz = img.shape[2]
+  sw = img.shape[3]
+
+  size = ( (sx+1) // 2, (sy+1) // 2, sz, sw )
+
+  cdef np.ndarray[NUMBER, ndim=4] oimg = np.zeros(size, dtype=img.dtype, order='F')
+
+  cdef uint8_t[:,:,:,:] arr_memview8u_i
+  cdef uint16_t[:,:,:,:] arr_memview16u_i
+  cdef uint32_t[:,:,:,:] arr_memview32u_i
+  cdef uint64_t[:,:,:,:] arr_memview64u_i
+
+  cdef uint8_t[:,:,:,:] arr_memview8u_o
+  cdef uint16_t[:,:,:,:] arr_memview16u_o
+  cdef uint32_t[:,:,:,:] arr_memview32u_o
+  cdef uint64_t[:,:,:,:] arr_memview64u_o
+
+  if img.dtype in (np.uint8, np.int8):
+    arr_memview8u_i = img.view(np.uint8)
+    arr_memview8u_o = oimg.view(np.uint8)
+    _mode_pooling_2x2[uint8_t](
+      &arr_memview8u_i[0,0,0,0], &arr_memview8u_o[0,0,0,0], 
+      sx, sy, sz, sw
+    )
+  elif img.dtype in (np.uint16, np.int16):
+    arr_memview16u_i = img.view(np.uint16)
+    arr_memview16u_o = oimg.view(np.uint16)
+    _mode_pooling_2x2[uint16_t](
+      &arr_memview16u_i[0,0,0,0], &arr_memview16u_o[0,0,0,0], 
+      sx, sy, sz, sw
+    )
+  elif img.dtype in (np.uint32, np.int32, np.float32):
+    arr_memview32u_i = img.view(np.uint32)
+    arr_memview32u_o = oimg.view(np.uint32)
+    _mode_pooling_2x2[uint32_t](
+      &arr_memview32u_i[0,0,0,0], &arr_memview32u_o[0,0,0,0], 
+      sx, sy, sz, sw
+    )
+  elif img.dtype in (np.uint64, np.int64, np.float64, np.csingle):
+    arr_memview64u_i = img.view(np.uint64)
+    arr_memview64u_o = oimg.view(np.uint64)
+    _mode_pooling_2x2[uint64_t](
+      &arr_memview64u_i[0,0,0,0], &arr_memview64u_o[0,0,0,0], 
+      sx, sy, sz, sw
+    )
+  else:
+    raise ValueError("{} not supported.".format(img.dtype))
+
+  return oimg
+
+def _mode_pooling_2x2_cython(np.ndarray[NUMBER, ndim=4] img):
   cdef size_t sx = img.shape[0]
   cdef size_t sy = img.shape[1]
   cdef size_t sz = img.shape[2]
@@ -797,7 +856,7 @@ def _mode_pooling_2x2(np.ndarray[NUMBER, ndim=4] img):
         if xodd:
           oimg[osx - 1, oy, z, w] = img[ sx - 1, y, z, w]
 
-  return oimg.reshape( (osx, osy, sz, sw) )
+  return oimg.reshape((osx, osy, sz, sw), order="F")
 
 def mode_pooling_2x2x2(img, uint32_t num_mips=1, sparse=False):
   ndim = img.ndim
