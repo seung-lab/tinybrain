@@ -826,10 +826,12 @@ inline void _mode_pooling_2x2(
   T* img, T* oimg,
   const size_t sx, const size_t sy, 
   const size_t sz, const size_t sw,
+  const size_t stride_x, const size_t stride_y,
+  const size_t stride_z, const size_t stride_w 
 ) {
   const size_t osx = (sx + 1) >> 1;
   const size_t osy = (sy + 1) >> 1;
-
+  
   size_t x, y, z, w;
   T a, b, c, d;
 
@@ -837,6 +839,14 @@ inline void _mode_pooling_2x2(
 
   const size_t xodd = (sx & 0x01);
   const size_t yodd = (sy & 0x01);
+
+  auto idx = [&](size_t x, size_t y, size_t z, size_t w) {
+    return x * stride_x + y * stride_y + z * stride_z + w * stride_w;
+  };
+
+  auto oidx = [&](size_t x, size_t y, size_t z, size_t w) {
+    return x + osx * (y + osy * (z + sz * w));
+  };
 
   for (w = 0; w < sw; w++) {
     for (z = 0; z < sz; z++) {
@@ -846,12 +856,12 @@ inline void _mode_pooling_2x2(
         ox = 0;
 
         for (x = 0; x < sx - xodd; x += 2) {
-          a = img[x + sx * (y + sy * (z + sz * w))];
-          b = img[(x+1) + sx * (y + sy * (z + sz * w))];
-          c = img[x + sx * ((y+1) + sy * (z + sz * w))];
-          d = img[(x+1) + sx * ((y+1) + sy * (z + sz * w))];
+          a = img[idx(x,y,z,w)];
+          b = img[idx(x+1,y,z,w)];
+          c = img[idx(x,y+1,z,w)];
+          d = img[idx(x+1,y+1,z,w)];
 
-          out = ox + osx * (oy + osy * (z + sz * w));
+          out = oidx(ox, oy, z, w);
 
           if (a == b) {
             oimg[out] = a;
@@ -869,19 +879,17 @@ inline void _mode_pooling_2x2(
           ox++;
         }
         if (xodd) {
-          out = (osx - 1) + osx * (oy + osy * (z + sz * w));
-          oimg[out] = img[(sx - 1) + sx * (y + sy * (z + sz * w))];
+          out = oidx(osx - 1, oy, z, w);
+          oimg[out] = img[idx(sx - 1, y, z, w)];
         }
         oy++;
       }
       if (yodd) {
         for (x = 0; x < osx - xodd; x++) {
-          out = x + osx * ((osy - 1) + osy * (z + sz * w));
-          oimg[out] = img[(2*x) + sx * ((sy - 1) + sy * (z + sz * w))];
+          oimg[oidx(x, osy - 1, z, w)] = img[idx(2*x, sy - 1, z, w)];
         }
         if (xodd) {
-          out = (osx - 1) + osx * ((osy - 1) + osy * (z + sz * w));
-          oimg[out] = img[(sx - 1) + sx * ((sy - 1) + sy * (z + sz * w))];
+          oimg[oidx(osx - 1, osy - 1, z, w)] = img[idx(sx - 1, sy - 1, z, w)];
         }
       }
     }
