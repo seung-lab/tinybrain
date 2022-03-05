@@ -214,11 +214,10 @@ def downsample_segmentation(img, factor, sparse=False, num_mips=1):
   if np.all(np.array(factor, int) == 1):
       return [ img ] * num_mips
 
-  if not sparse:
-    if tuple(factor) in ( (2,2), (2,2,1), (2,2,1,1) ):
-      return tinybrain.accelerated.mode_pooling_2x2(img, num_mips=num_mips)
-    elif tuple(factor) in ( (2,2,2), (2,2,2,1) ):
-      return tinybrain.accelerated.mode_pooling_2x2x2(img, num_mips=num_mips)
+  if tuple(factor) in ( (2,2), (2,2,1), (2,2,1,1) ) and not sparse:
+    return tinybrain.accelerated.mode_pooling_2x2(img, num_mips=num_mips)
+  elif tuple(factor) in ( (2,2,2), (2,2,2,1) ):
+    return tinybrain.accelerated.mode_pooling_2x2x2(img, num_mips=num_mips, sparse=sparse)
 
   ndim = img.ndim
   img = expand_dims(img, 4)
