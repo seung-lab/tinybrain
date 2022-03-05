@@ -180,7 +180,7 @@ def test_accelerated_vs_numpy_avg_pooling_2x2x2(dtype, sx, sy, sz):
 def test_accelerated_vs_numpy_mode_pooling(order, dtype, xodd, yodd):
   image = np.random.randint(
     0, np.iinfo(dtype).max, 
-    size=(4+xodd, 4+yodd, 1, 1), 
+    size=(256+xodd, 256+yodd, 1, 1), 
     dtype=dtype
   )
 
