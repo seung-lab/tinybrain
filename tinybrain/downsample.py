@@ -233,7 +233,7 @@ def _downsample_segmentation(data, factor, sparse=False):
   if data.dtype.kind not in ('u', 'i'): # integer types
     return downsample_with_striding(data, tuple(factor))[0]
 
-  is_pot = lambda x: (x != 0) and not (x & (x - 1)) # is power of two
+  is_pot = lambda x: (x > 1) and not (np.log2(x) % 1) # is power of two
   is_twod_pot_downsample = np.any(factor == 1) and is_pot(reduce(operator.mul, factor))
   is_threed_pot_downsample = not np.any(factor == 1) and is_pot(reduce(operator.mul, factor)) 
 
