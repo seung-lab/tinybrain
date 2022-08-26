@@ -820,8 +820,15 @@ def test_minimum_size():
   out_mips = tinybrain.downsample_segmentation(labels, factor=(2,2,1), num_mips=1)
   assert out_mips[0].shape == (50,1,100)  
 
+def test_4x4x4_downsample_segmentation():
+  """Making sure that 4x isotropic downsampling works correctly.
 
+  This is a minimum example for invoking recursive countless3d.
+  """
+  labels = np.ones((4, 4, 4), dtype=np.uint32)
+  assert tinybrain.downsample_segmentation(labels, (4, 4, 4)) == [[[1]]]
 
-
-
-
+def test_float_factor():
+  """Using a float downsampling factor"""
+  labels = np.ones((8, 8, 8), dtype=np.uint32)
+  assert tinybrain.downsample_segmentation(labels, (8., 8., 8.)) == [[[1]]]
