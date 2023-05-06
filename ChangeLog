@@ -1,6 +1,31 @@
 CHANGES
 =======
 
+1.3.1
+-----
+
+* release(1.3.1): fixes downsampling factors > 2
+* ci: remove appveyor
+* ci: remove travis
+* ci: add GHA tests
+* fix: supporting floats in is\_pot (#19)
+
+1.3.0
+-----
+
+* release(1.3.0): performance improvements for mode pooling
+* install: bump requirement to py37
+* perf: faster 2x2 mode pooling (#18)
+* perf: enabled forgotten accelerated 2x2x2 sparse mode
+
+1.2.4
+-----
+
+* chore: update supported versions
+* release(1.2.4): increase performance of mode pooling 2x2x1
+* chore: update ChangeLog
+* build: update tox
+* chore: replace hyphens with underscores
 * docs: elaborate on why 2x2x2 is so much faster on real data
 * docs: update perf numbers with fix + use connectomics.npy for seg
 * perf: increase performance of mode pooling 2x2
