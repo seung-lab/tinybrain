@@ -331,7 +331,7 @@ T* _average_pooling_2x2_single_mip(
   }
 
   size_t x, ox, y, oy;
-  size_t zoff, ozoff, oyoff;
+  size_t zoff, ozoff;
 
   for (size_t w = 0; w < sw; w++) {
     for (size_t z = 0; z < sz; z++) {
@@ -363,7 +363,6 @@ T* _average_pooling_2x2_single_mip(
       if (odd_y) {
         y = sy - 1;
         oy = osy - 1;
-        oyoff = (osx * oy + ozoff);
 
         for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox++) {
           out[ox + osx * oy + ozoff] = static_cast<T>(
@@ -530,7 +529,7 @@ T* _average_pooling_2x2x2_single_mip(
   }
 
   size_t x, ox, y, oy, z, oz;
-  size_t zoff, ozoff, oyoff;
+  size_t zoff, ozoff;
 
   for (size_t w = 0; w < sw; w++) {
     for (z = 0, oz = 0; z < sz - odd_z; z += 2, oz++) {
@@ -570,7 +569,6 @@ T* _average_pooling_2x2x2_single_mip(
       if (odd_y) {
         y = sy - 1;
         oy = osy - 1;
-        oyoff = (osx * oy + ozoff);
 
         for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox++) {
           out[ox + osx * oy + ozoff] = static_cast<T>(
@@ -622,7 +620,6 @@ T* _average_pooling_2x2x2_single_mip(
       if (odd_y) {
         y = sy - 1;
         oy = osy - 1;
-        oyoff = (osx * oy + ozoff);
 
         for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox++) {
           out[ox + osx * oy + ozoff] = static_cast<T>(
