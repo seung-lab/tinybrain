@@ -942,7 +942,7 @@ inline void _mode_pooling_2x2x2(
           oimg[o_loc] = vals[0];
           continue;
         }
-        else if (vals[4] == vals[5] && vals[4] == vals[6] && vals[4] == vals[7] && (!sparse || vals[0] != 0)) {
+        else if (vals[4] == vals[5] && vals[4] == vals[6] && vals[4] == vals[7] && (!sparse || vals[4] != 0)) {
           oimg[o_loc] = vals[4];
           continue;
         }
