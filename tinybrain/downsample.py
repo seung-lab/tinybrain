@@ -50,6 +50,8 @@ def downsample_with_averaging(img, factor, num_mips=1, sparse=False):
   ):
     img = np.asfortranarray(img)
     if (tuple(factor) in ( (2,2), (2,2,1), (2,2,1,1) )):
+      if sparse:
+        raise ValueError("sparse mode is not implemented for 2x2.")
       return tinybrain.accelerated.average_pooling_2x2(img, num_mips)
     elif (tuple(factor) in ( (2,2,2), (2,2,2,1) )):
       return tinybrain.accelerated.average_pooling_2x2x2(img, num_mips, sparse)
