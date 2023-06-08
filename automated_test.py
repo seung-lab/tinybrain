@@ -157,7 +157,22 @@ def test_accelerated_vs_numpy_avg_pooling_2x2x1_simple_sparse(dtype):
       image[x,y,0,2] = 3
       res = tinybrain.accelerated.average_pooling_2x2(image, num_mips=1, sparse=True) 
       
-      ans = image = np.zeros((1,1,1,3), order="F", dtype=dtype)
+      ans = np.zeros((1,1,1,3), order="F", dtype=dtype)
+      ans[0,0,0,0] = 1
+      ans[0,0,0,1] = 2
+      ans[0,0,0,2] = 3
+      assert np.all(res == ans)
+
+  for x in [0,1]:
+    for y in [0,1]:
+      image = np.zeros((4,4,1,3), order="F", dtype=dtype)
+      image[x,y,0,0] = 1
+      image[x,y,0,1] = 2
+      image[x,y,0,2] = 3
+      res = tinybrain.accelerated.average_pooling_2x2(image, num_mips=2, sparse=True) 
+      res = res[1]
+
+      ans = np.zeros((1,1,1,3), order="F", dtype=dtype)
       ans[0,0,0,0] = 1
       ans[0,0,0,1] = 2
       ans[0,0,0,2] = 3

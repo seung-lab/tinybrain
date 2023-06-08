@@ -940,6 +940,13 @@ inline void render_image_floating(T* accum, T* oimg, const T divisor, const size
 }
 
 template <typename T>
+inline void render_image_floating_sparse(T* accum, T* denominator, T* oimg, const size_t ovoxels) {
+  for (size_t i = 0; i < ovoxels; i++) {
+    oimg[i] = accum[i] / denominator[i];
+  }
+}
+
+template <typename T>
 inline void shift_right(T* accum, const size_t ovoxels, const size_t bits) {
   for (size_t i = 0; i < ovoxels; i++) {
     accum[i] >>= bits;

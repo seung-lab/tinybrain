@@ -49,7 +49,7 @@ def downsample_with_averaging(img, factor, num_mips=1, sparse=False):
     or num_mips == 1 # _average_pooling_2x2_single_mip_py supports all primative types
   ):
     img = np.asfortranarray(img)
-    if (tuple(factor) in ( (2,2), (2,2,1), (2,2,1,1) )) and (not sparse or num_mips == 1):
+    if (tuple(factor) in ( (2,2), (2,2,1), (2,2,1,1) )):
       return tinybrain.accelerated.average_pooling_2x2(img, num_mips, sparse)
     elif (tuple(factor) in ( (2,2,2), (2,2,2,1) )):
       return tinybrain.accelerated.average_pooling_2x2x2(img, num_mips, sparse)
