@@ -1,6 +1,14 @@
 CHANGES
 =======
 
+1.3.3
+-----
+
+* release(1.3.3): fix sparse mode 2x2x2 seg ds and throw error
+* fix: throw error if sparse mode isn't supported
+* refactor: remove unused variable oyoff
+* fix: incorrect sparse check value in 2x2x2 mode downsampling
+
 1.3.2
 -----
 

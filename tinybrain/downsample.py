@@ -49,9 +49,7 @@ def downsample_with_averaging(img, factor, num_mips=1, sparse=False):
     or num_mips == 1 # _average_pooling_2x2_single_mip_py supports all primative types
   ):
     img = np.asfortranarray(img)
-    if (tuple(factor) in ( (2,2), (2,2,1), (2,2,1,1) )):
-      if sparse:
-        raise ValueError("sparse mode is not implemented for 2x2.")
+    if (tuple(factor) in ( (2,2), (2,2,1), (2,2,1,1) )) and not sparse:
       return tinybrain.accelerated.average_pooling_2x2(img, num_mips)
     elif (tuple(factor) in ( (2,2,2), (2,2,2,1) )):
       return tinybrain.accelerated.average_pooling_2x2x2(img, num_mips, sparse)
@@ -61,11 +59,11 @@ def downsample_with_averaging(img, factor, num_mips=1, sparse=False):
     dtype = img.dtype
     img = img.astype(np.float32)
     for mip in range(num_mips):
-      img = downsample_with_averaging_numpy(img, factor)
+      img = downsample_with_averaging_numpy(img, factor, sparse)
       results.append(img.astype(dtype))
   else:
     for mip in range(num_mips):
-      img = downsample_with_averaging_numpy(img, factor)
+      img = downsample_with_averaging_numpy(img, factor, sparse)
       results.append(img)
 
   return results
@@ -117,7 +115,7 @@ def odd_to_even2d(image):
   
   return newimg
 
-def downsample_with_averaging_numpy(array, factor):
+def downsample_with_averaging_numpy(array, factor, sparse=False):
   """
   Downsample x by factor using averaging.
 
@@ -137,7 +135,13 @@ def downsample_with_averaging_numpy(array, factor):
     part = array[tuple(np.s_[o::f] for o, f in zip(offset, factor))]
     indexing_expr = tuple(np.s_[:s] for s in part.shape)
     temp[indexing_expr] += part
-    counts[indexing_expr] += 1
+    if sparse:
+      counts[indexing_expr] += part > 0
+    else:
+      counts[indexing_expr] += 1
+
+  if sparse:
+    np.maximum(counts, 1, out=counts)
   return np.cast[array.dtype](temp / counts)
 
 def downsample_with_max_pooling(array, factor, num_mips=1):
