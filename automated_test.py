@@ -178,6 +178,17 @@ def test_accelerated_vs_numpy_avg_pooling_2x2x1_simple_sparse(dtype):
       ans[0,0,0,2] = 3
       assert np.all(res == ans)
 
+  image = np.zeros((2,2,1,3), order="F", dtype=dtype)
+  ans = np.zeros((1,1,1,3), order="F", dtype=dtype)
+  res = tinybrain.accelerated.average_pooling_2x2(image, num_mips=1, sparse=True) 
+  assert np.all(res[0] == ans)
+
+  image = np.zeros((4,4,1,3), order="F", dtype=dtype)
+  ans = np.zeros((1,1,1,3), order="F", dtype=dtype)
+  res = tinybrain.accelerated.average_pooling_2x2(image, num_mips=2, sparse=True) 
+  assert np.all(res[1] == ans)
+
+
 @pytest.mark.parametrize("dtype", (np.uint8, np.uint16, np.float32, np.float64))
 @pytest.mark.parametrize("sx", (6,7,1024,1025))
 @pytest.mark.parametrize("sy", (6,7,1024,1025))
