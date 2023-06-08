@@ -942,7 +942,12 @@ inline void render_image_floating(T* accum, T* oimg, const T divisor, const size
 template <typename T>
 inline void render_image_floating_sparse(T* accum, T* denominator, T* oimg, const size_t ovoxels) {
   for (size_t i = 0; i < ovoxels; i++) {
-    oimg[i] = accum[i] / denominator[i];
+    if (denominator[i] == 0) {
+      oimg[i] = 0;
+    }
+    else {
+      oimg[i] = accum[i] / denominator[i];
+    }
   }
 }
 
