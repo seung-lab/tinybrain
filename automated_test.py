@@ -126,12 +126,13 @@ def test_even_odd2d():
   assert np.array_equal(oddimgf, ans3x3x3)
 
 @pytest.mark.parametrize("dtype", (np.uint8, np.uint16, np.float32, np.float64))
-def test_accelerated_vs_numpy_avg_pooling_2x2(dtype):
-  image = np.random.randint(0,255, size=(512, 512, 6), dtype=np.uint8).astype(dtype)
+@pytest.mark.parametrize("sparse", [False, True])
+def test_accelerated_vs_numpy_avg_pooling_2x2x1(dtype, sparse):
+  image = np.random.randint(0,255, size=(512, 512, 6), dtype=np.uint8).astype(dtype, copy=False)
   imagef = np.asfortranarray(image)
 
-  accimg = tinybrain.accelerated.average_pooling_2x2(imagef) 
-  npimg = tinybrain.downsample.downsample_with_averaging_numpy(imagef, (2,2,1))
+  accimg = tinybrain.accelerated.average_pooling_2x2(imagef, sparse=sparse) 
+  npimg = tinybrain.downsample.downsample_with_averaging_numpy(imagef, (2,2,1), sparse=sparse)
   assert np.all(accimg == npimg)
 
   # There are slight differences in how the accelerated version and 
@@ -141,10 +142,26 @@ def test_accelerated_vs_numpy_avg_pooling_2x2(dtype):
   # integer truncation. We can't compare above mip 4 because the accelerated
   # version will exhibit integer truncation.
 
-  mips = tinybrain.downsample_with_averaging(imagef, (2,2,1), num_mips=4)
-  npimg = tinybrain.downsample.downsample_with_averaging_numpy(imagef, (16,16,1))
-  
+  mips = tinybrain.downsample_with_averaging(imagef, (2,2,1), num_mips=4, sparse=sparse)
+  npimg = tinybrain.downsample.downsample_with_averaging_numpy(imagef, (16,16,1), sparse=sparse)
+
   assert np.all(mips[-1] == npimg)
+
+@pytest.mark.parametrize("dtype", (np.uint8, np.uint16, np.float32, np.float64))
+def test_accelerated_vs_numpy_avg_pooling_2x2x1_simple_sparse(dtype):
+  for x in [0,1]:
+    for y in [0,1]:
+      image = np.zeros((2,2,1,3), order="F", dtype=dtype)
+      image[x,y,0,0] = 1
+      image[x,y,0,1] = 2
+      image[x,y,0,2] = 3
+      res = tinybrain.accelerated.average_pooling_2x2(image, num_mips=1, sparse=True) 
+      
+      ans = image = np.zeros((1,1,1,3), order="F", dtype=dtype)
+      ans[0,0,0,0] = 1
+      ans[0,0,0,1] = 2
+      ans[0,0,0,2] = 3
+      assert np.all(res == ans)
 
 @pytest.mark.parametrize("dtype", (np.uint8, np.uint16, np.float32, np.float64))
 @pytest.mark.parametrize("sx", (6,7,1024,1025))

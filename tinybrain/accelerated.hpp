@@ -312,7 +312,7 @@ T* _average_pooling_2x2_single_mip(
   const T* channel, 
   const size_t sx, const size_t sy, 
   const size_t sz, const size_t sw = 1,
-  T* out = NULL
+  T* out = NULL, const bool sparse = false
 ) {
   using T2 = typename PromotedType<T>::type; // e.g. uint8_t -> uint16_t
 
@@ -338,39 +338,97 @@ T* _average_pooling_2x2_single_mip(
       zoff = sxy * (z + sz * w);
       ozoff = osxy * (z + sz * w);
 
-      for (y = 0, oy = 0; y < sy - odd_y; y += 2, oy++) {
-        for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox++) {
-          out[ox + osx * oy + ozoff] = static_cast<T>(
-            (
-                static_cast<T2>(channel[x + sx * y + zoff]) 
-              + static_cast<T2>(channel[(x+1) + sx * y + zoff])
-              + static_cast<T2>(channel[x + sx * (y+1) + zoff]) 
-              + static_cast<T2>(channel[(x+1) + sx * (y+1) + zoff])
-            ) / 4
-          );
-        }
+      if (sparse) {
+        for (y = 0, oy = 0; y < sy - odd_y; y += 2, oy++) {
+          for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox++) {
+            T a = channel[x + sx * y + zoff];
+            T b = channel[(x+1) + sx * y + zoff];
+            T c = channel[x + sx * (y+1) + zoff];
+            T d = channel[(x+1) + sx * (y+1) + zoff];
 
-        if (odd_x) {
-          out[(ox - 1) + osx * oy + ozoff] = static_cast<T>(
-            (
-                static_cast<T2>(channel[x + sx * y + zoff])
-              + static_cast<T2>(channel[x + sx * (y+1) + zoff])
-            ) / 2
-          );
+            out[ox + osx * oy + ozoff] = static_cast<T>(
+              (
+                  static_cast<T2>(a) 
+                + static_cast<T2>(b)
+                + static_cast<T2>(c) 
+                + static_cast<T2>(d)
+              ) / static_cast<T2>(
+                  std::max(
+                    static_cast<T>((a > 0) + (b > 0) + (c > 0) + (d > 0)),
+                    static_cast<T>(1)
+                  )
+                )
+              );
+          }
+
+          if (odd_x) {
+            T a = channel[x + sx * y + zoff];
+            T b = channel[x + sx * (y+1) + zoff];
+            out[(ox - 1) + osx * oy + ozoff] = static_cast<T>(
+              (
+                  static_cast<T2>(a)
+                + static_cast<T2>(b)
+              ) / static_cast<T2>(
+                std::max(
+                  static_cast<T>((a > 0) + (b > 0)),
+                  static_cast<T>(1)
+              )
+            ));
+          }
         }
+      }
+      else {
+        for (y = 0, oy = 0; y < sy - odd_y; y += 2, oy++) {
+          for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox++) {
+            out[ox + osx * oy + ozoff] = static_cast<T>(
+              (
+                  static_cast<T2>(channel[x + sx * y + zoff]) 
+                + static_cast<T2>(channel[(x+1) + sx * y + zoff])
+                + static_cast<T2>(channel[x + sx * (y+1) + zoff]) 
+                + static_cast<T2>(channel[(x+1) + sx * (y+1) + zoff])
+              ) / 4
+            );
+          }
+
+          if (odd_x) {
+            out[(ox - 1) + osx * oy + ozoff] = static_cast<T>(
+              (
+                  static_cast<T2>(channel[x + sx * y + zoff])
+                + static_cast<T2>(channel[x + sx * (y+1) + zoff])
+              ) / 2
+            );
+          }
+        }        
       }
 
       if (odd_y) {
         y = sy - 1;
         oy = osy - 1;
 
-        for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox++) {
-          out[ox + osx * oy + ozoff] = static_cast<T>(
-            (
-                static_cast<T2>(channel[x + sx * y + zoff]) 
-              + static_cast<T2>(channel[(x+1) + sx * y + zoff])
-            ) / 2
-          );
+        if (sparse) {
+          for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox++) {
+            out[ox + osx * oy + ozoff] = static_cast<T>(
+              (
+                  static_cast<T2>(channel[x + sx * y + zoff]) 
+                + static_cast<T2>(channel[(x+1) + sx * y + zoff])
+              ) / 2
+            );
+          }
+        }
+        else {
+          T a = channel[x + sx * y + zoff];
+          T b = channel[(x+1) + sx * y + zoff];
+          for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox++) {
+            out[ox + osx * oy + ozoff] = static_cast<T>(
+              (
+                  static_cast<T2>(a) 
+                + static_cast<T2>(b)
+              ) / static_cast<T2>(std::max(
+                  static_cast<T>((a > 0) + (b > 0)),
+                  static_cast<T>(1)
+              ))
+            );
+          }          
         }
 
         if (odd_x) {
@@ -663,6 +721,76 @@ inline void denominator_x_pass(
     // to avoid darkening during render
     denom[(osx - 1) + o_offset] += static_cast<U>(channel[(sx - 1) + offset] != 0);
   }
+}
+
+// used for sparse=True only
+template <typename T, typename U>
+U* denominator_2x2(
+    T* channel, 
+    const size_t sx, const size_t sy, 
+    const size_t sz, const size_t sw = 1
+  ) {
+
+  const size_t sxy = sx * sy;
+
+  const size_t osx = (sx + 1) >> 1;
+  const size_t osy = (sy + 1) >> 1;
+  const size_t osz = sz;
+  const size_t osxy = osx * osy;
+  const size_t ovoxels = osxy * osz * sw;
+
+  const bool odd_y = (sy & 0x01);
+
+  U* denom = new U[ovoxels]();
+
+  size_t y, oy;
+  size_t zoff, ozoff, oyoff;
+
+  for (size_t w = 0; w < sw; w++) {
+    for (size_t z = 0; z < sz; z++) {
+      zoff = sxy * (z + sz * w);
+      ozoff = osxy * (z + sz * w);
+      
+      for (y = 0, oy = 0; y < sy - (size_t)odd_y; y++, oy++) {
+        denominator_x_pass<T, U>(
+          channel, denom, 
+          sx, osx,
+          (sx * y + zoff), (osx * oy + ozoff)
+        );
+
+        y++;
+
+        denominator_x_pass<T, U>(
+          channel, denom, 
+          sx, osx,
+          (sx * y + zoff), (osx * oy + ozoff)
+        );
+      }
+
+      if (odd_y) {
+        y = sy - 1;
+        oy = osy - 1;
+        oyoff = (osx * oy + ozoff);
+        denominator_x_pass<T, U>(
+          channel, denom, 
+          sx, osx,
+          (sx * y + zoff), oyoff
+        );
+      }
+    }
+
+    if (odd_y) {
+      y = sy - 1;
+      oy = osy - 1;
+      oyoff = (osx * oy + ozoff);
+      // double values to prevent darkening 
+      for (size_t x = 0; x < osx; x++) {
+        denom[x + oyoff] *= 2;
+      }
+    }
+  }
+
+  return denom;
 }
 
 // used for sparse=True only
