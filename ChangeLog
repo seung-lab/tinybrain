@@ -1,6 +1,13 @@
 CHANGES
 =======
 
+1.4.0
+-----
+
+* release(1.4.0): full support for 2x2x1 avg pooling
+* perf: 2x2x1 sparse avg pooling  (#20)
+* feat: numpy implementation of sparse for averaging
+
 1.3.3
 -----
 
