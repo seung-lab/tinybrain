@@ -3,6 +3,7 @@ from .downsample import (
   downsample_segmentation,
   downsample_with_striding,
   downsample_with_max_pooling,
+  downsample_with_min_pooling,
 
   DimensionError
 )

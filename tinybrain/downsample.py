@@ -144,6 +144,46 @@ def downsample_with_averaging_numpy(array, factor, sparse=False):
     np.maximum(counts, 1, out=counts)
   return np.cast[array.dtype](temp / counts)
 
+def downsample_with_min_pooling(array, factor, num_mips=1):
+
+  """
+  Downsample by picking the minimum value within a
+  cuboid specified by factor. That is, a reduction factor
+  of 2x2 works by summarizing many 2x2 cuboids. If factor's
+  length is smaller than array.shape, the remaining factors will
+  be filled with 1.
+  """
+  results = []
+  for mip in range(num_mips):
+    array = _downsample_with_min_pooling(array, factor)
+    results.append(array)
+  return results
+
+def _downsample_with_min_pooling(array, factor):
+  """
+  Downsample by picking the minimum value within a
+  cuboid specified by factor. That is, a reduction factor
+  of 2x2 works by summarizing many 2x2 cuboids. If factor's
+  length is smaller than array.shape, the remaining factors will
+  be filled with 1.
+  """
+  factor = validate_factor(array, factor)
+  if np.all(np.array(factor, int) == 1):
+      return array
+
+  sections = []
+
+  for offset in np.ndindex(factor):
+    part = array[tuple(np.s_[o::f] for o, f in zip(offset, factor))]
+    sections.append(part)
+
+  output = sections[0].copy()
+
+  for section in sections[1:]:
+    np.minimum(output, section, output)
+
+  return output
+
 def downsample_with_max_pooling(array, factor, num_mips=1):
   """
   Downsample by picking the maximum value within a
