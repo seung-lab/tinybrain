@@ -360,56 +360,56 @@ def test_downsample_segmentation_4x_x():
   result, = downsamplefn(result, (1,2,2))
   assert result.shape == (1024, 16, 128, 1)
 
-def test_downsample_max_pooling():
-  for dtype in (np.int8, np.float32):
-    cases = [
-      np.array([ [ -1, 0 ], [ 0, 0 ] ], dtype=dtype), 
-      np.array([ [ 0, 0 ], [ 0, 0 ] ], dtype=dtype), 
-      np.array([ [ 0, 1 ], [ 0, 0 ] ], dtype=dtype),
-      np.array([ [ 0, 1 ], [ 1, 0 ] ], dtype=dtype),
-      np.array([ [ 0, 1 ], [ 0, 2 ] ], dtype=dtype)
-    ]
+@pytest.mark.parametrize("dtype", [np.int8, np.float32])
+def test_downsample_max_pooling(dtype):
+  cases = [
+    np.array([ [ -1, 0 ], [ 0, 0 ] ], dtype=dtype), 
+    np.array([ [ 0, 0 ], [ 0, 0 ] ], dtype=dtype), 
+    np.array([ [ 0, 1 ], [ 0, 0 ] ], dtype=dtype),
+    np.array([ [ 0, 1 ], [ 1, 0 ] ], dtype=dtype),
+    np.array([ [ 0, 1 ], [ 0, 2 ] ], dtype=dtype)
+  ]
 
-    for i in range(len(cases)):
-      case = cases[i]
-      result, = tinybrain.downsample.downsample_with_max_pooling(case, (1, 1))
-      assert np.all(result == cases[i])
+  for i in range(len(cases)):
+    case = cases[i]
+    result, = tinybrain.downsample.downsample_with_max_pooling(case, (1, 1))
+    assert np.all(result == cases[i])
 
-    answers = [ 0, 0, 1, 1, 2 ]
+  answers = [ 0, 0, 1, 1, 2 ]
 
-    for i in range(len(cases)):
-      case = cases[i]
-      result, = tinybrain.downsample.downsample_with_max_pooling(case, (2, 2))
-      assert result == answers[i]
+  for i in range(len(cases)):
+    case = cases[i]
+    result, = tinybrain.downsample.downsample_with_max_pooling(case, (2, 2))
+    assert result == answers[i]
 
 
-    cast = lambda arr: np.array(arr, dtype=dtype) 
+  cast = lambda arr: np.array(arr, dtype=dtype) 
 
-    answers = list(map(cast, [  
-      [[ 0, 0 ]],
-      [[ 0, 0 ]],
-      [[ 0, 1 ]],
-      [[ 1, 1 ]],
-      [[ 0, 2 ]],
-    ]))
+  answers = list(map(cast, [  
+    [[ 0, 0 ]],
+    [[ 0, 0 ]],
+    [[ 0, 1 ]],
+    [[ 1, 1 ]],
+    [[ 0, 2 ]],
+  ]))
 
-    for i in range(len(cases)):
-      case = cases[i]
-      result, = tinybrain.downsample.downsample_with_max_pooling(case, (2, 1))
-      assert np.all(result == answers[i])
+  for i in range(len(cases)):
+    case = cases[i]
+    result, = tinybrain.downsample.downsample_with_max_pooling(case, (2, 1))
+    assert np.all(result == answers[i])
 
-    answers = list(map(cast, [  
-      [[ 0 ], [ 0 ]],
-      [[ 0 ], [ 0 ]],
-      [[ 1 ], [ 0 ]],
-      [[ 1 ], [ 1 ]],
-      [[ 1 ], [ 2 ]],
-    ]))
+  answers = list(map(cast, [  
+    [[ 0 ], [ 0 ]],
+    [[ 0 ], [ 0 ]],
+    [[ 1 ], [ 0 ]],
+    [[ 1 ], [ 1 ]],
+    [[ 1 ], [ 2 ]],
+  ]))
 
-    for i in range(len(cases)):
-      case = cases[i]
-      result, = tinybrain.downsample.downsample_with_max_pooling(case, (1, 2))
-      assert np.all(result == answers[i])
+  for i in range(len(cases)):
+    case = cases[i]
+    result, = tinybrain.downsample.downsample_with_max_pooling(case, (1, 2))
+    assert np.all(result == answers[i])
 
   result, = tinybrain.downsample.downsample_with_max_pooling(image4x4x4, (2, 2, 2))
   answer = cast([
@@ -448,6 +448,57 @@ def test_downsample_max_pooling():
   ])
 
   assert np.all(result == answer)
+
+@pytest.mark.parametrize("dtype", [np.int8, np.float32])
+def test_downsample_min_pooling(dtype):
+  cases = [
+    np.array([ [ -1, 0 ], [ 0, 0 ] ], dtype=dtype), 
+    np.array([ [ 0, 0 ], [ 0, 0 ] ], dtype=dtype), 
+    np.array([ [ 0, 1 ], [ 0, 0 ] ], dtype=dtype),
+    np.array([ [ 0, 1 ], [ 1, 0 ] ], dtype=dtype),
+    np.array([ [ 0, 1 ], [ 0, 2 ] ], dtype=dtype)
+  ]
+
+  for i in range(len(cases)):
+    case = cases[i]
+    result, = tinybrain.downsample.downsample_with_min_pooling(case, (1, 1))
+    assert np.all(result == cases[i])
+
+  answers = [ -1, 0, 0, 0, 0 ]
+
+  for i in range(len(cases)):
+    case = cases[i]
+    result, = tinybrain.downsample.downsample_with_min_pooling(case, (2, 2))
+    assert result == answers[i]
+
+  cast = lambda arr: np.array(arr, dtype=dtype) 
+
+  answers = list(map(cast, [  
+    [[ -1, 0 ]],
+    [[ 0, 0 ]],
+    [[ 0, 0 ]],
+    [[ 0, 0 ]],
+    [[ 0, 1 ]],
+  ]))
+
+  for i in range(len(cases)):
+    case = cases[i]
+    result, = tinybrain.downsample.downsample_with_min_pooling(case, (2, 1))
+    print(result)
+    assert np.all(result == answers[i])
+
+  answers = list(map(cast, [  
+    [[ -1 ], [ 0 ]],
+    [[ 0 ], [ 0 ]],
+    [[ 0 ], [ 0 ]],
+    [[ 0 ], [ 0 ]],
+    [[ 0 ], [ 0 ]],
+  ]))
+
+  for i in range(len(cases)):
+    case = cases[i]
+    result, = tinybrain.downsample.downsample_with_min_pooling(case, (1, 2))
+    assert np.all(result == answers[i])
 
 def test_countless3d():
   def test_all_cases(fn):

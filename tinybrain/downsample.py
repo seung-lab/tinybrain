@@ -154,11 +154,25 @@ def downsample_with_max_pooling(array, factor, num_mips=1):
   """
   results = []
   for mip in range(num_mips):
-    array = _downsample_with_max_pooling(array, factor)
+    array = _downsample_with(array, factor, fn=np.maximum)
     results.append(array)
   return results
 
-def _downsample_with_max_pooling(array, factor):
+def downsample_with_min_pooling(array, factor, num_mips=1):
+  """
+  Downsample by picking the minimum value within a
+  cuboid specified by factor. That is, a reduction factor
+  of 2x2 works by summarizing many 2x2 cuboids. If factor's 
+  length is smaller than array.shape, the remaining factors will
+  be filled with 1.
+  """
+  results = []
+  for mip in range(num_mips):
+    array = _downsample_with(array, factor, fn=np.minimum)
+    results.append(array)
+  return results
+
+def _downsample_with(array, factor, fn):
   """
   Downsample by picking the maximum value within a
   cuboid specified by factor. That is, a reduction factor
@@ -179,7 +193,7 @@ def _downsample_with_max_pooling(array, factor):
   output = sections[0].copy()
 
   for section in sections[1:]:
-    np.maximum(output, section, output)
+    fn(output, section, output)
 
   return output
 
