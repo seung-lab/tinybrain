@@ -1,6 +1,14 @@
 CHANGES
 =======
 
+1.5.0
+-----
+
+* ci: install setuptools, wheel
+* ci: update cibuildwheel to non-buggy version
+* ci: update tests, -3.7, +3.11, +3.12
+* feat: add min pooling
+
 1.4.1
 -----
 
