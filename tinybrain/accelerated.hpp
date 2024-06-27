@@ -23,10 +23,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include <cmath>
 #include <cstdio>
 #include <cstdint>
+#include <array>
 
 #ifdef __x86_64
   #include "immintrin.h"
 #endif
+
+#include "network_sort.hpp"
 
 namespace accelerated {
                                                                                                                                                                                                                                                                                                                                     
@@ -1069,9 +1072,10 @@ inline void _mode_pooling_2x2x2(
   const size_t osx = (sx + 1) >> 1;
   const size_t osy = (sy + 1) >> 1;
 
-  T vals[8];
   T cur_val, max_val;
   size_t max_ct, cur_ct;
+
+  static_network_sorter<8> network_sort;
 
   for (size_t v = 0; v < sv; v++) {
     for (size_t w = 0; w < sw; w++) {
@@ -1084,14 +1088,16 @@ inline void _mode_pooling_2x2x2(
             size_t plus_y = (y < sy - 1) * sx;
             size_t plus_z = (z < sz - 1) * sxy;
 
-            vals[0] = img[ offset ];
-            vals[1] = img[ offset + plus_x ];
-            vals[2] = img[ offset + plus_y ];
-            vals[3] = img[ offset + plus_x + plus_y ];
-            vals[4] = img[ offset + plus_z ];
-            vals[5] = img[ offset + plus_x + plus_z ];
-            vals[6] = img[ offset + plus_y + plus_z ];
-            vals[7] = img[ offset + plus_x + plus_y + plus_z ];
+            std::array<T, 8> vals = {
+              img[ offset ],
+              img[ offset + plus_x ],
+              img[ offset + plus_y ],
+              img[ offset + plus_x + plus_y ],
+              img[ offset + plus_z ],
+              img[ offset + plus_x + plus_z ],
+              img[ offset + plus_y + plus_z ],
+              img[ offset + plus_x + plus_y + plus_z ]
+            };
             
             size_t o_loc = (x >> 1) + osx * ((y >> 1) + osy * ((z >> 1) + sz * (w + sw * v)));
             // These two if statements could be removed, but they add a very small
@@ -1105,31 +1111,57 @@ inline void _mode_pooling_2x2x2(
               continue;
             }
 
-            max_ct = 0;
-            max_val = 0;
-            for (short int t = 0; t < 8; t++) {
-              cur_val = vals[t];
-              if (sparse && cur_val == 0) {
+            network_sort(vals);
+
+            cur_ct = 1;
+            max_ct = 1;
+            cur_val = vals[0];
+            max_val = vals[0];
+
+            for (short int t = 1; t < 8; t++) {
+              T inst_val = vals[t];
+              if (sparse && inst_val == 0) {
                 continue;
               }
+              else if (inst_val != cur_val) {
+                if (cur_ct > max_ct) {
+                  max_val = cur_val;
+                  max_ct = cur_ct;
+                }
+                cur_ct = 0;
+                cur_val = inst_val;
+              }
 
-              cur_ct = 1;
-              for (short int p = 0; p < t; p++) {
-                cur_ct += (cur_val == vals[p]);
-              }
-              for (short int p = t + 1; p < 8; p++) {
-                cur_ct += (cur_val == vals[p]);
-              }
-
-              if (cur_ct >= 4) {
-                max_val = cur_val;
-                break;
-              }
-              else if (cur_ct > max_ct) {
-                max_ct = cur_ct;
-                max_val = cur_val;
-              }
+              cur_ct++;
             }
+
+            if (cur_ct > max_ct || (sparse && max_val == 0)) {
+              max_val = cur_val;
+            }
+
+            // for (short int t = 0; t < 8; t++) {
+            //   cur_val = vals[t];
+            //   if (sparse && cur_val == 0) {
+            //     continue;
+            //   }
+
+            //   cur_ct = 1;
+            //   for (short int p = 0; p < t; p++) {
+            //     cur_ct += (cur_val == vals[p]);
+            //   }
+            //   for (short int p = t + 1; p < 8; p++) {
+            //     cur_ct += (cur_val == vals[p]);
+            //   }
+
+            //   if (cur_ct >= 4) {
+            //     max_val = cur_val;
+            //     break;
+            //   }
+            //   else if (cur_ct > max_ct) {
+            //     max_ct = cur_ct;
+            //     max_val = cur_val;
+            //   }
+            // }
 
             oimg[o_loc] = max_val;
           }
