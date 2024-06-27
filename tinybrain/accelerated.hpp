@@ -1133,6 +1133,9 @@ inline void _mode_pooling_2x2x2(
               }
 
               cur_ct++;
+              if (cur_ct >= 4) {
+                break;
+              }
             }
 
             if (cur_ct > max_ct || (sparse && max_val == 0)) {
