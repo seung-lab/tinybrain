@@ -190,7 +190,7 @@ template <typename T, typename U>
 U* accumulate_2x2(
     T* channel, 
     const size_t sx, const size_t sy, 
-    const size_t sz = 1, const size_t sw = 1
+    const size_t sz = 1, const size_t sw = 1, const size_t sv = 1
   ) {
 
   const size_t sxy = sx * sy;
@@ -198,7 +198,7 @@ U* accumulate_2x2(
   const size_t osx = (sx + 1) >> 1;
   const size_t osy = (sy + 1) >> 1;
   const size_t osxy = osx * osy;
-  const size_t ovoxels = osxy * sz * sw;
+  const size_t ovoxels = osxy * sz * sw * sv;
 
   const bool odd_y = (sy & 0x01);
 
@@ -207,272 +207,11 @@ U* accumulate_2x2(
   size_t y, oy;
   size_t zoff, ozoff, oyoff;
 
-  for (size_t w = 0; w < sw; w++) {
-    for (size_t z = 0; z < sz; z++) {
-      zoff = sxy * (z + sz * w);
-      ozoff = osxy * (z + sz * w);
-
-      for (y = 0, oy = 0; y < sy - (size_t)odd_y; y++, oy++) {
-        accumulate_x_pass<T, U>(
-          channel, accum, 
-          sx, osx,
-          (sx * y + zoff), (osx * oy + ozoff)
-        );
-
-        y++;
-
-        accumulate_x_pass<T, U>(
-          channel, accum, 
-          sx, osx,
-          (sx * y + zoff), (osx * oy + ozoff)
-        );
-      }
-
-      if (odd_y) {
-        y = sy - 1;
-        oy = osy - 1;
-        oyoff = (osx * oy + ozoff);
-        accumulate_x_pass<T, U>(
-          channel, accum, 
-          sx, osx,
-          (sx * y + zoff), oyoff
-        );
-        
-        // double values to prevent darkening 
-        for (size_t x = 0; x < osx; x++) {
-          accum[x + oyoff] *= 2;
-        }
-      }
-    }
-  }
-
-  return accum;
-}
-
-template <typename T>
-T* accumulate_2x2f(
-    T* channel, 
-    const size_t sx, const size_t sy, 
-    const size_t sz = 1, const size_t sw = 1
-  ) {
-
-  const size_t sxy = sx * sy;
-
-  const size_t osx = (sx + 1) >> 1;
-  const size_t osy = (sy + 1) >> 1;
-  const size_t osxy = osx * osy;
-  const size_t ovoxels = osxy * sz * sw;
-
-  const bool odd_y = (sy & 0x01);
-
-  alignas(16) T* accum = new T[ovoxels]();
-
-  size_t y, oy;
-  size_t zoff, ozoff, oyoff;
-
-  for (size_t w = 0; w < sw; w++) {
-    for (size_t z = 0; z < sz; z++) {
-      zoff = sxy * (z + sz * w);
-      ozoff = osxy * (z + sz * w);
-
-      for (y = 0, oy = 0; y < sy - (size_t)odd_y; y += 2, oy++) {
-        accumulate_2x2_dual_pass<T>(
-          channel, accum, 
-          sx, sy, 
-          osx, osy,
-          (sx * y + zoff), (osx * oy + ozoff)
-        );
-      }
-
-      if (odd_y) {
-        y = sy - 1;
-        oy = osy - 1;
-        oyoff = (osx * oy + ozoff);
-        accumulate_x_pass<T, T>(
-          channel, accum, 
-          sx, osx,
-          (sx * y + zoff), oyoff
-        );
-        
-        // double values to prevent darkening 
-        for (size_t x = 0; x < osx; x++) {
-          accum[x + oyoff] *= 2;
-        }
-      }
-    }
-  }
-
-  return accum;
-}
-
-// lower memory version for a single mip level
-
-template <typename T>
-T* _average_pooling_2x2_single_mip(
-  const T* channel, 
-  const size_t sx, const size_t sy, 
-  const size_t sz, const size_t sw = 1,
-  T* out = NULL, const bool sparse = false
-) {
-  using T2 = typename PromotedType<T>::type; // e.g. uint8_t -> uint16_t
-
-  const size_t sxy = sx * sy;
-
-  const size_t osx = (sx + 1) >> 1;
-  const size_t osy = (sy + 1) >> 1;
-  const size_t osxy = osx * osy;
-  const size_t ovoxels = osxy * sz * sw;
-
-  const size_t odd_x = static_cast<size_t>(sx & 0x01);
-  const size_t odd_y = static_cast<size_t>(sy & 0x01);
-
-  if (out == NULL) {
-    out = new T[ovoxels]();
-  }
-
-  size_t x, ox, y, oy;
-  size_t zoff, ozoff;
-
-  for (size_t w = 0; w < sw; w++) {
-    for (size_t z = 0; z < sz; z++) {
-      zoff = sxy * (z + sz * w);
-      ozoff = osxy * (z + sz * w);
-
-      if (sparse) {
-        for (y = 0, oy = 0; y < sy - odd_y; y += 2, oy++) {
-          for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox++) {
-            T a = channel[x + sx * y + zoff];
-            T b = channel[(x+1) + sx * y + zoff];
-            T c = channel[x + sx * (y+1) + zoff];
-            T d = channel[(x+1) + sx * (y+1) + zoff];
-
-            out[ox + osx * oy + ozoff] = static_cast<T>(
-              (
-                  static_cast<T2>(a) 
-                + static_cast<T2>(b)
-                + static_cast<T2>(c) 
-                + static_cast<T2>(d)
-              ) / static_cast<T2>(
-                  std::max(
-                    static_cast<T>((a > 0) + (b > 0) + (c > 0) + (d > 0)),
-                    static_cast<T>(1)
-                  )
-                )
-              );
-          }
-
-          if (odd_x) {
-            T a = channel[x + sx * y + zoff];
-            T b = channel[x + sx * (y+1) + zoff];
-            out[(ox - 1) + osx * oy + ozoff] = static_cast<T>(
-              (
-                  static_cast<T2>(a)
-                + static_cast<T2>(b)
-              ) / static_cast<T2>(
-                std::max(
-                  static_cast<T>((a > 0) + (b > 0)),
-                  static_cast<T>(1)
-              )
-            ));
-          }
-        }
-      }
-      else {
-        for (y = 0, oy = 0; y < sy - odd_y; y += 2, oy++) {
-          for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox++) {
-            out[ox + osx * oy + ozoff] = static_cast<T>(
-              (
-                  static_cast<T2>(channel[x + sx * y + zoff]) 
-                + static_cast<T2>(channel[(x+1) + sx * y + zoff])
-                + static_cast<T2>(channel[x + sx * (y+1) + zoff]) 
-                + static_cast<T2>(channel[(x+1) + sx * (y+1) + zoff])
-              ) / 4
-            );
-          }
-
-          if (odd_x) {
-            out[(ox - 1) + osx * oy + ozoff] = static_cast<T>(
-              (
-                  static_cast<T2>(channel[x + sx * y + zoff])
-                + static_cast<T2>(channel[x + sx * (y+1) + zoff])
-              ) / 2
-            );
-          }
-        }        
-      }
-
-      if (odd_y) {
-        y = sy - 1;
-        oy = osy - 1;
-
-        if (sparse) {
-          for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox++) {
-            out[ox + osx * oy + ozoff] = static_cast<T>(
-              (
-                  static_cast<T2>(channel[x + sx * y + zoff]) 
-                + static_cast<T2>(channel[(x+1) + sx * y + zoff])
-              ) / 2
-            );
-          }
-        }
-        else {
-          T a = channel[x + sx * y + zoff];
-          T b = channel[(x+1) + sx * y + zoff];
-          for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox++) {
-            out[ox + osx * oy + ozoff] = static_cast<T>(
-              (
-                  static_cast<T2>(a) 
-                + static_cast<T2>(b)
-              ) / static_cast<T2>(std::max(
-                  static_cast<T>((a > 0) + (b > 0)),
-                  static_cast<T>(1)
-              ))
-            );
-          }          
-        }
-
-        if (odd_x) {
-          out[(ox - 1) + osx * oy + ozoff] = channel[x + sx * y + zoff]; // corner
-        }
-      }
-    }
-  }
-
-  return out;
-}
-
-// 2x2x2 below
-
-template <typename T, typename U>
-U* accumulate_2x2x2(
-    T* channel, 
-    const size_t sx, const size_t sy, 
-    const size_t sz, const size_t sw = 1
-  ) {
-
-  const size_t sxy = sx * sy;
-
-  const size_t osx = (sx + 1) >> 1;
-  const size_t osy = (sy + 1) >> 1;
-  const size_t osz = (sz + 1) >> 1;
-  const size_t osxy = osx * osy;
-  const size_t ovoxels = osxy * osz * sw;
-
-  const bool odd_y = (sy & 0x01);
-  const bool odd_z = (sz & 0x01);
-
-  U* accum = new U[ovoxels]();
-
-  size_t y, oy;
-  size_t z, oz;
-  size_t zoff, ozoff, oyoff;
-
-  for (size_t w = 0; w < sw; w++) {
-    for (z = 0, oz = 0; z < sz - (size_t)odd_z; oz++) {
-      ozoff = osxy * (oz + osz * w);
-      
-      for (size_t zz = 0; zz < 2 && z < sz - (size_t)odd_z; zz++, z++) {
-        zoff = sxy * (z + sz * w);
+  for (size_t v = 0; v < sv; v++) {
+    for (size_t w = 0; w < sw; w++) {
+      for (size_t z = 0; z < sz; z++) {
+        zoff = sxy * (z + sz * (w + sw * v));
+        ozoff = osxy * (z + sz * (w + sw * v));
 
         for (y = 0, oy = 0; y < sy - (size_t)odd_y; y++, oy++) {
           accumulate_x_pass<T, U>(
@@ -499,61 +238,330 @@ U* accumulate_2x2x2(
             sx, osx,
             (sx * y + zoff), oyoff
           );
-        }
-      }
-
-      if (odd_y) {
-        y = sy - 1;
-        oy = osy - 1;
-        oyoff = (osx * oy + ozoff);
-        // double values to prevent darkening 
-        for (size_t x = 0; x < osx; x++) {
-          accum[x + oyoff] *= 2;
+          
+          // double values to prevent darkening 
+          for (size_t x = 0; x < osx; x++) {
+            accum[x + oyoff] *= 2;
+          }
         }
       }
     }
+  }
 
-    if (odd_z) {
-      z = sz - 1;
-      oz = osz - 1;
-      ozoff = osxy * (oz + osz * w);
-      zoff = sxy * (z + sz * w);
+  return accum;
+}
 
-      for (y = 0, oy = 0; y < sy - (size_t)odd_y; y++, oy++) {
-        accumulate_x_pass<T, U>(
-          channel, accum, 
-          sx, osx,
-          (sx * y + zoff), (osx * oy + ozoff)
-        );
+template <typename T>
+T* accumulate_2x2f(
+    T* channel, 
+    const size_t sx, const size_t sy, 
+    const size_t sz = 1, const size_t sw = 1, const size_t sv = 1
+  ) {
 
-        y++;
+  const size_t sxy = sx * sy;
 
-        accumulate_x_pass<T, U>(
-          channel, accum, 
-          sx, osx,
-          (sx * y + zoff), (osx * oy + ozoff)
-        );
+  const size_t osx = (sx + 1) >> 1;
+  const size_t osy = (sy + 1) >> 1;
+  const size_t osxy = osx * osy;
+  const size_t ovoxels = osxy * sz * sw * sv;
+
+  const bool odd_y = (sy & 0x01);
+
+  alignas(16) T* accum = new T[ovoxels]();
+
+  size_t y, oy;
+  size_t zoff, ozoff, oyoff;
+
+  for (size_t v = 0; v < sv; v++) {
+    for (size_t w = 0; w < sw; w++) {
+      for (size_t z = 0; z < sz; z++) {
+        zoff = sxy * (z + sz * (w + sw * v));
+        ozoff = osxy * (z + sz * (w + sw * v));
+
+        for (y = 0, oy = 0; y < sy - (size_t)odd_y; y += 2, oy++) {
+          accumulate_2x2_dual_pass<T>(
+            channel, accum, 
+            sx, sy, 
+            osx, osy,
+            (sx * y + zoff), (osx * oy + ozoff)
+          );
+        }
+
+        if (odd_y) {
+          y = sy - 1;
+          oy = osy - 1;
+          oyoff = (osx * oy + ozoff);
+          accumulate_x_pass<T, T>(
+            channel, accum, 
+            sx, osx,
+            (sx * y + zoff), oyoff
+          );
+          
+          // double values to prevent darkening 
+          for (size_t x = 0; x < osx; x++) {
+            accum[x + oyoff] *= 2;
+          }
+        }
       }
+    }
+  }
 
-      if (odd_y) {
-        y = sy - 1;
-        oy = osy - 1;
-        oyoff = (osx * oy + ozoff);
-        accumulate_x_pass<T, U>(
-          channel, accum, 
-          sx, osx,
-          (sx * y + zoff), oyoff
-        );
+  return accum;
+}
+
+// lower memory version for a single mip level
+
+template <typename T>
+T* _average_pooling_2x2_single_mip(
+  const T* channel, 
+  const size_t sx, const size_t sy, 
+  const size_t sz, const size_t sw = 1, const size_t sv = 1,
+  T* out = NULL, const bool sparse = false
+) {
+  using T2 = typename PromotedType<T>::type; // e.g. uint8_t -> uint16_t
+
+  const size_t sxy = sx * sy;
+
+  const size_t osx = (sx + 1) >> 1;
+  const size_t osy = (sy + 1) >> 1;
+  const size_t osxy = osx * osy;
+  const size_t ovoxels = osxy * sz * sw * sv;
+
+  const size_t odd_x = static_cast<size_t>(sx & 0x01);
+  const size_t odd_y = static_cast<size_t>(sy & 0x01);
+
+  if (out == NULL) {
+    out = new T[ovoxels]();
+  }
+
+  size_t x, ox, y, oy;
+  size_t zoff, ozoff;
+
+  for (size_t v = 0; v < sv; v++) {
+    for (size_t w = 0; w < sw; w++) {
+      for (size_t z = 0; z < sz; z++) {
+        zoff = sxy * (z + sz * (w + sw * v));
+        ozoff = osxy * (z + sz * (w + sw * v));
+
+        if (sparse) {
+          for (y = 0, oy = 0; y < sy - odd_y; y += 2, oy++) {
+            for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox++) {
+              T a = channel[x + sx * y + zoff];
+              T b = channel[(x+1) + sx * y + zoff];
+              T c = channel[x + sx * (y+1) + zoff];
+              T d = channel[(x+1) + sx * (y+1) + zoff];
+
+              out[ox + osx * oy + ozoff] = static_cast<T>(
+                (
+                    static_cast<T2>(a) 
+                  + static_cast<T2>(b)
+                  + static_cast<T2>(c) 
+                  + static_cast<T2>(d)
+                ) / static_cast<T2>(
+                    std::max(
+                      static_cast<T>((a > 0) + (b > 0) + (c > 0) + (d > 0)),
+                      static_cast<T>(1)
+                    )
+                  )
+                );
+            }
+
+            if (odd_x) {
+              T a = channel[x + sx * y + zoff];
+              T b = channel[x + sx * (y+1) + zoff];
+              out[(ox - 1) + osx * oy + ozoff] = static_cast<T>(
+                (
+                    static_cast<T2>(a)
+                  + static_cast<T2>(b)
+                ) / static_cast<T2>(
+                  std::max(
+                    static_cast<T>((a > 0) + (b > 0)),
+                    static_cast<T>(1)
+                )
+              ));
+            }
+          }
+        }
+        else {
+          for (y = 0, oy = 0; y < sy - odd_y; y += 2, oy++) {
+            for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox++) {
+              out[ox + osx * oy + ozoff] = static_cast<T>(
+                (
+                    static_cast<T2>(channel[x + sx * y + zoff]) 
+                  + static_cast<T2>(channel[(x+1) + sx * y + zoff])
+                  + static_cast<T2>(channel[x + sx * (y+1) + zoff]) 
+                  + static_cast<T2>(channel[(x+1) + sx * (y+1) + zoff])
+                ) / 4
+              );
+            }
+
+            if (odd_x) {
+              out[(ox - 1) + osx * oy + ozoff] = static_cast<T>(
+                (
+                    static_cast<T2>(channel[x + sx * y + zoff])
+                  + static_cast<T2>(channel[x + sx * (y+1) + zoff])
+                ) / 2
+              );
+            }
+          }        
+        }
+
+        if (odd_y) {
+          y = sy - 1;
+          oy = osy - 1;
+
+          if (sparse) {
+            for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox++) {
+              out[ox + osx * oy + ozoff] = static_cast<T>(
+                (
+                    static_cast<T2>(channel[x + sx * y + zoff]) 
+                  + static_cast<T2>(channel[(x+1) + sx * y + zoff])
+                ) / 2
+              );
+            }
+          }
+          else {
+            T a = channel[x + sx * y + zoff];
+            T b = channel[(x+1) + sx * y + zoff];
+            for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox++) {
+              out[ox + osx * oy + ozoff] = static_cast<T>(
+                (
+                    static_cast<T2>(a) 
+                  + static_cast<T2>(b)
+                ) / static_cast<T2>(std::max(
+                    static_cast<T>((a > 0) + (b > 0)),
+                    static_cast<T>(1)
+                ))
+              );
+            }          
+          }
+
+          if (odd_x) {
+            out[(ox - 1) + osx * oy + ozoff] = channel[x + sx * y + zoff]; // corner
+          }
+        }
+      }
+    }
+  }
+
+  return out;
+}
+
+// 2x2x2 below
+
+template <typename T, typename U>
+U* accumulate_2x2x2(
+    T* channel, 
+    const size_t sx, const size_t sy, 
+    const size_t sz, const size_t sw = 1, const size_t sv = 1
+  ) {
+
+  const size_t sxy = sx * sy;
+
+  const size_t osx = (sx + 1) >> 1;
+  const size_t osy = (sy + 1) >> 1;
+  const size_t osz = (sz + 1) >> 1;
+  const size_t osxy = osx * osy;
+  const size_t ovoxels = osxy * osz * sw * sv;
+
+  const bool odd_y = (sy & 0x01);
+  const bool odd_z = (sz & 0x01);
+
+  U* accum = new U[ovoxels]();
+
+  size_t y, oy;
+  size_t z, oz;
+  size_t zoff, ozoff, oyoff;
+
+  for (size_t v = 0; v < sv; v++) {
+    for (size_t w = 0; w < sw; w++) {
+      for (z = 0, oz = 0; z < sz - (size_t)odd_z; oz++) {
+        ozoff = osxy * (oz + osz * (w + sw * v));
         
-        // double values to prevent darkening 
-        for (size_t x = 0; x < osx; x++) {
-          accum[x + oyoff] *= 2;
+        for (size_t zz = 0; zz < 2 && z < sz - (size_t)odd_z; zz++, z++) {
+          zoff = sxy * (z + sz * (w + sw * v));
+
+          for (y = 0, oy = 0; y < sy - (size_t)odd_y; y++, oy++) {
+            accumulate_x_pass<T, U>(
+              channel, accum, 
+              sx, osx,
+              (sx * y + zoff), (osx * oy + ozoff)
+            );
+
+            y++;
+
+            accumulate_x_pass<T, U>(
+              channel, accum, 
+              sx, osx,
+              (sx * y + zoff), (osx * oy + ozoff)
+            );
+          }
+
+          if (odd_y) {
+            y = sy - 1;
+            oy = osy - 1;
+            oyoff = (osx * oy + ozoff);
+            accumulate_x_pass<T, U>(
+              channel, accum, 
+              sx, osx,
+              (sx * y + zoff), oyoff
+            );
+          }
+        }
+
+        if (odd_y) {
+          y = sy - 1;
+          oy = osy - 1;
+          oyoff = (osx * oy + ozoff);
+          // double values to prevent darkening 
+          for (size_t x = 0; x < osx; x++) {
+            accum[x + oyoff] *= 2;
+          }
         }
       }
 
-      // double values to prevent darkening 
-      for (size_t i = 0; i < osxy; i++) {
-        accum[i + ozoff] *= 2;
+      if (odd_z) {
+        z = sz - 1;
+        oz = osz - 1;
+        ozoff = osxy * (oz + osz * (w + sw * v));
+        zoff = sxy * (z + sz * (w + sw * v));
+
+        for (y = 0, oy = 0; y < sy - (size_t)odd_y; y++, oy++) {
+          accumulate_x_pass<T, U>(
+            channel, accum, 
+            sx, osx,
+            (sx * y + zoff), (osx * oy + ozoff)
+          );
+
+          y++;
+
+          accumulate_x_pass<T, U>(
+            channel, accum, 
+            sx, osx,
+            (sx * y + zoff), (osx * oy + ozoff)
+          );
+        }
+
+        if (odd_y) {
+          y = sy - 1;
+          oy = osy - 1;
+          oyoff = (osx * oy + ozoff);
+          accumulate_x_pass<T, U>(
+            channel, accum, 
+            sx, osx,
+            (sx * y + zoff), oyoff
+          );
+          
+          // double values to prevent darkening 
+          for (size_t x = 0; x < osx; x++) {
+            accum[x + oyoff] *= 2;
+          }
+        }
+
+        // double values to prevent darkening 
+        for (size_t i = 0; i < osxy; i++) {
+          accum[i + ozoff] *= 2;
+        }
       }
     }
   }
@@ -565,7 +573,7 @@ template <typename T>
 T* _average_pooling_2x2x2_single_mip(
   const T* channel, 
   const size_t sx, const size_t sy, 
-  const size_t sz, const size_t sw = 1,
+  const size_t sz, const size_t sw = 1, const size_t sv = 1,
   T* out = NULL
 ) {
   using T2 = typename PromotedType<T>::type; // e.g. uint8_t -> uint16_t
@@ -576,7 +584,7 @@ T* _average_pooling_2x2x2_single_mip(
   const size_t osy = (sy + 1) >> 1;
   const size_t osz = (sz + 1) >> 1;
   const size_t osxy = osx * osy;
-  const size_t ovoxels = osxy * sz * sw;
+  const size_t ovoxels = osxy * sz * sw * sv;
 
   const size_t odd_x = static_cast<size_t>(sx & 0x01);
   const size_t odd_y = static_cast<size_t>(sy & 0x01);
@@ -589,107 +597,109 @@ T* _average_pooling_2x2x2_single_mip(
   size_t x, ox, y, oy, z, oz;
   size_t zoff, ozoff;
 
-  for (size_t w = 0; w < sw; w++) {
-    for (z = 0, oz = 0; z < sz - odd_z; z += 2, oz++) {
-      zoff = sxy * (z + sz * w);
-      ozoff = osxy * (oz + osz * w);
+  for (size_t v = 0; v < sv; v++) {
+    for (size_t w = 0; w < sw; w++) {
+      for (z = 0, oz = 0; z < sz - odd_z; z += 2, oz++) {
+        zoff = sxy * (z + sz * (w + sw * v));
+        ozoff = osxy * (oz + osz * (w + sw * v));
 
-      for (y = 0, oy = 0; y < sy - odd_y; y += 2, oy++) {
-        for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox++) {
-          out[ox + osx * oy + ozoff] = static_cast<T>(
-            (
-                static_cast<T2>(channel[x + sx * y + zoff]) 
-              + static_cast<T2>(channel[(x+1) + sx * y + zoff])
-              + static_cast<T2>(channel[x + sx * (y+1) + zoff]) 
-              + static_cast<T2>(channel[(x+1) + sx * (y+1) + zoff])
-              + static_cast<T2>(channel[x + sx * y + zoff + sxy]) 
-              + static_cast<T2>(channel[(x+1) + sx * y + zoff + sxy])
-              + static_cast<T2>(channel[x + sx * (y+1) + zoff + sxy]) 
-              + static_cast<T2>(channel[(x+1) + sx * (y+1) + zoff + sxy])
-            ) / 8
-          );
+        for (y = 0, oy = 0; y < sy - odd_y; y += 2, oy++) {
+          for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox++) {
+            out[ox + osx * oy + ozoff] = static_cast<T>(
+              (
+                  static_cast<T2>(channel[x + sx * y + zoff]) 
+                + static_cast<T2>(channel[(x+1) + sx * y + zoff])
+                + static_cast<T2>(channel[x + sx * (y+1) + zoff]) 
+                + static_cast<T2>(channel[(x+1) + sx * (y+1) + zoff])
+                + static_cast<T2>(channel[x + sx * y + zoff + sxy]) 
+                + static_cast<T2>(channel[(x+1) + sx * y + zoff + sxy])
+                + static_cast<T2>(channel[x + sx * (y+1) + zoff + sxy]) 
+                + static_cast<T2>(channel[(x+1) + sx * (y+1) + zoff + sxy])
+              ) / 8
+            );
+          }
+
+          if (odd_x) {
+            x = sx - 1;
+            ox = osx - 1;
+            out[ox + osx * oy + ozoff] = static_cast<T>(
+              (
+                  static_cast<T2>(channel[x + sx * y + zoff])
+                + static_cast<T2>(channel[x + sx * (y+1) + zoff])
+                + static_cast<T2>(channel[x + sx * y + zoff + sxy])
+                + static_cast<T2>(channel[x + sx * (y+1) + zoff + sxy])
+              ) / 4
+            );
+          }
         }
 
-        if (odd_x) {
-          x = sx - 1;
-          ox = osx - 1;
-          out[ox + osx * oy + ozoff] = static_cast<T>(
-            (
-                static_cast<T2>(channel[x + sx * y + zoff])
-              + static_cast<T2>(channel[x + sx * (y+1) + zoff])
-              + static_cast<T2>(channel[x + sx * y + zoff + sxy])
-              + static_cast<T2>(channel[x + sx * (y+1) + zoff + sxy])
-            ) / 4
-          );
-        }
-      }
+        if (odd_y) {
+          y = sy - 1;
+          oy = osy - 1;
 
-      if (odd_y) {
-        y = sy - 1;
-        oy = osy - 1;
+          for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox++) {
+            out[ox + osx * oy + ozoff] = static_cast<T>(
+              (
+                  static_cast<T2>(channel[x + sx * y + zoff]) 
+                + static_cast<T2>(channel[(x+1) + sx * y + zoff])
+                + static_cast<T2>(channel[x + sx * y + zoff + sxy]) 
+                + static_cast<T2>(channel[(x+1) + sx * y + zoff + sxy])
+              ) / 4
+            );
+          }
 
-        for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox++) {
-          out[ox + osx * oy + ozoff] = static_cast<T>(
-            (
-                static_cast<T2>(channel[x + sx * y + zoff]) 
-              + static_cast<T2>(channel[(x+1) + sx * y + zoff])
-              + static_cast<T2>(channel[x + sx * y + zoff + sxy]) 
-              + static_cast<T2>(channel[(x+1) + sx * y + zoff + sxy])
-            ) / 4
-          );
-        }
-
-        if (odd_x) {
-          out[(osx - 1) + osx * oy + ozoff] = (
-              channel[(sx-1) + sx * (sy-1) + zoff]
-            + channel[(sx-1) + sx * (sy-1) + zoff + sxy] // corner
-          ) / 2;
-        }
-      }
-    }
-
-    if (odd_z) {
-      z = sz - 1;
-      zoff = sxy * (z + sz * w);
-      ozoff = osxy * ((osz - 1) + osz * w);
-
-      for (y = 0, oy = 0; y < sy - odd_y; y += 2, oy++) {
-        for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox++) {
-          out[ox + osx * oy + ozoff] = static_cast<T>(
-            (
-                static_cast<T2>(channel[x + sx * y + zoff]) 
-              + static_cast<T2>(channel[(x+1) + sx * y + zoff])
-              + static_cast<T2>(channel[x + sx * (y+1) + zoff]) 
-              + static_cast<T2>(channel[(x+1) + sx * (y+1) + zoff])
-            ) / 4
-          );
-        }
-
-        if (odd_x) {
-          out[(osx - 1) + osx * oy + ozoff] = static_cast<T>(
-            (
-                static_cast<T2>(channel[(sx - 1) + sx * y + zoff])
-              + static_cast<T2>(channel[(sx - 1) + sx * (y+1) + zoff])
-            ) / 2
-          );
+          if (odd_x) {
+            out[(osx - 1) + osx * oy + ozoff] = (
+                channel[(sx-1) + sx * (sy-1) + zoff]
+              + channel[(sx-1) + sx * (sy-1) + zoff + sxy] // corner
+            ) / 2;
+          }
         }
       }
 
-      if (odd_y) {
-        y = sy - 1;
-        oy = osy - 1;
+      if (odd_z) {
+        z = sz - 1;
+        zoff = sxy * (z + sz * (w + sw * v));
+        ozoff = osxy * ((osz - 1) + osz * (w + sw * v));
 
-        for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox++) {
-          out[ox + osx * oy + ozoff] = static_cast<T>(
-            (
-                static_cast<T2>(channel[x + sx * y + zoff]) 
-              + static_cast<T2>(channel[(x+1) + sx * y + zoff])
-            ) / 2
-          );
+        for (y = 0, oy = 0; y < sy - odd_y; y += 2, oy++) {
+          for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox++) {
+            out[ox + osx * oy + ozoff] = static_cast<T>(
+              (
+                  static_cast<T2>(channel[x + sx * y + zoff]) 
+                + static_cast<T2>(channel[(x+1) + sx * y + zoff])
+                + static_cast<T2>(channel[x + sx * (y+1) + zoff]) 
+                + static_cast<T2>(channel[(x+1) + sx * (y+1) + zoff])
+              ) / 4
+            );
+          }
+
+          if (odd_x) {
+            out[(osx - 1) + osx * oy + ozoff] = static_cast<T>(
+              (
+                  static_cast<T2>(channel[(sx - 1) + sx * y + zoff])
+                + static_cast<T2>(channel[(sx - 1) + sx * (y+1) + zoff])
+              ) / 2
+            );
+          }
         }
 
-        if (odd_x) {
-          out[(osx-1) + osx * oy + ozoff] = channel[(sx-1) + sx * (sy-1) + zoff]; // corner
+        if (odd_y) {
+          y = sy - 1;
+          oy = osy - 1;
+
+          for (x = 0, ox = 0; x < sx - odd_x; x += 2, ox++) {
+            out[ox + osx * oy + ozoff] = static_cast<T>(
+              (
+                  static_cast<T2>(channel[x + sx * y + zoff]) 
+                + static_cast<T2>(channel[(x+1) + sx * y + zoff])
+              ) / 2
+            );
+          }
+
+          if (odd_x) {
+            out[(osx-1) + osx * oy + ozoff] = channel[(sx-1) + sx * (sy-1) + zoff]; // corner
+          }
         }
       }
     }
@@ -728,7 +738,8 @@ template <typename T, typename U>
 U* denominator_2x2(
     T* channel, 
     const size_t sx, const size_t sy, 
-    const size_t sz, const size_t sw = 1
+    const size_t sz, 
+    const size_t sw = 1, const size_t sv = 1
   ) {
 
   const size_t sxy = sx * sy;
@@ -737,7 +748,7 @@ U* denominator_2x2(
   const size_t osy = (sy + 1) >> 1;
   const size_t osz = sz;
   const size_t osxy = osx * osy;
-  const size_t ovoxels = osxy * osz * sw;
+  const size_t ovoxels = osxy * osz * sw * sv;
 
   const bool odd_y = (sy & 0x01);
 
@@ -746,85 +757,12 @@ U* denominator_2x2(
   size_t y, oy;
   size_t zoff, ozoff, oyoff;
 
-  for (size_t w = 0; w < sw; w++) {
-    for (size_t z = 0; z < sz; z++) {
-      zoff = sxy * (z + sz * w);
-      ozoff = osxy * (z + sz * w);
-      
-      for (y = 0, oy = 0; y < sy - (size_t)odd_y; y++, oy++) {
-        denominator_x_pass<T, U>(
-          channel, denom, 
-          sx, osx,
-          (sx * y + zoff), (osx * oy + ozoff)
-        );
-
-        y++;
-
-        denominator_x_pass<T, U>(
-          channel, denom, 
-          sx, osx,
-          (sx * y + zoff), (osx * oy + ozoff)
-        );
-      }
-
-      if (odd_y) {
-        y = sy - 1;
-        oy = osy - 1;
-        oyoff = (osx * oy + ozoff);
-        denominator_x_pass<T, U>(
-          channel, denom, 
-          sx, osx,
-          (sx * y + zoff), oyoff
-        );
-      }
-    }
-
-    if (odd_y) {
-      y = sy - 1;
-      oy = osy - 1;
-      oyoff = (osx * oy + ozoff);
-      // double values to prevent darkening 
-      for (size_t x = 0; x < osx; x++) {
-        denom[x + oyoff] *= 2;
-      }
-    }
-  }
-
-  return denom;
-}
-
-// used for sparse=True only
-template <typename T, typename U>
-U* denominator_2x2x2(
-    T* channel, 
-    const size_t sx, const size_t sy, 
-    const size_t sz, const size_t sw = 1
-  ) {
-
-  const size_t sxy = sx * sy;
-
-  const size_t osx = (sx + 1) >> 1;
-  const size_t osy = (sy + 1) >> 1;
-  const size_t osz = (sz + 1) >> 1;
-  const size_t osxy = osx * osy;
-  const size_t ovoxels = osxy * osz * sw;
-
-  const bool odd_y = (sy & 0x01);
-  const bool odd_z = (sz & 0x01);
-
-  U* denom = new U[ovoxels]();
-
-  size_t y, oy;
-  size_t z, oz;
-  size_t zoff, ozoff, oyoff;
-
-  for (size_t w = 0; w < sw; w++) {
-    for (z = 0, oz = 0; z < sz - (size_t)odd_z; oz++) {
-      ozoff = osxy * (oz + osz * w);
-      
-      for (size_t zz = 0; zz < 2 && z < sz - (size_t)odd_z; zz++, z++) {
-        zoff = sxy * (z + sz * w);
-
+  for (size_t v = 0; v < sv; v++) {
+    for (size_t w = 0; w < sw; w++) {
+      for (size_t z = 0; z < sz; z++) {
+        zoff = sxy * (z + sz * (w + sw * v));
+        ozoff = osxy * (z + sz * (w + sw * v));
+        
         for (y = 0, oy = 0; y < sy - (size_t)odd_y; y++, oy++) {
           denominator_x_pass<T, U>(
             channel, denom, 
@@ -863,48 +801,126 @@ U* denominator_2x2x2(
         }
       }
     }
+  }
 
-    if (odd_z) {
-      z = sz - 1;
-      oz = osz - 1;
-      ozoff = osxy * (oz + osz * w);
-      zoff = sxy * (z + sz * w);
+  return denom;
+}
 
-      for (y = 0, oy = 0; y < sy - (size_t)odd_y; y++, oy++) {
-        denominator_x_pass<T, U>(
-          channel, denom, 
-          sx, osx,
-          (sx * y + zoff), (osx * oy + ozoff)
-        );
+// used for sparse=True only
+template <typename T, typename U>
+U* denominator_2x2x2(
+    T* channel, 
+    const size_t sx, const size_t sy, 
+    const size_t sz,
+    const size_t sw = 1, const size_t sv = 1
+  ) {
 
-        y++;
+  const size_t sxy = sx * sy;
 
-        denominator_x_pass<T, U>(
-          channel, denom, 
-          sx, osx,
-          (sx * y + zoff), (osx * oy + ozoff)
-        );
-      }
+  const size_t osx = (sx + 1) >> 1;
+  const size_t osy = (sy + 1) >> 1;
+  const size_t osz = (sz + 1) >> 1;
+  const size_t osxy = osx * osy;
+  const size_t ovoxels = osxy * osz * sw * sv;
 
-      if (odd_y) {
-        y = sy - 1;
-        oy = osy - 1;
-        oyoff = (osx * oy + ozoff);
-        denominator_x_pass<T, U>(
-          channel, denom, 
-          sx, osx,
-          (sx * y + zoff), oyoff
-        );
+  const bool odd_y = (sy & 0x01);
+  const bool odd_z = (sz & 0x01);
 
-        // double values to prevent darkening 
-        for (size_t x = 0; x < osx; x++) {
-          denom[x + oyoff] *= 2;
+  U* denom = new U[ovoxels]();
+
+  size_t y, oy;
+  size_t z, oz;
+  size_t zoff, ozoff, oyoff;
+
+  for (size_t v = 0; v < sv; v++) {
+    for (size_t w = 0; w < sw; w++) {
+      for (z = 0, oz = 0; z < sz - (size_t)odd_z; oz++) {
+        ozoff = osxy * (oz + osz * (w + sw * v));
+        
+        for (size_t zz = 0; zz < 2 && z < sz - (size_t)odd_z; zz++, z++) {
+          zoff = sxy * (z + sz * (w + sw * v));
+
+          for (y = 0, oy = 0; y < sy - (size_t)odd_y; y++, oy++) {
+            denominator_x_pass<T, U>(
+              channel, denom, 
+              sx, osx,
+              (sx * y + zoff), (osx * oy + ozoff)
+            );
+
+            y++;
+
+            denominator_x_pass<T, U>(
+              channel, denom, 
+              sx, osx,
+              (sx * y + zoff), (osx * oy + ozoff)
+            );
+          }
+
+          if (odd_y) {
+            y = sy - 1;
+            oy = osy - 1;
+            oyoff = (osx * oy + ozoff);
+            denominator_x_pass<T, U>(
+              channel, denom, 
+              sx, osx,
+              (sx * y + zoff), oyoff
+            );
+          }
+        }
+
+        if (odd_y) {
+          y = sy - 1;
+          oy = osy - 1;
+          oyoff = (osx * oy + ozoff);
+          // double values to prevent darkening 
+          for (size_t x = 0; x < osx; x++) {
+            denom[x + oyoff] *= 2;
+          }
         }
       }
 
-      // double values to prevent darkening 
-      for (size_t i = 0; i < osxy; i++) {
-        denom[i + ozoff] *= 2;
+      if (odd_z) {
+        z = sz - 1;
+        oz = osz - 1;
+        ozoff = osxy * (oz + osz * (w + sw * v));
+        zoff = sxy * (z + sz * (w + sw * v));
+
+        for (y = 0, oy = 0; y < sy - (size_t)odd_y; y++, oy++) {
+          denominator_x_pass<T, U>(
+            channel, denom, 
+            sx, osx,
+            (sx * y + zoff), (osx * oy + ozoff)
+          );
+
+          y++;
+
+          denominator_x_pass<T, U>(
+            channel, denom, 
+            sx, osx,
+            (sx * y + zoff), (osx * oy + ozoff)
+          );
+        }
+
+        if (odd_y) {
+          y = sy - 1;
+          oy = osy - 1;
+          oyoff = (osx * oy + ozoff);
+          denominator_x_pass<T, U>(
+            channel, denom, 
+            sx, osx,
+            (sx * y + zoff), oyoff
+          );
+
+          // double values to prevent darkening 
+          for (size_t x = 0; x < osx; x++) {
+            denom[x + oyoff] *= 2;
+          }
+        }
+
+        // double values to prevent darkening 
+        for (size_t i = 0; i < osxy; i++) {
+          denom[i + ozoff] *= 2;
+        }
       }
     }
   }
@@ -963,13 +979,15 @@ inline void _mode_pooling_2x2(
   T* img, T* oimg,
   const size_t sx, const size_t sy, 
   const size_t sz, const size_t sw,
+  const size_t sv,
   const size_t stride_x, const size_t stride_y,
-  const size_t stride_z, const size_t stride_w 
+  const size_t stride_z, const size_t stride_w,
+  const size_t stride_v
 ) {
   const size_t osx = (sx + 1) >> 1;
   const size_t osy = (sy + 1) >> 1;
   
-  size_t x, y, z, w;
+  size_t x, y, z, w, v;
   T a, b, c, d;
 
   size_t ox, oy, out;
@@ -977,56 +995,58 @@ inline void _mode_pooling_2x2(
   const size_t xodd = (sx & 0x01);
   const size_t yodd = (sy & 0x01);
 
-  auto idx = [&](size_t x, size_t y, size_t z, size_t w) {
-    return x * stride_x + y * stride_y + z * stride_z + w * stride_w;
+  auto idx = [&](size_t x, size_t y, size_t z, size_t w, size_t v) {
+    return x * stride_x + y * stride_y + z * stride_z + w * stride_w + v * stride_v;
   };
 
-  auto oidx = [&](size_t x, size_t y, size_t z, size_t w) {
-    return x + osx * (y + osy * (z + sz * w));
+  auto oidx = [&](size_t x, size_t y, size_t z, size_t w, size_t v) {
+    return x + osx * (y + osy * (z + sz * (w + sw * v)));
   };
 
-  for (w = 0; w < sw; w++) {
-    for (z = 0; z < sz; z++) {
-      oy = 0;
+  for (v = 0; v < sv; v++) {
+    for (w = 0; w < sw; w++) {
+      for (z = 0; z < sz; z++) {
+        oy = 0;
 
-      for (y = 0; y < sy - yodd; y += 2) {
-        ox = 0;
+        for (y = 0; y < sy - yodd; y += 2) {
+          ox = 0;
 
-        for (x = 0; x < sx - xodd; x += 2) {
-          a = img[idx(x,y,z,w)];
-          b = img[idx(x+1,y,z,w)];
-          c = img[idx(x,y+1,z,w)];
-          d = img[idx(x+1,y+1,z,w)];
+          for (x = 0; x < sx - xodd; x += 2) {
+            a = img[idx(x,y,z,w,v)];
+            b = img[idx(x+1,y,z,w,v)];
+            c = img[idx(x,y+1,z,w,v)];
+            d = img[idx(x+1,y+1,z,w,v)];
 
-          out = oidx(ox, oy, z, w);
+            out = oidx(ox, oy, z, w, v);
 
-          if (a == b) {
-            oimg[out] = a;
+            if (a == b) {
+              oimg[out] = a;
+            }
+            else if (a == c) {
+              oimg[out] = a;
+            }
+            else if (b == c) {
+              oimg[out] = b;
+            }
+            else {
+              oimg[out] = d;
+            }
+
+            ox++;
           }
-          else if (a == c) {
-            oimg[out] = a;
+          if (xodd) {
+            out = oidx(osx - 1, oy, z, w, v);
+            oimg[out] = img[idx(sx - 1, y, z, w, v)];
           }
-          else if (b == c) {
-            oimg[out] = b;
-          }
-          else {
-            oimg[out] = d;
-          }
-
-          ox++;
+          oy++;
         }
-        if (xodd) {
-          out = oidx(osx - 1, oy, z, w);
-          oimg[out] = img[idx(sx - 1, y, z, w)];
-        }
-        oy++;
-      }
-      if (yodd) {
-        for (x = 0; x < osx - xodd; x++) {
-          oimg[oidx(x, osy - 1, z, w)] = img[idx(2*x, sy - 1, z, w)];
-        }
-        if (xodd) {
-          oimg[oidx(osx - 1, osy - 1, z, w)] = img[idx(sx - 1, sy - 1, z, w)];
+        if (yodd) {
+          for (x = 0; x < osx - xodd; x++) {
+            oimg[oidx(x, osy - 1, z, w, v)] = img[idx(2*x, sy - 1, z, w, v)];
+          }
+          if (xodd) {
+            oimg[oidx(osx - 1, osy - 1, z, w, v)] = img[idx(sx - 1, sy - 1, z, w, v)];
+          }
         }
       }
     }
@@ -1040,7 +1060,7 @@ template <typename T>
 inline void _mode_pooling_2x2x2(
   T* img, T* oimg,
   const size_t sx, const size_t sy, 
-  const size_t sz, const size_t sw = 1,
+  const size_t sz, const size_t sw = 1, const size_t sv = 1,
   const bool sparse = false
 ) {
 
@@ -1048,69 +1068,72 @@ inline void _mode_pooling_2x2x2(
 
   const size_t osx = (sx + 1) >> 1;
   const size_t osy = (sy + 1) >> 1;
-  const size_t osxy = osx * osy;
 
   T vals[8];
   T cur_val, max_val;
   size_t max_ct, cur_ct;
 
-  for (size_t z = 0; z < sz; z += 2) {
-    for (size_t y = 0; y < sy; y += 2) {
-      for (size_t x = 0; x < sx; x += 2) {
-        size_t offset = x + sx * y + sxy * z;
-        
-        size_t plus_x = (x < sx - 1);
-        size_t plus_y = (y < sy - 1) * sx;
-        size_t plus_z = (z < sz - 1) * sxy;
+  for (size_t v = 0; v < sv; v++) {
+    for (size_t w = 0; w < sw; w++) {
+      for (size_t z = 0; z < sz; z += 2) {
+        for (size_t y = 0; y < sy; y += 2) {
+          for (size_t x = 0; x < sx; x += 2) {
+            size_t offset = x + sx * (y + sy * (z + sz * (w + sw * v)));
+            
+            size_t plus_x = (x < sx - 1);
+            size_t plus_y = (y < sy - 1) * sx;
+            size_t plus_z = (z < sz - 1) * sxy;
 
-        vals[0] = img[ offset ];
-        vals[1] = img[ offset + plus_x ];
-        vals[2] = img[ offset + plus_y ];
-        vals[3] = img[ offset + plus_x + plus_y ];
-        vals[4] = img[ offset + plus_z ];
-        vals[5] = img[ offset + plus_x + plus_z ];
-        vals[6] = img[ offset + plus_y + plus_z ];
-        vals[7] = img[ offset + plus_x + plus_y + plus_z ];
-        
-        size_t o_loc = (x >> 1) + osx * (y >> 1) + osxy * (z >> 1);
-        // These two if statements could be removed, but they add a very small
-        // cost on random data (< 10%) and can speed up connectomics data by ~4x
-        if (vals[0] == vals[1] && vals[0] == vals[2] && vals[0] == vals[3] && (!sparse || vals[0] != 0)) {
-          oimg[o_loc] = vals[0];
-          continue;
+            vals[0] = img[ offset ];
+            vals[1] = img[ offset + plus_x ];
+            vals[2] = img[ offset + plus_y ];
+            vals[3] = img[ offset + plus_x + plus_y ];
+            vals[4] = img[ offset + plus_z ];
+            vals[5] = img[ offset + plus_x + plus_z ];
+            vals[6] = img[ offset + plus_y + plus_z ];
+            vals[7] = img[ offset + plus_x + plus_y + plus_z ];
+            
+            size_t o_loc = (x >> 1) + osx * ((y >> 1) + osy * ((z >> 1) + sz * (w + sw * v)));
+            // These two if statements could be removed, but they add a very small
+            // cost on random data (< 10%) and can speed up connectomics data by ~4x
+            if (vals[0] == vals[1] && vals[0] == vals[2] && vals[0] == vals[3] && (!sparse || vals[0] != 0)) {
+              oimg[o_loc] = vals[0];
+              continue;
+            }
+            else if (vals[4] == vals[5] && vals[4] == vals[6] && vals[4] == vals[7] && (!sparse || vals[4] != 0)) {
+              oimg[o_loc] = vals[4];
+              continue;
+            }
+
+            max_ct = 0;
+            max_val = 0;
+            for (short int t = 0; t < 8; t++) {
+              cur_val = vals[t];
+              if (sparse && cur_val == 0) {
+                continue;
+              }
+
+              cur_ct = 1;
+              for (short int p = 0; p < t; p++) {
+                cur_ct += (cur_val == vals[p]);
+              }
+              for (short int p = t + 1; p < 8; p++) {
+                cur_ct += (cur_val == vals[p]);
+              }
+
+              if (cur_ct >= 4) {
+                max_val = cur_val;
+                break;
+              }
+              else if (cur_ct > max_ct) {
+                max_ct = cur_ct;
+                max_val = cur_val;
+              }
+            }
+
+            oimg[o_loc] = max_val;
+          }
         }
-        else if (vals[4] == vals[5] && vals[4] == vals[6] && vals[4] == vals[7] && (!sparse || vals[4] != 0)) {
-          oimg[o_loc] = vals[4];
-          continue;
-        }
-
-        max_ct = 0;
-        max_val = 0;
-        for (short int t = 0; t < 8; t++) {
-          cur_val = vals[t];
-          if (sparse && cur_val == 0) {
-            continue;
-          }
-
-          cur_ct = 1;
-          for (short int p = 0; p < t; p++) {
-            cur_ct += (cur_val == vals[p]);
-          }
-          for (short int p = t + 1; p < 8; p++) {
-            cur_ct += (cur_val == vals[p]);
-          }
-
-          if (cur_ct >= 4) {
-            max_val = cur_val;
-            break;
-          }
-          else if (cur_ct > max_ct) {
-            max_ct = cur_ct;
-            max_val = cur_val;
-          }
-        }
-
-        oimg[o_loc] = max_val;
       }
     }
   }
