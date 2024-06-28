@@ -22,13 +22,13 @@ import numpy as np
 np.import_array()
 
 cdef extern from "accelerated.hpp" namespace "accelerated":
-  cdef T* _average_pooling_2x2_single_mip[T](T* arr, size_t sx, size_t sy, size_t sz, size_t sw, T* out, uint8_t sparse)
-  cdef U* accumulate_2x2[T, U](T* arr, size_t sx, size_t sy, size_t sz, size_t sw)
-  cdef T* accumulate_2x2f[T](T* arr, size_t sx, size_t sy, size_t sz, size_t sw)
-  cdef U* denominator_2x2[T, U](T* arr, size_t sx, size_t sy, size_t sz, size_t sw)
-  cdef T* _average_pooling_2x2x2_single_mip[T](T* arr, size_t sx, size_t sy, size_t sz, size_t sw, T* out)
-  cdef U* accumulate_2x2x2[T, U](T* arr, size_t sx, size_t sy, size_t sz, size_t sw)
-  cdef U* denominator_2x2x2[T, U](T* arr, size_t sx, size_t sy, size_t sz, size_t sw)
+  cdef T* _average_pooling_2x2_single_mip[T](T* arr, size_t sx, size_t sy, size_t sz, size_t sw, size_t sv, T* out, uint8_t sparse)
+  cdef U* accumulate_2x2[T, U](T* arr, size_t sx, size_t sy, size_t sz, size_t sw, size_t sv)
+  cdef T* accumulate_2x2f[T](T* arr, size_t sx, size_t sy, size_t sz, size_t sw, size_t sv)
+  cdef U* denominator_2x2[T, U](T* arr, size_t sx, size_t sy, size_t sz, size_t sw, size_t sv)
+  cdef T* _average_pooling_2x2x2_single_mip[T](T* arr, size_t sx, size_t sy, size_t sz, size_t sw, size_t sv, T* out)
+  cdef U* accumulate_2x2x2[T, U](T* arr, size_t sx, size_t sy, size_t sz, size_t sw, size_t sv)
+  cdef U* denominator_2x2x2[T, U](T* arr, size_t sx, size_t sy, size_t sz, size_t sw, size_t sv)
   cdef void render_image[T, U](T* arr, U* oimg, uint32_t bitshift, size_t ovoxels)
   cdef void render_image_sparse[T, U](T* numerator, T* denominator, U* oimg, size_t ovoxels)
   cdef void render_image_floating[T](T* arr, T* oimg, T divisor, size_t ovoxels)
@@ -37,14 +37,15 @@ cdef extern from "accelerated.hpp" namespace "accelerated":
   cdef void _mode_pooling_2x2[T](
     T* img, T* oimg, 
     size_t sx, size_t sy, 
-    size_t sz, size_t sw,
+    size_t sz, size_t sw, size_t sv,
     size_t stride_x, size_t stride_y,
-    size_t stride_z, size_t stride_w
+    size_t stride_z, size_t stride_w,
+    size_t stride_v
   )
   cdef void _mode_pooling_2x2x2[T](
     T* img, T* oimg, 
     size_t sx, size_t sy, 
-    size_t sz, size_t sw,
+    size_t sz, size_t sw, size_t sv,
     uint8_t sparse
   )
 
@@ -80,7 +81,7 @@ ctypedef fused NUMBER:
 
 def average_pooling_2x2(channel, size_t num_mips=1, sparse=False):
   ndim = channel.ndim
-  channel = expand_dims(channel, 4)
+  channel = expand_dims(channel, 5)
 
   cdef size_t sx = channel.shape[0]
   cdef size_t sy = channel.shape[1]
@@ -107,80 +108,82 @@ def average_pooling_2x2(channel, size_t num_mips=1, sparse=False):
 
   return results
 
-def _average_pooling_2x2_single_mip_py(np.ndarray[NUMBER, ndim=4] channel, sparse):
-  cdef uint8_t[:,:,:,:] arr_memview8u
-  cdef uint16_t[:,:,:,:] arr_memview16u
-  cdef uint32_t[:,:,:,:] arr_memview32u
-  cdef uint64_t[:,:,:,:] arr_memview64u
-  cdef float[:,:,:,:] arr_memviewf
-  cdef double[:,:,:,:] arr_memviewd
+def _average_pooling_2x2_single_mip_py(np.ndarray[NUMBER, ndim=5] channel, sparse):
+  cdef uint8_t[:,:,:,:,:] arr_memview8u
+  cdef uint16_t[:,:,:,:,:] arr_memview16u
+  cdef uint32_t[:,:,:,:,:] arr_memview32u
+  cdef uint64_t[:,:,:,:,:] arr_memview64u
+  cdef float[:,:,:,:,:] arr_memviewf
+  cdef double[:,:,:,:,:] arr_memviewd
 
-  cdef uint8_t[:,:,:,:] out_memview8u
-  cdef uint16_t[:,:,:,:] out_memview16u
-  cdef uint32_t[:,:,:,:] out_memview32u
-  cdef uint64_t[:,:,:,:] out_memview64u
-  cdef float[:,:,:,:] out_memviewf
-  cdef double[:,:,:,:] out_memviewd
+  cdef uint8_t[:,:,:,:,:] out_memview8u
+  cdef uint16_t[:,:,:,:,:] out_memview16u
+  cdef uint32_t[:,:,:,:,:] out_memview32u
+  cdef uint64_t[:,:,:,:,:] out_memview64u
+  cdef float[:,:,:,:,:] out_memviewf
+  cdef double[:,:,:,:,:] out_memviewd
 
   cdef size_t sx = channel.shape[0]
   cdef size_t sy = channel.shape[1]
   cdef size_t sz = channel.shape[2]
   cdef size_t sw = channel.shape[3]
+  cdef size_t sv = channel.shape[4]
 
-  shape = ( (sx+1)//2, (sy+1)//2, sz, sw )
+  shape = ( (sx+1)//2, (sy+1)//2, sz, sw, sv )
 
-  cdef np.ndarray[NUMBER, ndim=4] out = np.zeros(shape, dtype=channel.dtype, order="F")
+  cdef np.ndarray[NUMBER, ndim=5] out = np.zeros(shape, dtype=channel.dtype, order="F")
 
   if channel.dtype == np.uint8:
     arr_memview8u = channel
     out_memview8u = out
-    _average_pooling_2x2_single_mip[uint8_t](&arr_memview8u[0,0,0,0], sx, sy, sz, sw, &out_memview8u[0,0,0,0], bool(sparse))
+    _average_pooling_2x2_single_mip[uint8_t](&arr_memview8u[0,0,0,0,0], sx, sy, sz, sw, sv, &out_memview8u[0,0,0,0,0], bool(sparse))
   elif channel.dtype == np.uint16:
     arr_memview16u = channel
     out_memview16u = out
-    _average_pooling_2x2_single_mip[uint16_t](&arr_memview16u[0,0,0,0], sx, sy, sz, sw, &out_memview16u[0,0,0,0], bool(sparse))
+    _average_pooling_2x2_single_mip[uint16_t](&arr_memview16u[0,0,0,0,0], sx, sy, sz, sw, sv, &out_memview16u[0,0,0,0,0], bool(sparse))
   elif channel.dtype == np.uint32:
     arr_memview32u = channel
     out_memview32u = out
-    _average_pooling_2x2_single_mip[uint32_t](&arr_memview32u[0,0,0,0], sx, sy, sz, sw, &out_memview32u[0,0,0,0], bool(sparse))
+    _average_pooling_2x2_single_mip[uint32_t](&arr_memview32u[0,0,0,0,0], sx, sy, sz, sw, sv, &out_memview32u[0,0,0,0,0], bool(sparse))
   elif channel.dtype == np.uint64:
     arr_memview64u = channel
     out_memview64u = out
-    _average_pooling_2x2_single_mip[uint64_t](&arr_memview64u[0,0,0,0], sx, sy, sz, sw, &out_memview64u[0,0,0,0], bool(sparse))
+    _average_pooling_2x2_single_mip[uint64_t](&arr_memview64u[0,0,0,0,0], sx, sy, sz, sw, sv, &out_memview64u[0,0,0,0,0], bool(sparse))
   elif channel.dtype == np.float32:
     arr_memviewf = channel
     out_memviewf = out
-    _average_pooling_2x2_single_mip[float](&arr_memviewf[0,0,0,0], sx, sy, sz, sw, &out_memviewf[0,0,0,0], bool(sparse))
+    _average_pooling_2x2_single_mip[float](&arr_memviewf[0,0,0,0,0], sx, sy, sz, sw, sv, &out_memviewf[0,0,0,0,0], bool(sparse))
   elif channel.dtype == np.float64:
     arr_memviewd = channel
     out_memviewd = out
-    _average_pooling_2x2_single_mip[double](&arr_memviewd[0,0,0,0], sx, sy, sz, sw, &out_memviewd[0,0,0,0], bool(sparse))
+    _average_pooling_2x2_single_mip[double](&arr_memviewd[0,0,0,0,0], sx, sy, sz, sw, sv, &out_memviewd[0,0,0,0,0], bool(sparse))
   else:
     raise TypeError("Unsupported data type. " + str(channel.dtype))
 
   return [ out ]
 
-def _average_pooling_2x2_uint8(np.ndarray[uint8_t, ndim=4] channel, uint32_t num_mips, sparse):
+def _average_pooling_2x2_uint8(np.ndarray[uint8_t, ndim=5] channel, uint32_t num_mips, sparse):
   cdef size_t sx = channel.shape[0]
   cdef size_t sy = channel.shape[1]
   cdef size_t sz = channel.shape[2]
   cdef size_t sw = channel.shape[3]
+  cdef size_t sv = channel.shape[4]
   cdef size_t sxy = sx * sy
 
   cdef size_t osx = (sx + 1) // 2
   cdef size_t osy = (sy + 1) // 2
   cdef size_t osxy = osx * osy
-  cdef size_t ovoxels = osxy * sz * sw
+  cdef size_t ovoxels = osxy * sz * sw * sv
 
-  cdef uint8_t[:,:,:,:] channelview = channel
-  cdef uint16_t* accum = accumulate_2x2[uint8_t, uint16_t](&channelview[0,0,0,0], sx, sy, sz, sw)
+  cdef uint8_t[:,:,:,:,:] channelview = channel
+  cdef uint16_t* accum = accumulate_2x2[uint8_t, uint16_t](&channelview[0,0,0,0,0], sx, sy, sz, sw, sv)
   cdef uint16_t[:] accumview = <uint16_t[:ovoxels]>accum
   cdef uint16_t* tmp
   cdef uint32_t mip, bitshift
 
   cdef uint16_t* denominator
   if sparse:
-    denominator = denominator_2x2[uint8_t, uint16_t](&channelview[0,0,0,0], sx, sy, sz, sw)
+    denominator = denominator_2x2[uint8_t, uint16_t](&channelview[0,0,0,0,0], sx, sy, sz, sw, sv)
 
   cdef uint8_t[:] oimgview
 
@@ -196,7 +199,7 @@ def _average_pooling_2x2_uint8(np.ndarray[uint8_t, ndim=4] channel, uint32_t num
       render_image[uint16_t, uint8_t](&accumview[0], &oimgview[0], bitshift, ovoxels)
 
     results.append(
-      oimg.reshape( (osx, osy, sz, sw), order='F' )
+      oimg.reshape( (osx, osy, sz, sw, sv), order='F' )
     )
 
     if mip == num_mips - 1:
@@ -211,43 +214,44 @@ def _average_pooling_2x2_uint8(np.ndarray[uint8_t, ndim=4] channel, uint32_t num
     osx = (sx + 1) // 2
     osy = (sy + 1) // 2
     osxy = osx * osy
-    ovoxels = osxy * sz * sw
+    ovoxels = osxy * sz * sw * sv
 
     tmp = accum 
-    accum = accumulate_2x2[uint16_t, uint16_t](accum, sx, sy, sz, sw)
+    accum = accumulate_2x2[uint16_t, uint16_t](accum, sx, sy, sz, sw, sv)
     accumview = <uint16_t[:ovoxels]>accum
     PyMem_Free(tmp)
 
     if sparse:
       tmp = denominator
-      denominator = accumulate_2x2[uint16_t, uint16_t](denominator, sx, sy, sz, sw)
+      denominator = accumulate_2x2[uint16_t, uint16_t](denominator, sx, sy, sz, sw, sv)
       PyMem_Free(tmp)
 
   PyMem_Free(accum)
 
   return results
 
-def _average_pooling_2x2_uint16(np.ndarray[uint16_t, ndim=4] channel, uint32_t num_mips, sparse):
+def _average_pooling_2x2_uint16(np.ndarray[uint16_t, ndim=5] channel, uint32_t num_mips, sparse):
   cdef size_t sx = channel.shape[0]
   cdef size_t sy = channel.shape[1]
   cdef size_t sz = channel.shape[2]
   cdef size_t sw = channel.shape[3]
+  cdef size_t sv = channel.shape[4]
   cdef size_t sxy = sx * sy
 
   cdef size_t osx = (sx + 1) // 2
   cdef size_t osy = (sy + 1) // 2
   cdef size_t osxy = osx * osy
-  cdef size_t ovoxels = osxy * sz * sw
+  cdef size_t ovoxels = osxy * sz * sw * sv
 
-  cdef uint16_t[:,:,:,:] channelview = channel
-  cdef uint32_t* accum = accumulate_2x2[uint16_t, uint32_t](&channelview[0,0,0,0], sx, sy, sz, sw)
+  cdef uint16_t[:,:,:,:,:] channelview = channel
+  cdef uint32_t* accum = accumulate_2x2[uint16_t, uint32_t](&channelview[0,0,0,0,0], sx, sy, sz, sw, sv)
   cdef uint32_t[:] accumview = <uint32_t[:ovoxels]>accum
   cdef uint32_t* tmp
   cdef uint32_t mip, bitshift
 
   cdef uint32_t* denominator
   if sparse:
-    denominator = denominator_2x2[uint16_t, uint32_t](&channelview[0,0,0,0], sx, sy, sz, sw)
+    denominator = denominator_2x2[uint16_t, uint32_t](&channelview[0,0,0,0,0], sx, sy, sz, sw, sv)
 
   cdef uint16_t[:] oimgview
 
@@ -263,7 +267,7 @@ def _average_pooling_2x2_uint16(np.ndarray[uint16_t, ndim=4] channel, uint32_t n
       render_image[uint32_t, uint16_t](&accumview[0], &oimgview[0], bitshift, ovoxels)
 
     results.append(
-      oimg.reshape( (osx, osy, sz, sw), order='F' )
+      oimg.reshape( (osx, osy, sz, sw, sv), order='F' )
     )
 
     if mip == num_mips - 1:
@@ -278,43 +282,44 @@ def _average_pooling_2x2_uint16(np.ndarray[uint16_t, ndim=4] channel, uint32_t n
     osx = (sx + 1) // 2
     osy = (sy + 1) // 2
     osxy = osx * osy
-    ovoxels = osxy * sz * sw
+    ovoxels = osxy * sz * sw * sv
 
     tmp = accum 
-    accum = accumulate_2x2[uint32_t, uint32_t](accum, sx, sy, sz, sw)
+    accum = accumulate_2x2[uint32_t, uint32_t](accum, sx, sy, sz, sw, sv)
     accumview = <uint32_t[:ovoxels]>accum
     PyMem_Free(tmp)
 
     if sparse:
       tmp = denominator
-      denominator = accumulate_2x2[uint32_t, uint32_t](denominator, sx, sy, sz, sw)
+      denominator = accumulate_2x2[uint32_t, uint32_t](denominator, sx, sy, sz, sw, sv)
       PyMem_Free(tmp)
 
   PyMem_Free(accum)
 
   return results
 
-def _average_pooling_2x2_float(np.ndarray[float, ndim=4] channel, uint32_t num_mips, sparse):
+def _average_pooling_2x2_float(np.ndarray[float, ndim=5] channel, uint32_t num_mips, sparse):
   cdef size_t sx = channel.shape[0]
   cdef size_t sy = channel.shape[1]
   cdef size_t sz = channel.shape[2]
   cdef size_t sw = channel.shape[3]
+  cdef size_t sv = channel.shape[4]
   cdef size_t sxy = sx * sy
 
   cdef size_t osx = (sx + 1) // 2
   cdef size_t osy = (sy + 1) // 2
   cdef size_t osxy = osx * osy
-  cdef size_t ovoxels = osxy * sz * sw
+  cdef size_t ovoxels = osxy * sz * sw * sv
 
-  cdef float[:,:,:,:] channelview = channel
-  cdef float* accum = accumulate_2x2f[float](&channelview[0,0,0,0], sx, sy, sz, sw)
+  cdef float[:,:,:,:,:] channelview = channel
+  cdef float* accum = accumulate_2x2f[float](&channelview[0,0,0,0,0], sx, sy, sz, sw, sv)
   cdef float[:] accumview = <float[:ovoxels]>accum
   cdef float* tmp
   cdef uint32_t mip
 
   cdef float* denominator
   if sparse:
-    denominator = denominator_2x2[float, float](&channelview[0,0,0,0], sx, sy, sz, sw)
+    denominator = denominator_2x2[float, float](&channelview[0,0,0,0,0], sx, sy, sz, sw, sv)
 
   cdef float divisor = 1.0
   cdef float[:] oimgview
@@ -331,7 +336,7 @@ def _average_pooling_2x2_float(np.ndarray[float, ndim=4] channel, uint32_t num_m
       render_image_floating[float](&accumview[0], &oimgview[0], divisor, ovoxels)
 
     results.append(
-      oimg.reshape( (osx, osy, sz, sw), order='F' )
+      oimg.reshape( (osx, osy, sz, sw, sv), order='F' )
     )
 
     if mip == num_mips - 1:
@@ -343,36 +348,37 @@ def _average_pooling_2x2_float(np.ndarray[float, ndim=4] channel, uint32_t num_m
     osx = (sx + 1) // 2
     osy = (sy + 1) // 2
     osxy = osx * osy
-    ovoxels = osxy * sz * sw
+    ovoxels = osxy * sz * sw * sv
 
     tmp = accum 
-    accum = accumulate_2x2f[float](accum, sx, sy, sz, sw)
+    accum = accumulate_2x2f[float](accum, sx, sy, sz, sw, sv)
     accumview = <float[:ovoxels]>accum
     PyMem_Free(tmp)
 
     if sparse:
       tmp = denominator
-      denominator = accumulate_2x2f[float](denominator, sx, sy, sz, sw)
+      denominator = accumulate_2x2f[float](denominator, sx, sy, sz, sw, sv)
       PyMem_Free(tmp)
 
   PyMem_Free(accum)
 
   return results
 
-def _average_pooling_2x2_double(np.ndarray[double, ndim=4] channel, uint32_t num_mips, sparse):
+def _average_pooling_2x2_double(np.ndarray[double, ndim=5] channel, uint32_t num_mips, sparse):
   cdef size_t sx = channel.shape[0]
   cdef size_t sy = channel.shape[1]
   cdef size_t sz = channel.shape[2]
   cdef size_t sw = channel.shape[3]
+  cdef size_t sv = channel.shape[4]
   cdef size_t sxy = sx * sy
 
   cdef size_t osx = (sx + 1) // 2
   cdef size_t osy = (sy + 1) // 2
   cdef size_t osxy = osx * osy
-  cdef size_t ovoxels = osxy * sz * sw
+  cdef size_t ovoxels = osxy * sz * sw * sv
 
-  cdef double[:,:,:,:] channelview = channel
-  cdef double* accum = accumulate_2x2f[double](&channelview[0,0,0,0], sx, sy, sz, sw)
+  cdef double[:,:,:,:,:] channelview = channel
+  cdef double* accum = accumulate_2x2f[double](&channelview[0,0,0,0,0], sx, sy, sz, sw, sv)
   cdef double[:] accumview = <double[:ovoxels]>accum
   cdef double* tmp
   cdef uint32_t mip
@@ -382,7 +388,7 @@ def _average_pooling_2x2_double(np.ndarray[double, ndim=4] channel, uint32_t num
 
   cdef double* denominator
   if sparse:
-    denominator = denominator_2x2[double, double](&channelview[0,0,0,0], sx, sy, sz, sw)
+    denominator = denominator_2x2[double, double](&channelview[0,0,0,0,0], sx, sy, sz, sw, sv)
 
   results = []
   for mip in range(num_mips):
@@ -396,7 +402,7 @@ def _average_pooling_2x2_double(np.ndarray[double, ndim=4] channel, uint32_t num
       render_image_floating[double](&accumview[0], &oimgview[0], divisor, ovoxels)
 
     results.append(
-      oimg.reshape( (osx, osy, sz, sw), order='F' )
+      oimg.reshape( (osx, osy, sz, sw, sv), order='F' )
     )
 
     if mip == num_mips - 1:
@@ -408,16 +414,16 @@ def _average_pooling_2x2_double(np.ndarray[double, ndim=4] channel, uint32_t num
     osx = (sx + 1) // 2
     osy = (sy + 1) // 2
     osxy = osx * osy
-    ovoxels = osxy * sz * sw
+    ovoxels = osxy * sz * sw * sv
 
     tmp = accum 
-    accum = accumulate_2x2f[double](accum, sx, sy, sz, sw)
+    accum = accumulate_2x2f[double](accum, sx, sy, sz, sw, sv)
     accumview = <double[:ovoxels]>accum
     PyMem_Free(tmp)
 
     if sparse:
       tmp = denominator
-      denominator = accumulate_2x2f[double](denominator, sx, sy, sz, sw)
+      denominator = accumulate_2x2f[double](denominator, sx, sy, sz, sw, sv)
       PyMem_Free(tmp)
 
   PyMem_Free(accum)
@@ -428,7 +434,7 @@ def _average_pooling_2x2_double(np.ndarray[double, ndim=4] channel, uint32_t num
 
 def average_pooling_2x2x2(channel, size_t num_mips=1, sparse=False):
   ndim = channel.ndim
-  channel = expand_dims(channel, 4)
+  channel = expand_dims(channel, 5)
 
   cdef size_t sx = channel.shape[0]
   cdef size_t sy = channel.shape[1]
@@ -459,75 +465,77 @@ def average_pooling_2x2x2(channel, size_t num_mips=1, sparse=False):
 
   return results
 
-def _average_pooling_2x2x2_single_mip_py(np.ndarray[NUMBER, ndim=4] channel):
-  cdef uint8_t[:,:,:,:] arr_memview8u
-  cdef uint16_t[:,:,:,:] arr_memview16u
-  cdef uint32_t[:,:,:,:] arr_memview32u
-  cdef uint64_t[:,:,:,:] arr_memview64u
-  cdef float[:,:,:,:] arr_memviewf
-  cdef double[:,:,:,:] arr_memviewd
+def _average_pooling_2x2x2_single_mip_py(np.ndarray[NUMBER, ndim=5] channel):
+  cdef uint8_t[:,:,:,:,:] arr_memview8u
+  cdef uint16_t[:,:,:,:,:] arr_memview16u
+  cdef uint32_t[:,:,:,:,:] arr_memview32u
+  cdef uint64_t[:,:,:,:,:] arr_memview64u
+  cdef float[:,:,:,:,:] arr_memviewf
+  cdef double[:,:,:,:,:] arr_memviewd
 
-  cdef uint8_t[:,:,:,:] out_memview8u
-  cdef uint16_t[:,:,:,:] out_memview16u
-  cdef uint32_t[:,:,:,:] out_memview32u
-  cdef uint64_t[:,:,:,:] out_memview64u
-  cdef float[:,:,:,:] out_memviewf
-  cdef double[:,:,:,:] out_memviewd
+  cdef uint8_t[:,:,:,:,:] out_memview8u
+  cdef uint16_t[:,:,:,:,:] out_memview16u
+  cdef uint32_t[:,:,:,:,:] out_memview32u
+  cdef uint64_t[:,:,:,:,:] out_memview64u
+  cdef float[:,:,:,:,:] out_memviewf
+  cdef double[:,:,:,:,:] out_memviewd
 
   cdef size_t sx = channel.shape[0]
   cdef size_t sy = channel.shape[1]
   cdef size_t sz = channel.shape[2]
   cdef size_t sw = channel.shape[3]
+  cdef size_t sv = channel.shape[4]
 
-  shape = ( (sx+1)//2, (sy+1)//2, (sz+1)//2, sw )
+  shape = ( (sx+1)//2, (sy+1)//2, (sz+1)//2, sw, sv )
 
-  cdef np.ndarray[NUMBER, ndim=4] out = np.zeros(shape, dtype=channel.dtype, order="F")
+  cdef np.ndarray[NUMBER, ndim=5] out = np.zeros(shape, dtype=channel.dtype, order="F")
 
   if channel.dtype == np.uint8:
     arr_memview8u = channel
     out_memview8u = out
-    _average_pooling_2x2x2_single_mip[uint8_t](&arr_memview8u[0,0,0,0], sx, sy, sz, sw, &out_memview8u[0,0,0,0])
+    _average_pooling_2x2x2_single_mip[uint8_t](&arr_memview8u[0,0,0,0,0], sx, sy, sz, sw, sv, &out_memview8u[0,0,0,0,0])
   elif channel.dtype == np.uint16:
     arr_memview16u = channel
     out_memview16u = out
-    _average_pooling_2x2x2_single_mip[uint16_t](&arr_memview16u[0,0,0,0], sx, sy, sz, sw, &out_memview16u[0,0,0,0])
+    _average_pooling_2x2x2_single_mip[uint16_t](&arr_memview16u[0,0,0,0,0], sx, sy, sz, sw, sv, &out_memview16u[0,0,0,0,0])
   elif channel.dtype == np.uint32:
     arr_memview32u = channel
     out_memview32u = out
-    _average_pooling_2x2x2_single_mip[uint32_t](&arr_memview32u[0,0,0,0], sx, sy, sz, sw, &out_memview32u[0,0,0,0])
+    _average_pooling_2x2x2_single_mip[uint32_t](&arr_memview32u[0,0,0,0,0], sx, sy, sz, sw, sv, &out_memview32u[0,0,0,0,0])
   elif channel.dtype == np.uint64:
     arr_memview64u = channel
     out_memview64u = out
-    _average_pooling_2x2x2_single_mip[uint64_t](&arr_memview64u[0,0,0,0], sx, sy, sz, sw, &out_memview64u[0,0,0,0])
+    _average_pooling_2x2x2_single_mip[uint64_t](&arr_memview64u[0,0,0,0,0], sx, sy, sz, sw, sv, &out_memview64u[0,0,0,0,0])
   elif channel.dtype == np.float32:
     arr_memviewf = channel
     out_memviewf = out
-    _average_pooling_2x2x2_single_mip[float](&arr_memviewf[0,0,0,0], sx, sy, sz, sw, &out_memviewf[0,0,0,0])
+    _average_pooling_2x2x2_single_mip[float](&arr_memviewf[0,0,0,0,0], sx, sy, sz, sw, sv, &out_memviewf[0,0,0,0,0])
   elif channel.dtype == np.float64:
     arr_memviewd = channel
     out_memviewd = out
-    _average_pooling_2x2x2_single_mip[double](&arr_memviewd[0,0,0,0], sx, sy, sz, sw, &out_memviewd[0,0,0,0])
+    _average_pooling_2x2x2_single_mip[double](&arr_memviewd[0,0,0,0,0], sx, sy, sz, sw, sv, &out_memviewd[0,0,0,0,0])
   else:
     raise TypeError("Unsupported data type. " + str(channel.dtype))
 
   return [ out ]
 
-def _average_pooling_2x2x2_uint8(np.ndarray[uint8_t, ndim=4] channel, uint32_t num_mips, sparse=False):
+def _average_pooling_2x2x2_uint8(np.ndarray[uint8_t, ndim=5] channel, uint32_t num_mips, sparse=False):
   cdef size_t sx = channel.shape[0]
   cdef size_t sy = channel.shape[1]
   cdef size_t sz = channel.shape[2]
   cdef size_t sw = channel.shape[3]
+  cdef size_t sv = channel.shape[4]
   cdef size_t sxy = sx * sy
 
   cdef size_t osx = (sx + 1) // 2
   cdef size_t osy = (sy + 1) // 2
   cdef size_t osz = (sz + 1) // 2
   cdef size_t osxy = osx * osy
-  cdef size_t ovoxels = osxy * osz * sw
+  cdef size_t ovoxels = osxy * osz * sw * sv
 
-  cdef uint8_t[:,:,:,:] channelview = channel
+  cdef uint8_t[:,:,:,:,:] channelview = channel
   cdef uint32_t* accum = accumulate_2x2x2[uint8_t, uint32_t](
-    &channelview[0,0,0,0], sx, sy, sz, sw
+    &channelview[0,0,0,0,0], sx, sy, sz, sw, sv
   )
   cdef uint32_t[:] accumview = <uint32_t[:ovoxels]>accum
 
@@ -536,7 +544,7 @@ def _average_pooling_2x2x2_uint8(np.ndarray[uint8_t, ndim=4] channel, uint32_t n
   cdef uint32_t[:] denomview
   if sparse:
     denom = denominator_2x2x2[uint8_t, uint32_t](
-      &channelview[0,0,0,0], sx, sy, sz, sw
+      &channelview[0,0,0,0,0], sx, sy, sz, sw, sv
     )
     denomview = <uint32_t[:ovoxels]>denom
 
@@ -576,16 +584,16 @@ def _average_pooling_2x2x2_uint8(np.ndarray[uint8_t, ndim=4] channel, uint32_t n
     osy = (sy + 1) // 2
     osz = (sz + 1) // 2
     osxy = osx * osy
-    ovoxels = osxy * osz * sw
+    ovoxels = osxy * osz * sw * sv
 
     tmp = accum 
-    accum = accumulate_2x2x2[uint32_t, uint32_t](accum, sx, sy, sz, sw)
+    accum = accumulate_2x2x2[uint32_t, uint32_t](accum, sx, sy, sz, sw, sv)
     accumview = <uint32_t[:ovoxels]>accum
     PyMem_Free(tmp)
 
     if sparse:
       tmp = denom
-      denom = accumulate_2x2x2[uint32_t, uint32_t](denom, sx, sy, sz, sw)
+      denom = accumulate_2x2x2[uint32_t, uint32_t](denom, sx, sy, sz, sw, sv)
       denomview = <uint32_t[:ovoxels]>denom
       PyMem_Free(tmp)
 
@@ -595,22 +603,23 @@ def _average_pooling_2x2x2_uint8(np.ndarray[uint8_t, ndim=4] channel, uint32_t n
 
   return results
 
-def _average_pooling_2x2x2_uint16(np.ndarray[uint16_t, ndim=4] channel, uint32_t num_mips, sparse):
+def _average_pooling_2x2x2_uint16(np.ndarray[uint16_t, ndim=5] channel, uint32_t num_mips, sparse):
   cdef size_t sx = channel.shape[0]
   cdef size_t sy = channel.shape[1]
   cdef size_t sz = channel.shape[2]
   cdef size_t sw = channel.shape[3]
+  cdef size_t sv = channel.shape[4]
   cdef size_t sxy = sx * sy
 
   cdef size_t osx = (sx + 1) // 2
   cdef size_t osy = (sy + 1) // 2
   cdef size_t osz = (sz + 1) // 2
   cdef size_t osxy = osx * osy
-  cdef size_t ovoxels = osxy * osz * sw
+  cdef size_t ovoxels = osxy * osz * sw * sv
 
-  cdef uint16_t[:,:,:,:] channelview = channel
+  cdef uint16_t[:,:,:,:,:] channelview = channel
   cdef uint32_t* accum = accumulate_2x2x2[uint16_t, uint32_t](
-    &channelview[0,0,0,0], sx, sy, sz, sw
+    &channelview[0,0,0,0,0], sx, sy, sz, sw, sv
   )
   cdef uint32_t[:] accumview = <uint32_t[:ovoxels]>accum
 
@@ -619,7 +628,7 @@ def _average_pooling_2x2x2_uint16(np.ndarray[uint16_t, ndim=4] channel, uint32_t
   cdef uint32_t[:] denomview
   if sparse:
     denom = denominator_2x2x2[uint16_t, uint32_t](
-      &channelview[0,0,0,0], sx, sy, sz, sw
+      &channelview[0,0,0,0,0], sx, sy, sz, sw, sv
     )
     denomview = <uint32_t[:ovoxels]>denom
 
@@ -639,7 +648,7 @@ def _average_pooling_2x2x2_uint16(np.ndarray[uint16_t, ndim=4] channel, uint32_t
       render_image[uint32_t, uint16_t](&accumview[0], &oimgview[0], bitshift, ovoxels)
 
     results.append(
-      oimg.reshape( (osx, osy, osz, sw), order='F' )
+      oimg.reshape( (osx, osy, osz, sw, sv), order='F' )
     )
 
     if mip == num_mips - 1:
@@ -658,16 +667,16 @@ def _average_pooling_2x2x2_uint16(np.ndarray[uint16_t, ndim=4] channel, uint32_t
     osy = (sy + 1) // 2
     osz = (sz + 1) // 2
     osxy = osx * osy
-    ovoxels = osxy * osz * sw
+    ovoxels = osxy * osz * sw * sv
 
     tmp = accum 
-    accum = accumulate_2x2x2[uint32_t, uint32_t](accum, sx, sy, sz, sw)
+    accum = accumulate_2x2x2[uint32_t, uint32_t](accum, sx, sy, sz, sw, sv)
     accumview = <uint32_t[:ovoxels]>accum
     PyMem_Free(tmp)
 
     if sparse:
       tmp = denom
-      denom = accumulate_2x2x2[uint32_t, uint32_t](denom, sx, sy, sz, sw)
+      denom = accumulate_2x2x2[uint32_t, uint32_t](denom, sx, sy, sz, sw, sv)
       denomview = <uint32_t[:ovoxels]>denom
       PyMem_Free(tmp)
 
@@ -677,21 +686,22 @@ def _average_pooling_2x2x2_uint16(np.ndarray[uint16_t, ndim=4] channel, uint32_t
 
   return results
 
-def _average_pooling_2x2x2_float(np.ndarray[float, ndim=4] channel, uint32_t num_mips):
+def _average_pooling_2x2x2_float(np.ndarray[float, ndim=5] channel, uint32_t num_mips):
   cdef size_t sx = channel.shape[0]
   cdef size_t sy = channel.shape[1]
   cdef size_t sz = channel.shape[2]
   cdef size_t sw = channel.shape[3]
+  cdef size_t sv = channel.shape[4]
   cdef size_t sxy = sx * sy
 
   cdef size_t osx = (sx + 1) // 2
   cdef size_t osy = (sy + 1) // 2
   cdef size_t osz = (sz + 1) // 2
   cdef size_t osxy = osx * osy
-  cdef size_t ovoxels = osxy * osz * sw
+  cdef size_t ovoxels = osxy * osz * sw * sv
   
-  cdef float[:,:,:,:] channelview = channel
-  cdef float* accum = accumulate_2x2x2[float,float](&channelview[0,0,0,0], sx, sy, sz, sw)
+  cdef float[:,:,:,:,:] channelview = channel
+  cdef float* accum = accumulate_2x2x2[float,float](&channelview[0,0,0,0,0], sx, sy, sz, sw, sv)
   cdef float[:] accumview = <float[:ovoxels]>accum
   cdef float* tmp
   cdef uint32_t mip
@@ -707,7 +717,7 @@ def _average_pooling_2x2x2_float(np.ndarray[float, ndim=4] channel, uint32_t num
     render_image_floating[float](&accumview[0], &oimgview[0], divisor, ovoxels)
 
     results.append(
-      oimg.reshape( (osx, osy, osz, sw), order='F' )
+      oimg.reshape( (osx, osy, osz, sw, sv), order='F' )
     )
 
     if mip == num_mips - 1:
@@ -721,10 +731,10 @@ def _average_pooling_2x2x2_float(np.ndarray[float, ndim=4] channel, uint32_t num
     osy = (sy + 1) // 2
     osz = (sz + 1) // 2
     osxy = osx * osy
-    ovoxels = osxy * osz * sw
+    ovoxels = osxy * osz * sw * sv
 
     tmp = accum 
-    accum = accumulate_2x2x2[float,float](accum, sx, sy, sz, sw)
+    accum = accumulate_2x2x2[float,float](accum, sx, sy, sz, sw, sv)
     accumview = <float[:ovoxels]>accum
     PyMem_Free(tmp)
 
@@ -732,21 +742,22 @@ def _average_pooling_2x2x2_float(np.ndarray[float, ndim=4] channel, uint32_t num
 
   return results
 
-def _average_pooling_2x2x2_double(np.ndarray[double, ndim=4] channel, uint32_t num_mips):
+def _average_pooling_2x2x2_double(np.ndarray[double, ndim=5] channel, uint32_t num_mips):
   cdef size_t sx = channel.shape[0]
   cdef size_t sy = channel.shape[1]
   cdef size_t sz = channel.shape[2]
   cdef size_t sw = channel.shape[3]
+  cdef size_t sv = channel.shape[4]
   cdef size_t sxy = sx * sy
 
   cdef size_t osx = (sx + 1) // 2
   cdef size_t osy = (sy + 1) // 2
   cdef size_t osz = (sz + 1) // 2
   cdef size_t osxy = osx * osy
-  cdef size_t ovoxels = osxy * osz * sw
+  cdef size_t ovoxels = osxy * osz * sw * sv
   
-  cdef double[:,:,:,:] channelview = channel
-  cdef double* accum = accumulate_2x2x2[double,double](&channelview[0,0,0,0], sx, sy, sz, sw)
+  cdef double[:,:,:,:,:] channelview = channel
+  cdef double* accum = accumulate_2x2x2[double,double](&channelview[0,0,0,0,0], sx, sy, sz, sw, sv)
   cdef double[:] accumview = <double[:ovoxels]>accum
   cdef double* tmp
   cdef uint32_t mip
@@ -762,7 +773,7 @@ def _average_pooling_2x2x2_double(np.ndarray[double, ndim=4] channel, uint32_t n
     render_image_floating[double](&accumview[0], &oimgview[0], divisor, ovoxels)
 
     results.append(
-      oimg.reshape( (osx, osy, osz, sw), order='F' )
+      oimg.reshape( (osx, osy, osz, sw, sv), order='F' )
     )
 
     if mip == num_mips - 1:
@@ -776,10 +787,10 @@ def _average_pooling_2x2x2_double(np.ndarray[double, ndim=4] channel, uint32_t n
     osy = (sy + 1) // 2
     osz = (sz + 1) // 2
     osxy = osx * osy
-    ovoxels = osxy * osz * sw
+    ovoxels = osxy * osz * sw * sv
 
     tmp = accum 
-    accum = accumulate_2x2x2[double,double](accum, sx, sy, sz, sw)
+    accum = accumulate_2x2x2[double,double](accum, sx, sy, sz, sw, sv)
     accumview = <double[:ovoxels]>accum
     PyMem_Free(tmp)
 
@@ -791,7 +802,7 @@ def _average_pooling_2x2x2_double(np.ndarray[double, ndim=4] channel, uint32_t n
 
 def mode_pooling_2x2(img, uint32_t num_mips=1):
   ndim = img.ndim
-  img = expand_dims(img, 4)
+  img = expand_dims(img, 5)
 
   results = []
   for mip in range(num_mips):
@@ -803,31 +814,33 @@ def mode_pooling_2x2(img, uint32_t num_mips=1):
 
   return results
 
-def _mode_pooling_2x2_cpp(np.ndarray[NUMBER, ndim=4] img):
+def _mode_pooling_2x2_cpp(np.ndarray[NUMBER, ndim=5] img):
   sx = img.shape[0]
   sy = img.shape[1]
   sz = img.shape[2]
   sw = img.shape[3]
+  sv = img.shape[4]
 
-  size = ( (sx+1) // 2, (sy+1) // 2, sz, sw )
+  size = ( (sx+1) // 2, (sy+1) // 2, sz, sw, sv )
 
-  cdef np.ndarray[NUMBER, ndim=4] oimg = np.zeros(size, dtype=img.dtype, order='F')
+  cdef np.ndarray[NUMBER, ndim=5] oimg = np.zeros(size, dtype=img.dtype, order='F')
 
-  cdef uint8_t[:,:,:,:] arr_memview8u_i
-  cdef uint16_t[:,:,:,:] arr_memview16u_i
-  cdef uint32_t[:,:,:,:] arr_memview32u_i
-  cdef uint64_t[:,:,:,:] arr_memview64u_i
+  cdef uint8_t[:,:,:,:,:] arr_memview8u_i
+  cdef uint16_t[:,:,:,:,:] arr_memview16u_i
+  cdef uint32_t[:,:,:,:,:] arr_memview32u_i
+  cdef uint64_t[:,:,:,:,:] arr_memview64u_i
 
-  cdef uint8_t[:,:,:,:] arr_memview8u_o
-  cdef uint16_t[:,:,:,:] arr_memview16u_o
-  cdef uint32_t[:,:,:,:] arr_memview32u_o
-  cdef uint64_t[:,:,:,:] arr_memview64u_o
+  cdef uint8_t[:,:,:,:,:] arr_memview8u_o
+  cdef uint16_t[:,:,:,:,:] arr_memview16u_o
+  cdef uint32_t[:,:,:,:,:] arr_memview32u_o
+  cdef uint64_t[:,:,:,:,:] arr_memview64u_o
 
   strides = np.array([
     img.strides[0],
     img.strides[1],
     img.strides[2],
     img.strides[3],
+    img.strides[4],
   ]) 
   strides //= sizeof(NUMBER)
 
@@ -835,33 +848,33 @@ def _mode_pooling_2x2_cpp(np.ndarray[NUMBER, ndim=4] img):
     arr_memview8u_i = img.view(np.uint8)
     arr_memview8u_o = oimg.view(np.uint8)
     _mode_pooling_2x2[uint8_t](
-      &arr_memview8u_i[0,0,0,0], &arr_memview8u_o[0,0,0,0], 
-      sx, sy, sz, sw,
-      strides[0], strides[1], strides[2], strides[3]
+      &arr_memview8u_i[0,0,0,0,0], &arr_memview8u_o[0,0,0,0,0], 
+      sx, sy, sz, sw, sv,
+      strides[0], strides[1], strides[2], strides[3], strides[4]
     )
   elif img.dtype in (np.uint16, np.int16):
     arr_memview16u_i = img.view(np.uint16)
     arr_memview16u_o = oimg.view(np.uint16)
     _mode_pooling_2x2[uint16_t](
-      &arr_memview16u_i[0,0,0,0], &arr_memview16u_o[0,0,0,0], 
-      sx, sy, sz, sw,
-      strides[0], strides[1], strides[2], strides[3]
+      &arr_memview16u_i[0,0,0,0,0], &arr_memview16u_o[0,0,0,0,0], 
+      sx, sy, sz, sw, sv,
+      strides[0], strides[1], strides[2], strides[3], strides[4]
     )
   elif img.dtype in (np.uint32, np.int32, np.float32):
     arr_memview32u_i = img.view(np.uint32)
     arr_memview32u_o = oimg.view(np.uint32)
     _mode_pooling_2x2[uint32_t](
-      &arr_memview32u_i[0,0,0,0], &arr_memview32u_o[0,0,0,0], 
-      sx, sy, sz, sw,
-      strides[0], strides[1], strides[2], strides[3]
+      &arr_memview32u_i[0,0,0,0,0], &arr_memview32u_o[0,0,0,0,0], 
+      sx, sy, sz, sw, sv,
+      strides[0], strides[1], strides[2], strides[3], strides[4]
     )
   elif img.dtype in (np.uint64, np.int64, np.float64, np.csingle):
     arr_memview64u_i = img.view(np.uint64)
     arr_memview64u_o = oimg.view(np.uint64)
     _mode_pooling_2x2[uint64_t](
-      &arr_memview64u_i[0,0,0,0], &arr_memview64u_o[0,0,0,0], 
-      sx, sy, sz, sw,
-      strides[0], strides[1], strides[2], strides[3]
+      &arr_memview64u_i[0,0,0,0,0], &arr_memview64u_o[0,0,0,0,0], 
+      sx, sy, sz, sw, sv,
+      strides[0], strides[1], strides[2], strides[3], strides[4]
     )
   else:
     raise ValueError("{} not supported.".format(img.dtype))
@@ -870,7 +883,7 @@ def _mode_pooling_2x2_cpp(np.ndarray[NUMBER, ndim=4] img):
 
 def mode_pooling_2x2x2(img, uint32_t num_mips=1, sparse=False):
   ndim = img.ndim
-  img = expand_dims(img, 4)
+  img = expand_dims(img, 5)
 
   results = []
   for mip in range(num_mips):
@@ -882,56 +895,57 @@ def mode_pooling_2x2x2(img, uint32_t num_mips=1, sparse=False):
 
   return results  
 
-def _mode_pooling_2x2x2_helper(np.ndarray[NUMBER, ndim=4] img, sparse):
+def _mode_pooling_2x2x2_helper(np.ndarray[NUMBER, ndim=5] img, sparse):
   sx = img.shape[0]
   sy = img.shape[1]
   sz = img.shape[2]
   sw = img.shape[3]
+  sv = img.shape[3]
 
-  size = ( (sx+1) // 2, (sy+1) // 2, (sz+1) // 2, sw )
+  size = ( (sx+1) // 2, (sy+1) // 2, (sz+1) // 2, sw, sv )
 
-  cdef np.ndarray[NUMBER, ndim=4] oimg = np.zeros(size, dtype=img.dtype, order='F')
+  cdef np.ndarray[NUMBER, ndim=5] oimg = np.zeros(size, dtype=img.dtype, order='F')
 
-  cdef uint8_t[:,:,:,:] arr_memview8u_i
-  cdef uint16_t[:,:,:,:] arr_memview16u_i
-  cdef uint32_t[:,:,:,:] arr_memview32u_i
-  cdef uint64_t[:,:,:,:] arr_memview64u_i
+  cdef uint8_t[:,:,:,:,:] arr_memview8u_i
+  cdef uint16_t[:,:,:,:,:] arr_memview16u_i
+  cdef uint32_t[:,:,:,:,:] arr_memview32u_i
+  cdef uint64_t[:,:,:,:,:] arr_memview64u_i
 
-  cdef uint8_t[:,:,:,:] arr_memview8u_o
-  cdef uint16_t[:,:,:,:] arr_memview16u_o
-  cdef uint32_t[:,:,:,:] arr_memview32u_o
-  cdef uint64_t[:,:,:,:] arr_memview64u_o
+  cdef uint8_t[:,:,:,:,:] arr_memview8u_o
+  cdef uint16_t[:,:,:,:,:] arr_memview16u_o
+  cdef uint32_t[:,:,:,:,:] arr_memview32u_o
+  cdef uint64_t[:,:,:,:,:] arr_memview64u_o
 
   if img.dtype in (np.uint8, np.int8):
     arr_memview8u_i = img.view(np.uint8)
     arr_memview8u_o = oimg.view(np.uint8)
     _mode_pooling_2x2x2[uint8_t](
-      &arr_memview8u_i[0,0,0,0], &arr_memview8u_o[0,0,0,0], 
-      sx, sy, sz, sw, 
+      &arr_memview8u_i[0,0,0,0,0], &arr_memview8u_o[0,0,0,0,0], 
+      sx, sy, sz, sw, sv,
       bool(sparse)
     )
   elif img.dtype in (np.uint16, np.int16):
     arr_memview16u_i = img.view(np.uint16)
     arr_memview16u_o = oimg.view(np.uint16)
     _mode_pooling_2x2x2[uint16_t](
-      &arr_memview16u_i[0,0,0,0], &arr_memview16u_o[0,0,0,0], 
-      sx, sy, sz, sw,
+      &arr_memview16u_i[0,0,0,0,0], &arr_memview16u_o[0,0,0,0,0], 
+      sx, sy, sz, sw, sv,
       bool(sparse)
     )
   elif img.dtype in (np.uint32, np.int32, np.float32):
     arr_memview32u_i = img.view(np.uint32)
     arr_memview32u_o = oimg.view(np.uint32)
     _mode_pooling_2x2x2[uint32_t](
-      &arr_memview32u_i[0,0,0,0], &arr_memview32u_o[0,0,0,0], 
-      sx, sy, sz, sw,
+      &arr_memview32u_i[0,0,0,0,0], &arr_memview32u_o[0,0,0,0,0], 
+      sx, sy, sz, sw, sv,
       bool(sparse)
     )
   elif img.dtype in (np.uint64, np.int64, np.float64, np.csingle):
     arr_memview64u_i = img.view(np.uint64)
     arr_memview64u_o = oimg.view(np.uint64)
     _mode_pooling_2x2x2[uint64_t](
-      &arr_memview64u_i[0,0,0,0], &arr_memview64u_o[0,0,0,0], 
-      sx, sy, sz, sw,
+      &arr_memview64u_i[0,0,0,0,0], &arr_memview64u_o[0,0,0,0,0], 
+      sx, sy, sz, sw, sv,
       bool(sparse)
     )
   else:

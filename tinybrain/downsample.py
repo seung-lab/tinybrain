@@ -142,7 +142,7 @@ def downsample_with_averaging_numpy(array, factor, sparse=False):
 
   if sparse:
     np.maximum(counts, 1, out=counts)
-  return np.cast[array.dtype](temp / counts)
+  return np.asarray(temp / counts, dtype=array.dtype)
 
 def downsample_with_max_pooling(array, factor, num_mips=1):
   """
