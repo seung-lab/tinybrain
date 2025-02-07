@@ -4,7 +4,7 @@ Cython accelerated routines for common downsampling operations.
 
 Author: William Silversmith
 Affiliation: Seung Lab, Princeton Neuroscience Institute
-Date: March 2019
+Date: March 2019, Februrary 2025
 """
 cimport cython
 from cython cimport floating
