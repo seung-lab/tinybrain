@@ -290,7 +290,7 @@ def _average_pooling_2x2_int8(np.ndarray[int8_t, ndim=5] channel, uint32_t num_m
   results = []
   for mip in range(num_mips):
     bitshift = 2 * ((mip % 4) + 1) # integer truncation every 4 mip levels
-    oimg = np.zeros( (ovoxels,), dtype=np.uint8, order='F')
+    oimg = np.zeros( (ovoxels,), dtype=np.int8, order='F')
     oimgview = oimg
 
     if sparse:
@@ -358,7 +358,7 @@ def _average_pooling_2x2_int16(np.ndarray[int16_t, ndim=5] channel, uint32_t num
   results = []
   for mip in range(num_mips):
     bitshift = 2 * ((mip % 4) + 1) # integer truncation every 4 mip levels
-    oimg = np.zeros( (ovoxels,), dtype=np.uint16, order='F')
+    oimg = np.zeros( (ovoxels,), dtype=np.int16, order='F')
     oimgview = oimg
 
     if sparse:
