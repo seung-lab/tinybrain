@@ -14,7 +14,12 @@ img = load_3d_em_stack()
 img_pyramid = tinybrain.downsample_with_averaging(img, factor=(2,2,1), num_mips=5, sparse=False)
 
 labels = load_3d_labels()
-label_pyramid = tinybrain.downsample_segmentation(labels, factor=(2,2,1), num_mips=5, sparse=False))
+label_pyramid = tinybrain.downsample_segmentation(labels, factor=(2,2,1), num_mips=5, sparse=False)
+
+# We also have a few other types
+img_pyramid = tinybrain.downsample_with_min_pooling(image, factor=(2,2,1), num_mips=5)
+img_pyramid = tinybrain.downsample_with_max_pooling(image, factor=(2,2,1), num_mips=5)
+img_pyramid = tinybrain.downsample_with_striding(image, factor=(2,2,1), num_mips=5)
 ```
 
 ## Installation 
