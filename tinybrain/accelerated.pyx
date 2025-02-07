@@ -347,7 +347,7 @@ def _average_pooling_2x2_int16(np.ndarray[int16_t, ndim=5] channel, uint32_t num
   cdef int32_t* accum = accumulate_2x2[int16_t, int32_t](&channelview[0,0,0,0,0], sx, sy, sz, sw, sv)
   cdef int32_t[:] accumview = <int32_t[:ovoxels]>accum
   cdef int32_t* tmp
-  cdef int32_t mip, bitshift
+  cdef uint32_t mip, bitshift
 
   cdef int32_t* denominator
   if sparse:
@@ -817,7 +817,7 @@ def _average_pooling_2x2x2_int8(np.ndarray[int8_t, ndim=5] channel, uint32_t num
     denomview = <int32_t[:ovoxels]>denom
 
   cdef int32_t* tmp
-  cdef int32_t mip, bitshift
+  cdef uint32_t mip, bitshift
 
   cdef int8_t[:] oimgview
 
@@ -984,7 +984,7 @@ def _average_pooling_2x2x2_int16(np.ndarray[int16_t, ndim=5] channel, uint32_t n
     denomview = <int32_t[:ovoxels]>denom
 
   cdef int32_t* tmp
-  cdef int32_t mip, bitshift
+  cdef uint32_t mip, bitshift
 
   cdef int16_t[:] oimgview
 
