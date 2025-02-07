@@ -17,13 +17,13 @@ class NumpyImport:
 extra_compile_args = []
 if sys.platform == 'win32':
   extra_compile_args += [
-    '/std:c++11', '/O2'
+    '/std:c++17', '/O2'
   ]
   if platform.machine() == "x86_64":
     extra_compile_args += [ "/arch:SSE3" ]
 else:
   extra_compile_args += [
-    '-std=c++11', '-O3' # '-DCYTHON_TRACE=1'
+    '-std=c++17', '-O3' # '-DCYTHON_TRACE=1'
   ]
   if platform.machine() == "x86_64":
     extra_compile_args += [ '-msse3' ]
