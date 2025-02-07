@@ -136,7 +136,7 @@ def downsample_with_averaging_numpy(array, factor, sparse=False):
     indexing_expr = tuple(np.s_[:s] for s in part.shape)
     temp[indexing_expr] += part
     if sparse:
-      counts[indexing_expr] += part > 0
+      counts[indexing_expr] += part != 0
     else:
       counts[indexing_expr] += 1
 

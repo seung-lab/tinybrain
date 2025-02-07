@@ -359,7 +359,7 @@ T* _average_pooling_2x2_single_mip(
                   + static_cast<T2>(d)
                 ) / static_cast<T2>(
                     std::max(
-                      static_cast<T>((a > 0) + (b > 0) + (c > 0) + (d > 0)),
+                      static_cast<T>((a != 0) + (b != 0) + (c != 0) + (d != 0)),
                       static_cast<T>(1)
                     )
                   )
@@ -375,7 +375,7 @@ T* _average_pooling_2x2_single_mip(
                   + static_cast<T2>(b)
                 ) / static_cast<T2>(
                   std::max(
-                    static_cast<T>((a > 0) + (b > 0)),
+                    static_cast<T>((a != 0) + (b != 0)),
                     static_cast<T>(1)
                 )
               ));
@@ -931,8 +931,17 @@ U* denominator_2x2x2(
 
 template <typename T, typename U>
 inline void render_image(T* accum, U* oimg, const uint32_t bitshift, const size_t ovoxels) {
-  for (size_t i = 0; i < ovoxels; i++) {
-    oimg[i] = static_cast<U>(accum[i] >> bitshift);
+  if constexpr (std::is_signed<T>::value) {
+    for (size_t i = 0; i < ovoxels; i++) {
+      oimg[i] = (accum[i] < 0) 
+        ? -static_cast<U>(std::abs(accum[i]) >> bitshift)
+        : static_cast<U>(accum[i] >> bitshift);
+    }
+  } 
+  else {
+    for (size_t i = 0; i < ovoxels; i++) {
+      oimg[i] = static_cast<U>(accum[i] >> bitshift);
+    }
   }
 }
 
