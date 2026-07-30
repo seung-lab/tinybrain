@@ -42,10 +42,10 @@
 # 2x2 2 mip: 1.181s, 2269.54 MVx/sec, N=10
 # 2x2 1 mip sparse: 14.294s, 187.49 MVx/sec, N=10
 # 2x2 2 mip sparse: 25.615s, 104.63 MVx/sec, N=10
-# 2x2x2 1 mip: 3.621s, 740.07 MVx/sec, N=10
-# 2x2x2 2 mip: 4.066s, 659.13 MVx/sec, N=10
-# 2x2x2 1 mip sparse: 4.356s, 615.27 MVx/sec, N=10
-# 2x2x2 2 mip sparse: 5.084s, 527.10 MVx/sec, N=10
+# 2x2x2 1 mip: 2.576s, 1040.33 MVx/sec, N=10
+# 2x2x2 2 mip: 2.891s, 927.14 MVx/sec, N=10
+# 2x2x2 1 mip sparse: 2.530s, 1059.15 MVx/sec, N=10
+# 2x2x2 2 mip sparse: 2.917s, 918.66 MVx/sec, N=10
 
 import numpy as np
 import tinybrain
