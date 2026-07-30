@@ -35,6 +35,11 @@ setuptools.setup(
   setup_requires=['pbr', 'numpy','cython'],
   install_requires=['numpy'],
   python_requires=">=3.9",
+  define_macros=[ 
+    ("NDEBUG", 1),
+    ("NPY_NO_DEPRECATED_API", 1),
+    ("NPY_1_7_API_VERSION", 1),
+  ],
   ext_modules=[
     setuptools.Extension(
       'tinybrain.accelerated',
