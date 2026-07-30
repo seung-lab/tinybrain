@@ -1080,8 +1080,6 @@ inline void _mode_pooling_2x2x2(
   const size_t osy = (sy + 1) >> 1;
 
   T vals[8] = {};
-  T cur_val = 0, max_val = 0;
-  size_t max_ct = 0, cur_ct = 0;
 
   for (size_t v = 0; v < sv; v++) {
     for (size_t w = 0; w < sw; w++) {
@@ -1105,12 +1103,12 @@ inline void _mode_pooling_2x2x2(
             
             size_t o_loc = (x >> 1) + osx * ((y >> 1) + osy * ((z >> 1) + sz * (w + sw * v)));
 
-            max_ct = 0;
-            max_val = 0;
+            size_t max_ct = 0;
+            T max_val = 0;
             uint8_t all_mask = 0;
 
             for (short int t = 0; t < 8 && all_mask != 0xff; t++) {
-              cur_val = vals[t];
+              const T cur_val = vals[t];
               if (sparse && cur_val == 0) {
                 continue;
               }
@@ -1119,6 +1117,8 @@ inline void _mode_pooling_2x2x2(
               const int eoff = 8 - (tinybrain_clz((uint8_t)~all_mask) - 24);
 
               uint8_t seg_mask = 0;
+
+              size_t cur_ct = 0;
               for (int n = soff; n < eoff; n++) {
                 seg_mask |= (uint8_t)(vals[n] == cur_val) << n;
                 cur_ct += (vals[n] == cur_val);
