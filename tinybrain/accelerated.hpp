@@ -23,6 +23,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include <cmath>
 #include <cstdio>
 #include <cstdint>
+#include "builtins.hpp"
 
 #ifdef __x86_64
   #include "immintrin.h"
@@ -1116,19 +1117,23 @@ inline void _mode_pooling_2x2x2(
 
             max_ct = 0;
             max_val = 0;
-            for (short int t = 0; t < 8; t++) {
+            uint8_t all_mask = 0;
+
+            for (short int t = 0; t < 8 && all_mask != 0xff; t++) {
               cur_val = vals[t];
               if (sparse && cur_val == 0) {
                 continue;
               }
 
-              cur_ct = 1;
-              for (short int p = 0; p < t; p++) {
-                cur_ct += (cur_val == vals[p]);
+              const int soff = tinybrain_ctz((uint8_t)~all_mask);
+              const int eoff = 8 - (tinybrain_clz((uint8_t)~all_mask) - 24);
+
+              uint8_t seg_mask = 0;
+              for (int n = soff; n < eoff; n++) {
+                seg_mask |= (uint8_t)(vals[n] == cur_val) << n;
+                cur_ct += (vals[n] == cur_val);
               }
-              for (short int p = t + 1; p < 8; p++) {
-                cur_ct += (cur_val == vals[p]);
-              }
+              all_mask |= (uint8_t)seg_mask;
 
               if (cur_ct >= 4) {
                 max_val = cur_val;
