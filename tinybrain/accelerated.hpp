@@ -1079,9 +1079,9 @@ inline void _mode_pooling_2x2x2(
   const size_t osx = (sx + 1) >> 1;
   const size_t osy = (sy + 1) >> 1;
 
-  T vals[8];
-  T cur_val, max_val;
-  size_t max_ct, cur_ct;
+  T vals[8] = {};
+  T cur_val = 0, max_val = 0;
+  size_t max_ct = 0, cur_ct = 0;
 
   for (size_t v = 0; v < sv; v++) {
     for (size_t w = 0; w < sw; w++) {
