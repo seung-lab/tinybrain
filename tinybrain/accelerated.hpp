@@ -1114,7 +1114,7 @@ inline void _mode_pooling_2x2x2(
               continue;
             }
 
-            if (sparse && vals[7] == 0) {
+            if (sparse && vals[0] == 0) {
               max_ct = 0;
               max_val = 0;
             }
@@ -1123,7 +1123,10 @@ inline void _mode_pooling_2x2x2(
               max_val = vals[0];
             }
 
-            for (short int t = 7; t >= 0; t--) {
+            // no need to evaluate t=0, as if max_ct
+            // is 1 at the last entry, it can't go higher than
+            // 1, so we'll just take the last entry as good
+            for (short int t = 7; t >= 1; t--) {
               cur_val = vals[t];
               if (sparse && cur_val == 0) {
                 continue;
