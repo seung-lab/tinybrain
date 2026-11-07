@@ -700,6 +700,21 @@ def test_sparse_2x2x2_mode_downsampling(dtype):
   assert res[0][0][0] == 0
   assert res.shape == (1,1,1)
 
+  test7 = np.array([
+    [
+      [1,2],
+      [3,4],
+    ],
+    [
+      [5,6],
+      [7,8],
+    ],
+  ], dtype=dtype, order='F')
+
+  res = tinybrain.accelerated.mode_pooling_2x2x2(test7, sparse=True)[0]
+  assert res[0][0][0] == 1
+  assert res.shape == (1,1,1)
+
   # test7 = np.array([
   #   [
   #     [1,0,1],
