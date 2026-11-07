@@ -1114,19 +1114,23 @@ inline void _mode_pooling_2x2x2(
               continue;
             }
 
-            max_ct = 0;
-            max_val = 0;
-            for (short int t = 0; t < 8; t++) {
+            if (sparse && vals[7] == 0) {
+              max_ct = 0;
+              max_val = 0;
+            }
+            else {
+              max_ct = 1;
+              max_val = vals[0];
+            }
+
+            for (short int t = 7; t >= 0; t--) {
               cur_val = vals[t];
               if (sparse && cur_val == 0) {
                 continue;
               }
 
               cur_ct = 1;
-              for (short int p = 0; p < t; p++) {
-                cur_ct += (cur_val == vals[p]);
-              }
-              for (short int p = t + 1; p < 8; p++) {
+              for (short int p = t-1; p >= 0; p--) {
                 cur_ct += (cur_val == vals[p]);
               }
 
