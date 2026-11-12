@@ -88,19 +88,19 @@ print("Pillow ", time.time() - s)
 
 Here's the output from `perf.py` on an Apple Silicon 2021 Macbook Pro M1.
 Note that the image used was a random 2048x2048x64 array that was a uint8
-for average pooling and a uint64 for mode pooling to represent real use cases more fairly. In the table, read it as 2D or 3D downsamples, generating a single or multiple mip levels, with sparse mode enabled or disabled. The speed values are in megavoxels per a second and are the mean of ten runs.
+for average pooling and a uint64 for mode pooling to represent real use cases more fairly. In the table, read it as 2D or 3D downsamples, generating a single or multiple mip levels, with sparse mode enabled or disabled. The speed values are in megavoxels per a second and are the mean of ten runs. Last test run on 2026-11-11 w/ `tinybrain==1.8.0`. Since the first time this test has been run on the same hardware, the numbers have improved a lot. In part, this is likely due to compiler vectorization improvements as well as code changes.
 
 
 | dwnsmpl  |   mips  |   sparse  |   AVG (MVx/sec)  |   MODE (MVx/sec)  |
 |----------|---------|-----------|------------------|-------------------|
-|   2x2    |   1     |   N       |   3856.07        |   1057.87         |
-|   2x2    |   2     |   N       |   2685.80        |   1062.69         |
-|   2x2    |   1     |   Y       |   N/A            |   129.64          |
-|   2x2    |   2     |   Y       |   N/A            |   81.62           |
-|   2x2x2  |   1     |   N       |   4468.55        |   336.85          |
-|   2x2x2  |   2     |   N       |   2867.80        |   298.45          |
-|   2x2x2  |   1     |   Y       |   1389.47        |   337.87          |
-|   2x2x2  |   2     |   Y       |   1259.58        |   293.84          |
+|   2x2    |   1     |   N       |   29806.23       |   949.60         |
+|   2x2    |   2     |   N       |   10307.80       |   2161.17         |
+|   2x2    |   1     |   Y       |   N/A            |   169.42          |
+|   2x2    |   2     |   Y       |   N/A            |   94.17           |
+|   2x2x2  |   1     |   N       |   39890.47       |   584.02          |
+|   2x2x2  |   2     |   N       |   11160.49       |   522.53          |
+|   2x2x2  |   1     |   Y       |   4297.57        |   545.37          |
+|   2x2x2  |   2     |   Y       |   3604.68        |   480.03          |
 
 As the downsampling code's performance is data dependent due to branching, I also used [`connectomics.npy`](https://github.com/seung-lab/connected-components-3d/blob/master/benchmarks/connectomics.npy.gz) (512<sup>3</sup> uint32 extended to uint64) to see how that affected performance. This data comes from mouse visual cortex and has many equal adjacent voxels. In this volume, the 2x2x2 non-sparse mode is much faster as the "instant" majority detection can skip examining half the voxels in many cases.
 
