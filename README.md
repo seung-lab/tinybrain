@@ -14,7 +14,12 @@ img = load_3d_em_stack()
 img_pyramid = tinybrain.downsample_with_averaging(img, factor=(2,2,1), num_mips=5, sparse=False)
 
 labels = load_3d_labels()
-label_pyramid = tinybrain.downsample_segmentation(labels, factor=(2,2,1), num_mips=5, sparse=False))
+label_pyramid = tinybrain.downsample_segmentation(labels, factor=(2,2,1), num_mips=5, sparse=False)
+
+# We also have a few other types
+img_pyramid = tinybrain.downsample_with_min_pooling(image, factor=(2,2,1), num_mips=5)
+img_pyramid = tinybrain.downsample_with_max_pooling(image, factor=(2,2,1), num_mips=5)
+img_pyramid = tinybrain.downsample_with_striding(image, factor=(2,2,1), num_mips=5)
 ```
 
 ## Installation 
@@ -27,7 +32,7 @@ pip install tinybrain
 ## Motivation
 
 Image hierarchy generation in connectomics uses a few different techniques for
-visualizing data, but predominantly we create image pyramids of uint8 grayscale images using 2x2 average pooling and of uint8 to uint64 segmentation labels using 2x2 mode pooling. When images become very large and people wish to visualze upper mip levels using three axes at once, it becomes desirable to perform 2x2x2 downsamples to maintain isotropy.
+visualizing data, but predominantly we create image pyramids of uint8 grayscale images using 2x2 average pooling and of uint8 to uint64 segmentation labels using 2x2 mode pooling. When images become very large and people wish to visualize upper mip levels using three axes at once, it becomes desirable to perform 2x2x2 downsamples to maintain isotropy.
 
 It's possible to compute both of these using numpy, however as multiple packages found it useful to copy the downsample functions, it makes sense to formalize these functions into a seperate library located on PyPI.
 

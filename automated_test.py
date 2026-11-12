@@ -125,7 +125,7 @@ def test_even_odd2d():
   assert np.array_equal(oddimg, ans3x3x3)
   assert np.array_equal(oddimgf, ans3x3x3)
 
-@pytest.mark.parametrize("dtype", (np.uint8, np.uint16, np.float32, np.float64))
+@pytest.mark.parametrize("dtype", (np.int8, np.int16, np.uint8, np.uint16, np.float32, np.float64))
 @pytest.mark.parametrize("sparse", [False, True])
 def test_accelerated_vs_numpy_avg_pooling_2x2x1(dtype, sparse):
   image = np.random.randint(0,255, size=(512, 512, 6), dtype=np.uint8).astype(dtype, copy=False)
@@ -147,7 +147,7 @@ def test_accelerated_vs_numpy_avg_pooling_2x2x1(dtype, sparse):
 
   assert np.all(mips[-1] == npimg)
 
-@pytest.mark.parametrize("dtype", (np.uint8, np.uint16, np.float32, np.float64))
+@pytest.mark.parametrize("dtype", (np.int8, np.int16, np.uint8, np.uint16, np.float32, np.float64))
 def test_accelerated_vs_numpy_avg_pooling_2x2x1_simple_sparse(dtype):
   for x in [0,1]:
     for y in [0,1]:
@@ -189,7 +189,7 @@ def test_accelerated_vs_numpy_avg_pooling_2x2x1_simple_sparse(dtype):
   assert np.all(res[1] == ans)
 
 
-@pytest.mark.parametrize("dtype", (np.uint8, np.uint16, np.float32, np.float64))
+@pytest.mark.parametrize("dtype", (np.int8, np.int16, np.uint8, np.uint16, np.float32, np.float64))
 @pytest.mark.parametrize("sx", (6,7,1024,1025))
 @pytest.mark.parametrize("sy", (6,7,1024,1025))
 @pytest.mark.parametrize("sz", (4,5,32,33))
@@ -698,6 +698,21 @@ def test_sparse_2x2x2_mode_downsampling(dtype):
 
   res = tinybrain.accelerated.mode_pooling_2x2x2(test6, sparse=True)[0]
   assert res[0][0][0] == 0
+  assert res.shape == (1,1,1)
+
+  test7 = np.array([
+    [
+      [1,2],
+      [3,4],
+    ],
+    [
+      [5,6],
+      [7,8],
+    ],
+  ], dtype=dtype, order='F')
+
+  res = tinybrain.accelerated.mode_pooling_2x2x2(test7, sparse=True)[0]
+  assert res[0][0][0] == 1
   assert res.shape == (1,1,1)
 
   # test7 = np.array([

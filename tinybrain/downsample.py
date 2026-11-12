@@ -45,7 +45,7 @@ def downsample_with_averaging(img, factor, num_mips=1, sparse=False):
   Returns: [ mip0, mip1, mip2, ..., num_mip ]
   """
   if (
-    img.dtype in (np.uint8, np.uint16, np.float32, np.float64)
+    img.dtype in (np.int8, np.int16, np.uint8, np.uint16, np.float32, np.float64)
     or num_mips == 1 # _average_pooling_2x2_single_mip_py supports all primative types
   ):
     img = np.asfortranarray(img)
@@ -136,7 +136,7 @@ def downsample_with_averaging_numpy(array, factor, sparse=False):
     indexing_expr = tuple(np.s_[:s] for s in part.shape)
     temp[indexing_expr] += part
     if sparse:
-      counts[indexing_expr] += part > 0
+      counts[indexing_expr] += part != 0
     else:
       counts[indexing_expr] += 1
 
@@ -230,6 +230,11 @@ def downsample_segmentation(img, factor, sparse=False, num_mips=1):
   if np.all(np.array(factor, int) == 1):
       return [ img ] * num_mips
 
+  binary_image = isinstance(img, (bool, np.bool_))
+
+  if binary_image:
+    img = img.view(np.uint8)
+
   if tuple(factor) in ( (2,2), (2,2,1), (2,2,1,1) ) and not sparse:
     return tinybrain.accelerated.mode_pooling_2x2(img, num_mips=num_mips)
   elif tuple(factor) in ( (2,2,2), (2,2,2,1) ):
@@ -244,6 +249,10 @@ def downsample_segmentation(img, factor, sparse=False, num_mips=1):
     results.append(img)
 
   results = [ squeeze_dims(img, ndim) for img in results ]
+
+  if binary_image:
+    results = [ mip_img.view(bool) for mip_img in results ]
+
   return results
 
 def _downsample_segmentation(data, factor, sparse=False):

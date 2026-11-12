@@ -17,13 +17,13 @@ class NumpyImport:
 extra_compile_args = []
 if sys.platform == 'win32':
   extra_compile_args += [
-    '/std:c++11', '/O2'
+    '/std:c++17', '/O2'
   ]
   if platform.machine() == "x86_64":
     extra_compile_args += [ "/arch:SSE3" ]
 else:
   extra_compile_args += [
-    '-std=c++11', '-O3' # '-DCYTHON_TRACE=1'
+    '-std=c++17', '-O3' # '-DCYTHON_TRACE=1'
   ]
   if platform.machine() == "x86_64":
     extra_compile_args += [ '-msse3' ]
@@ -34,7 +34,7 @@ if sys.platform == 'darwin':
 setuptools.setup(
   setup_requires=['pbr', 'numpy','cython'],
   install_requires=['numpy'],
-  python_requires=">=3.8",
+  python_requires=">=3.9",
   ext_modules=[
     setuptools.Extension(
       'tinybrain.accelerated',
