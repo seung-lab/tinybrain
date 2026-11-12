@@ -111,14 +111,14 @@ As the downsampling code's performance is data dependent due to branching, I als
 
 | dwnsmpl  |   mips  |   sparse  |   MODE (MVx/sec)  |
 |----------|---------|-----------|-------------------|
-|   2x2    |   1     |   N       |   1078.09         |
-|   2x2    |   2     |   N       |   1030.90         |
-|   2x2    |   1     |   Y       |   146.15          |
-|   2x2    |   2     |   Y       |   69.25           |
-|   2x2x2  |   1     |   N       |   1966.74         |
-|   2x2x2  |   2     |   N       |   1790.60         |
-|   2x2x2  |   1     |   Y       |   2041.96         |
-|   2x2x2  |   2     |   Y       |   1758.42         |
+|   2x2    |   1     |   N       |   2333.79         |
+|   2x2    |   2     |   N       |   2385.92         |
+|   2x2    |   1     |   Y       |   193.95          |
+|   2x2    |   2     |   Y       |   102.15          |
+|   2x2x2  |   1     |   N       |   2995.39         |
+|   2x2x2  |   2     |   N       |   2403.57         |
+|   2x2x2  |   1     |   Y       |   3015.16         |
+|   2x2x2  |   2     |   Y       |   2592.10         |
 
 
 ## Considerations: downsample_segmentation 
